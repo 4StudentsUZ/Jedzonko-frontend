@@ -1,0 +1,2 @@
+# Jedzonko-frontend
+Aplikacja

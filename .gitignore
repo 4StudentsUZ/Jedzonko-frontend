@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+/app/src/main/res/layout/activity_main_todo.xml
+/app/src/main/res/layout/item_todo.xml
+/app/src/main/java/com/fourstudents/jedzonko/MainActivityOld.java
+/app/src/main/java/com/fourstudents/jedzonko/TodoAdapter.java
+/app/src/main/java/com/fourstudents/jedzonko/Todo.java

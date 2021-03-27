@@ -1,4 +1,4 @@
-package com.fourstudents.jedzonko.Database;
+package com.fourstudents.jedzonko.Database.Entities;
 
 import android.media.Image;
 
@@ -33,5 +33,13 @@ public class Tag {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public long getRecipeId() {
+        return recipeId;
+    }
+
+    public void setRecipeId(long recipeId) {
+        this.recipeId = recipeId;
     }
 }

@@ -4,11 +4,15 @@ import androidx.room.Embedded;
 import androidx.room.Relation;
 
 import com.fourstudents.jedzonko.Database.Entities.Ingredient;
+import com.fourstudents.jedzonko.Database.Entities.Product;
 
 import java.util.List;
 
-public class IngredientsWithRecipes {
+public class IngredientsWithProducts {
     @Embedded public Ingredient ingredient;
-    @Relation(parentColumn = "recipeId", entityColumn = "recipeId")
-    public List<Ingredient> ingredients;
+    @Relation(
+            parentColumn = "ingredientId",
+            entityColumn = "ingredientId"
+    )
+    public List<Product> products;
 }

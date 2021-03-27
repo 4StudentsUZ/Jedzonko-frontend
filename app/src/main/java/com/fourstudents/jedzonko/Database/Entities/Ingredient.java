@@ -1,4 +1,4 @@
-package com.fourstudents.jedzonko.Database;
+package com.fourstudents.jedzonko.Database.Entities;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -18,20 +18,12 @@ public class Ingredient {
     @ColumnInfo(name = "productId")
     private long productId;
 
-    public long getId() {
+    public long getIngredientId() {
         return ingredientId;
     }
 
-    public void setId(long id) {
+    public void setIngredientId(long ingredientId) {
         this.ingredientId = ingredientId;
-    }
-
-    public long getProductId() {
-        return productId;
-    }
-
-    public void setProduct(Set<Product> product) {
-        this.productId = productId;
     }
 
     public long getRecipeId() {
@@ -40,5 +32,13 @@ public class Ingredient {
 
     public void setRecipeId(long recipeId) {
         this.recipeId = recipeId;
+    }
+
+    public long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(long productId) {
+        this.productId = productId;
     }
 }

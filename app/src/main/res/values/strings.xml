@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">Jedzonko</string>
+    <string name="app_name">Jedzonko.pl</string>
+    <string name="nav_item_recipes">Przepisy</string>
+    <string name="nav_item_search">Szukaj</string>
+    <string name="nav_item_slist">Zakupy</string>
+    <string name="nav_item_account">Konto</string>
+    <string name="nav_item_shops">Sklepy</string>
+    <string name="title_recipes">Przepisy</string>
+    <string name="title_search">Szukaj</string>
+    <string name="title_slist">Listy zakupów</string>
+    <string name="title_account">Konto</string>
+    <string name="title_shops">Znajdź w pobliżu</string>
 </resources>

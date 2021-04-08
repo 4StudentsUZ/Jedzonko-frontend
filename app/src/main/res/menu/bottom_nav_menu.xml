@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navSearch"
+        android:title="@string/nav_item_search"
+        android:icon="@drawable/ic_search"/>
+
+    <item
+        android:id="@+id/navShoppingList"
+        android:title="@string/nav_item_slist"
+        android:icon="@drawable/ic_slist"/>
+
+    <item
+        android:id="@+id/navRecipes"
+        android:title="@string/nav_item_recipes"
+        android:icon="@drawable/ic_recipes"/>
+
+    <item
+        android:id="@+id/navShops"
+        android:title="@string/nav_item_shops"
+        android:icon="@drawable/ic_shops"/>
+
+    <item
+        android:id="@+id/navAccount"
+        android:title="@string/nav_item_account"
+        android:icon="@drawable/ic_account"/>
+
+</menu>

@@ -10,4 +10,6 @@
     <string name="title_slist">Listy zakupów</string>
     <string name="title_account">Konto</string>
     <string name="title_shops">Znajdź w pobliżu</string>
+    <string name="open_add_recipe_view_button">Otwórz widok dodawania przepisu</string>
+    <string name="open_camera_view_button">Otwórz widok kamery</string>
 </resources>

@@ -21,16 +21,15 @@ public class RecipesFragment extends Fragment {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
         toolbar.setTitle(R.string.title_recipes);
 
-        view.findViewById(R.id.floatingActionButton_add_recipe).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        view.findViewById(R.id.floatingActionButton_add_recipe).setOnClickListener(v ->
                 getActivity()
-                        .getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(((ViewGroup) getView().getParent()).getId(), new AccountFragment(), "AddRecipeFragment Opened After Floating Button Press")
-                        .commit();
-            }
-        });
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    //.replace(((ViewGroup) getView().getParent()).getId(), new AccountFragment(), "AddRecipeFragment")
+                    .replace(R.id.mainFrameLayout, new AccountFragment(), "AddRecipeFragment")
+                    .addToBackStack("AddRecipeFragment")
+                    .commit()
+            );
 
     }
 }

@@ -8,7 +8,6 @@ import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.fourstudents.jedzonko.Database.Entities.Ingredient;
-import com.fourstudents.jedzonko.Database.Relations.IngredientsWithProducts;
 import com.fourstudents.jedzonko.Database.Relations.IngredientsWithRecipes;
 
 import java.util.List;
@@ -25,10 +24,6 @@ public interface IngredientDao {
 
     @Update
     void update(Ingredient ingredient);
-
-    @Transaction
-    @Query("SELECT * FROM ingredient")
-    public List<IngredientsWithProducts> getIngredientsWithProducts();
 
     @Transaction
     @Query("SELECT * FROM ingredient")

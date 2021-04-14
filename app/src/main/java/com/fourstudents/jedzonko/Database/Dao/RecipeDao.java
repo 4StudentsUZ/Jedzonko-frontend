@@ -28,4 +28,10 @@ public interface RecipeDao {
     @Transaction
     @Query("SELECT * FROM recipe")
     public List<RecipesWithTags> getRecipesWithTags();
+
+    @Query("SELECT recipeId FROM recipe ORDER BY recipeId ASC")
+    public int getLastId();
+
+    @Query("SELECT COUNT(*) FROM recipe")
+    public int getRowsNumber();
 }

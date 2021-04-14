@@ -11,9 +11,6 @@ public class Product {
     @PrimaryKey(autoGenerate = true)
     private long productId;
 
-    @ColumnInfo(name = "ingredientId")
-    private long ingredientId;
-
     @ColumnInfo(name = "name")
     private String name;
 
@@ -29,14 +26,6 @@ public class Product {
 
     public void setProductId(long productId) {
         this.productId = productId;
-    }
-
-    public long getIngredientId() {
-        return ingredientId;
-    }
-
-    public void setIngredientId(long ingredientId) {
-        this.ingredientId = ingredientId;
     }
 
     public String getName() {

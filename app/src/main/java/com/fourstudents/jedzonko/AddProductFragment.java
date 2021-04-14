@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,8 +23,8 @@ import java.util.List;
 
 
 public class AddProductFragment extends Fragment {
-    TextView name;
-    TextView barcode;
+    EditText name;
+    EditText barcode;
     Button addProductButton;
     RoomDB database;
 
@@ -48,7 +49,6 @@ public class AddProductFragment extends Fragment {
         addProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkData();
                 if(checkData()){
                     Product product = new Product();
                     product.setName(name.getText().toString().trim());
@@ -63,7 +63,7 @@ public class AddProductFragment extends Fragment {
         });
     }
     boolean checkData(){
-        if(name.getText().equals("") ||barcode.getText().equals("")){
+        if(name.getText().toString().equals("")|| barcode.getText().toString().equals("")){
             Toast.makeText(getContext(),"Nie wprowadzono wszystkich danych", Toast.LENGTH_SHORT).show();
             return false;
         }

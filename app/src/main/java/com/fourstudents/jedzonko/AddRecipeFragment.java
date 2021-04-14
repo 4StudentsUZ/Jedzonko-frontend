@@ -104,7 +104,7 @@ public class AddRecipeFragment extends Fragment {
         addRecipeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkData();
+
                 if (checkData()) {
                     byte data[] = {0x0F, 0x10, 0x0F, 0x11};
 
@@ -128,15 +128,13 @@ public class AddRecipeFragment extends Fragment {
                     ingredientList.clear();
                     adapter1.notifyItemRangeRemoved(0, size);
                     Toast.makeText(getContext(), "Dodano przepis", Toast.LENGTH_SHORT).show();
-
-
                 }
             }
         });
 
     }
     boolean checkData(){
-        if(title.getText().equals("") || description.getText().equals("")|| ingredientList.size()==0 ){
+        if(title.getText().toString().equals("") || description.getText().toString().equals("")|| ingredientList.size()==0 ){
             Toast.makeText(getContext(),"Nie wprowadzono wszystkich danych", Toast.LENGTH_SHORT).show();
             return false;
         }

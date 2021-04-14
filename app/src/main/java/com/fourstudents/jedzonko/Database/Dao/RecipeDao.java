@@ -29,9 +29,7 @@ public interface RecipeDao {
     @Query("SELECT * FROM recipe")
     public List<RecipesWithTags> getRecipesWithTags();
 
-    @Query("SELECT recipeId FROM recipe ORDER BY recipeId ASC")
+    @Query("SELECT recipeId FROM recipe ORDER BY recipeId DESC")
     public int getLastId();
 
-    @Query("SELECT COUNT(*) FROM recipe")
-    public int getRowsNumber();
 }

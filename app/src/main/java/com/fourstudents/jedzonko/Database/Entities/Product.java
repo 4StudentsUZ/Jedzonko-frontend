@@ -1,4 +1,4 @@
-package com.fourstudents.jedzonko.Database;
+package com.fourstudents.jedzonko.Database.Entities;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -9,7 +9,7 @@ import java.util.Set;
 @Entity(tableName = "product")
 public class Product {
     @PrimaryKey(autoGenerate = true)
-    private long id;
+    private long productId;
 
     @ColumnInfo(name = "name")
     private String name;
@@ -17,15 +17,15 @@ public class Product {
     @ColumnInfo(name = "barcode")
     private String barcode;
 
-    @ColumnInfo(name = "images")
-    private Set<Image> images;
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
+    private byte[] data;
 
-    public long getId() {
-        return id;
+    public long getProductId() {
+        return productId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setProductId(long productId) {
+        this.productId = productId;
     }
 
     public String getName() {
@@ -44,11 +44,11 @@ public class Product {
         this.barcode = barcode;
     }
 
-    public Set<Image> getImages() {
-        return images;
+    public byte[] getData() {
+        return data;
     }
 
-    public void setImages(Set<Image> images) {
-        this.images = images;
+    public void setData(byte[] data) {
+        this.data = data;
     }
 }

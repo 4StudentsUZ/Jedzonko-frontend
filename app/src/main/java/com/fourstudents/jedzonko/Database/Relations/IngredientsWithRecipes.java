@@ -3,7 +3,7 @@ package com.fourstudents.jedzonko.Database.Relations;
 import androidx.room.Embedded;
 import androidx.room.Relation;
 
-import com.fourstudents.jedzonko.Database.Ingredient;
+import com.fourstudents.jedzonko.Database.Entities.Ingredient;
 
 import java.util.List;
 

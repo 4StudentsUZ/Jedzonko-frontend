@@ -1,11 +1,16 @@
 package com.fourstudents.jedzonko;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
+import android.view.OrientationEventListener;
+import android.view.Surface;
 import android.view.View;
 import android.widget.Toast;
 
@@ -15,14 +20,17 @@ import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.mlkit.vision.common.InputImage;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
@@ -61,7 +69,7 @@ public class CameraFragment extends Fragment {
             if (allPermissionsGranted()) {
                 startCamera();
             } else {
-                Toast.makeText(safeContext, "Permission not granted", Toast.LENGTH_LONG).show();
+                Toast.makeText(safeContext, R.string.permission_not_granted, Toast.LENGTH_LONG).show();
                 requireFragmentManager().popBackStack();
             }
         }
@@ -92,6 +100,7 @@ public class CameraFragment extends Fragment {
 
             preview = new Preview.Builder().build();
             imageCapture = new ImageCapture.Builder().build();
+            imageCapture.setTargetRotation(Surface.ROTATION_0);
 
             preview.setSurfaceProvider(((PreviewView)requireView().findViewById(R.id.viewFinder)).getSurfaceProvider());
 
@@ -111,26 +120,51 @@ public class CameraFragment extends Fragment {
     }
 
     private void takePhoto() {
+        imageCapture.takePicture(
+                ContextCompat.getMainExecutor(safeContext),
+                new ImageCapture.OnImageCapturedCallback() {
 
-        File photoFile = new File(outputDirectory, new SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".jpg");
 
-        ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(photoFile).build();
+                    @Override
+                    public void onCaptureSuccess(@NonNull ImageProxy image) {
+                        super.onCaptureSuccess(image);
+                        ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
+                        ((MainActivity) requireActivity()).imageData = HarryHelperClass.getBytesFromBuffer(byteBuffer);
+                        ((MainActivity) requireActivity()).imageRotation = image.getImageInfo().getRotationDegrees();
+                        Toast.makeText(safeContext, R.string.camera_photo_captured_info, Toast.LENGTH_LONG).show();
+                        image.close();
+                        requireFragmentManager().popBackStack();
+                    }
 
-        imageCapture.takePicture(outputFileOptions, ContextCompat.getMainExecutor(safeContext), new ImageCapture.OnImageSavedCallback() {
-
-            @Override
-            public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                Uri savedUri = Uri.fromFile(photoFile);
-                String msg = "Photo capture success: " + savedUri;
-                Toast.makeText(safeContext, msg, Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onError(@NonNull ImageCaptureException exception) {
-                Log.e("Harry takePhoto().onError()", "read stack trace");
-                exception.printStackTrace();
-            }
-        });
+                    @Override
+                    public void onError(@NonNull ImageCaptureException exception) {
+                        super.onError(exception);
+                        Log.e("Harry takePhoto().onError()", "read stack trace");
+                        exception.printStackTrace();
+                    }
+                });
+//        File photoFile = new File(outputDirectory, new SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".jpg");
+//
+//        ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(photoFile).build();
+//        imageCapture.takePicture(
+//                outputFileOptions,
+//                ContextCompat.getMainExecutor(safeContext),
+//                new ImageCapture.OnImageSavedCallback() {
+//
+//                    @Override
+//                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+//                        Uri savedUri = Uri.fromFile(photoFile);
+//                        String msg = "Photo capture success: " + savedUri;
+//                        Toast.makeText(safeContext, msg, Toast.LENGTH_LONG).show();
+//                    }
+//
+//                    @Override
+//                    public void onError(@NonNull ImageCaptureException exception) {
+//                        Log.e("Harry takePhoto().onError()", "read stack trace");
+//                        exception.printStackTrace();
+//                    }
+//                }
+//        );
 
     }
 

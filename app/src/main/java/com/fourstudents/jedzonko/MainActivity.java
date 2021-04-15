@@ -25,6 +25,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String BACK_STACK_ROOT_TAG = "root_fragment";
     private MenuItem menuItem;
 
+    // Fragment related variables
+    public byte[] imageData = null;
+    public Integer imageRotation = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

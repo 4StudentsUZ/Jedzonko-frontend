@@ -33,13 +33,5 @@ public class RecipesFragment extends Fragment {
                     .addToBackStack("AddRecipeFragment")
                     .commit()
             );
-        view.findViewById(R.id.floatingActionButton_open_camera).setOnClickListener(v ->
-                requireActivity()
-                    .getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.mainFrameLayout, new CameraFragment(), "RecipeCameraView")
-                    .addToBackStack("RecipeCameraView")
-                    .commit()
-        );
     }
 }

@@ -11,19 +11,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
+import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
-
-import com.fourstudents.jedzonko.Database.Image;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
@@ -39,9 +35,11 @@ public class CameraFragment extends Fragment {
     private final String FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS";
     private final int REQUEST_CODE_PERMISSIONS = 10;
     private final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
+    private boolean isOffline = false;
 
-    ImageCapture imageCapture = null;
     Preview preview = null;
+    ImageCapture imageCapture = null;
+    Camera camera = null;
 
     File outputDirectory;
     ExecutorService cameraExecutor;
@@ -59,14 +57,15 @@ public class CameraFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 startCamera();
             } else {
                 Toast.makeText(safeContext, "Permission not granted", Toast.LENGTH_LONG).show();
+                requireFragmentManager().popBackStack();
             }
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -76,7 +75,7 @@ public class CameraFragment extends Fragment {
         if (allPermissionsGranted()) {
             startCamera();
         } else {
-            ActivityCompat.requestPermissions(requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
+            requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
 
         view.findViewById(R.id.camera_capture_button).setOnClickListener(v -> takePhoto());
@@ -101,7 +100,7 @@ public class CameraFragment extends Fragment {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
                 cameraProvider.unbindAll();
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
+                camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
             } catch (ExecutionException | InterruptedException e) {
                 Log.e("Harry startCamera()", "read stack trace");
                 e.printStackTrace();

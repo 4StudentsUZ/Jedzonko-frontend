@@ -42,12 +42,22 @@ public class AddRecipeFragment extends Fragment {
     EditText title;
     EditText description;
 
+    private void initToolbar(View view) {
+        Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
+        toolbar.setTitle("Dodaj przepis");
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requireFragmentManager().popBackStack();
+            }
+        });
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Toolbar toolbar = getActivity().findViewById(R.id.custom_toolbar);
-        toolbar.setTitle("Dodaj przepis");
+        initToolbar(view);
         addIngredientButton = (Button) view.findViewById(R.id.addIngredientButton);
         addRecipeButton = view.findViewById(R.id.addRecipeButton);
         database = RoomDB.getInstance(getActivity());

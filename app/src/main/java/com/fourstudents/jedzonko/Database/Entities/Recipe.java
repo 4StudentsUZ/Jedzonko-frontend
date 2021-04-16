@@ -10,59 +10,59 @@ import androidx.room.*;
 import java.util.Set;
 
 @Entity(tableName = "recipe")
- public class Recipe{
-        @PrimaryKey(autoGenerate = true)
-        private long recipeId;
+public class Recipe{
+    @PrimaryKey(autoGenerate = true)
+    private long recipeId;
 
-        @ColumnInfo(name = "title")
-        private String title;
+    @ColumnInfo(name = "title")
+    private String title;
 
-        @ColumnInfo(name = "description")
-        private String description;
+    @ColumnInfo(name = "description")
+    private String description;
 
-        @ColumnInfo(name = "author")
-        private String author;
+    @ColumnInfo(name = "author")
+    private String author;
 
-        @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
-        private byte[] data;
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
+    private byte[] data;
 
-       public long getRecipeId() {
-              return recipeId;
-       }
+    public long getRecipeId() {
+          return recipeId;
+    }
 
-       public void setRecipeId(long recipeId) {
-              this.recipeId = recipeId;
-       }
+    public void setRecipeId(long recipeId) {
+          this.recipeId = recipeId;
+    }
 
-       public String getTitle() {
-              return title;
-       }
+    public String getTitle() {
+          return title;
+    }
 
-       public void setTitle(String title) {
-              this.title = title;
-       }
+    public void setTitle(String title) {
+          this.title = title;
+    }
 
-       public String getDescription() {
-              return description;
-       }
+    public String getDescription() {
+          return description;
+    }
 
-       public void setDescription(String description) {
-              this.description = description;
-       }
+    public void setDescription(String description) {
+          this.description = description;
+    }
 
-       public String getAuthor() {
-              return author;
-       }
+    public String getAuthor() {
+          return author;
+    }
 
-       public void setAuthor(String author) {
-              this.author = author;
-       }
+    public void setAuthor(String author) {
+          this.author = author;
+    }
 
-       public byte[] getData() {
-              return data;
-       }
+    public byte[] getData() {
+          return data;
+    }
 
-       public void setData(byte[] data) {
+    public void setData(byte[] data) {
               this.data = data;
        }
 }

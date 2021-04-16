@@ -12,13 +12,18 @@
     <string name="title_shops">Znajdź w pobliżu</string>
     <string name="open_add_recipe_view_button">Otwórz widok dodawania przepisu</string>
     <string name="open_camera_view_button">Otwórz widok kamery</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="add_recipes_title">Dodaj przepis</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
 
     <string name="save_recipe">Wave_recipe</string>
     <string name="go_back">Go_back</string>
     <string name="search_button">Wyszukaj</string>
+
+
+    <string name="camera_view_take_picture_button">Zrób zdjęcie</string>
+    <string name="camera_photo_captured_info">Zrobiono zdjęcie</string>
+    <string name="permission_not_granted">Nie przyznano uprawnień</string>
+    <string name="missing_input_data">Nie wprowadzono wszystkich danych</string>
 
 </resources>

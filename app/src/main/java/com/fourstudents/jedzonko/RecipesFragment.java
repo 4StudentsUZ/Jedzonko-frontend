@@ -52,21 +52,13 @@ public class RecipesFragment extends Fragment {
 
 
         view.findViewById(R.id.floatingActionButton_add_recipe).setOnClickListener(v ->
-                getActivity()
+                requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(((ViewGroup) getView().getParent()).getId(), new AddRecipeFragment(), "AddRecipeFragment")
+//                    .replace(((ViewGroup) getView().getParent()).getId(), new AddRecipeFragment(), "AddRecipeFragment")
                     .replace(R.id.mainFrameLayout, new AddRecipeFragment(), "AddRecipeFragment")
                     .addToBackStack("AddRecipeFragment")
                     .commit()
             );
-        view.findViewById(R.id.floatingActionButton_open_camera).setOnClickListener(v ->
-                requireActivity()
-                    .getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.mainFrameLayout, new CameraFragment(), "RecipeCameraView")
-                    .addToBackStack("RecipeCameraView")
-                    .commit()
-        );
     }
 }

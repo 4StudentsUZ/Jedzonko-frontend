@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -37,7 +38,6 @@ public class AddRecipeFragment extends Fragment {
     ProductRecyclerViewAdapter ingredientAdapter;
     ProductRecyclerViewAdapter productAdapter;
     Button addIngredientButton;
-    Button addRecipeButton;
     Dialog dialog;
     RecyclerView ingredientRV;
     RecyclerView productRV;
@@ -50,11 +50,26 @@ public class AddRecipeFragment extends Fragment {
     private void initToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
         toolbar.setTitle("Dodaj przepis");
+        toolbar.inflateMenu(R.menu.add_recipe);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 requireFragmentManager().popBackStack();
+            }
+        });
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                if(item.getItemId()==R.id.action_save_note)
+                {
+                    actionSaveRecipe();
+                }
+
+
+                return false;
             }
         });
     }
@@ -87,13 +102,18 @@ public class AddRecipeFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initToolbar(view);
 
         imageView = view.findViewById(R.id.imageView);
         addIngredientButton = view.findViewById(R.id.addIngredientButton);
-        addRecipeButton = view.findViewById(R.id.addRecipeButton);
         database = RoomDB.getInstance(getActivity());
         title = view.findViewById(R.id.editTextTitle);
         description = view.findViewById(R.id. editTextDescription);
@@ -183,42 +203,6 @@ public class AddRecipeFragment extends Fragment {
                 });
             }
         });
-        addRecipeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkData()) {
-                    byte[] data;
-                    BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
-                    Bitmap bmp = bitmapDrawable.getBitmap();
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    data = stream.toByteArray();
-
-                    Recipe recipe = new Recipe();
-                    recipe.setTitle(title.getText().toString().trim());
-                    recipe.setDescription(description.getText().toString().trim());
-                    recipe.setData(data);
-                    recipe.setAuthor("Me");
-                    database.recipeDao().insert(recipe);
-                    int recipeId = database.recipeDao().getLastId();
-                    int size = ingredientList.size();
-
-                    for (int i = 0; i < size; i++) {
-                        Ingredient ingredient = new Ingredient();
-                        ingredient.setProductId(ingredientList.get(i).getProductId());
-                        ingredient.setRecipeId(recipeId);
-                        database.ingredientDao().insert(ingredient);
-                    }
-                    title.setText("");
-                    description.setText("");
-                    ingredientList.clear();
-                    ingredientAdapter.notifyItemRangeRemoved(0, size);
-                    ((MainActivity) requireActivity()).imageData = null;
-                    imageView.setImageResource(R.drawable.test_drawable);
-                    Toast.makeText(getContext(), "Dodano przepis", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
 
     }
     boolean checkData(){
@@ -227,6 +211,40 @@ public class AddRecipeFragment extends Fragment {
             return false;
         }
         return true;
+    }
+
+    private void actionSaveRecipe() {
+        if (checkData()) {
+            byte[] data;
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
+            Bitmap bmp = bitmapDrawable.getBitmap();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            data = stream.toByteArray();
+
+            Recipe recipe = new Recipe();
+            recipe.setTitle(title.getText().toString().trim());
+            recipe.setDescription(description.getText().toString().trim());
+            recipe.setData(data);
+            recipe.setAuthor("Me");
+            database.recipeDao().insert(recipe);
+            int recipeId = database.recipeDao().getLastId();
+            int size = ingredientList.size();
+
+            for (int i = 0; i < size; i++) {
+                Ingredient ingredient = new Ingredient();
+                ingredient.setProductId(ingredientList.get(i).getProductId());
+                ingredient.setRecipeId(recipeId);
+                database.ingredientDao().insert(ingredient);
+            }
+            title.setText("");
+            description.setText("");
+            ingredientList.clear();
+            ingredientAdapter.notifyItemRangeRemoved(0, size);
+            ((MainActivity) requireActivity()).imageData = null;
+            imageView.setImageResource(R.drawable.test_drawable);
+            Toast.makeText(getContext(), "Dodano przepis", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

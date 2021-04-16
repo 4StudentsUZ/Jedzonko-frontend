@@ -18,4 +18,7 @@
     <string name="camera_photo_captured_info">Zrobiono zdjęcie</string>
     <string name="permission_not_granted">Nie przyznano uprawnień</string>
     <string name="missing_input_data">Nie wprowadzono wszystkich danych</string>
+    <string name="save_recipe">Zapisz przepis</string>
+    <string name="go_back">Powrót</string>
+    <string name="search_button">Wyszukaj</string>
 </resources>

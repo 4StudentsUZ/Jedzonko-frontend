@@ -45,7 +45,7 @@ public class AddProductFragment extends Fragment {
         barcode = view.findViewById(R.id.productBarcodeEditText);
         addProductButton = view.findViewById(R.id.addProductButton);
         database = RoomDB.getInstance(getActivity());
-        byte data[] = { 0x0F, 0x10, 0x0F, 0x11 };
+        byte[] data = { 0x0F, 0x10, 0x0F, 0x11 };
         addProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,13 +58,14 @@ public class AddProductFragment extends Fragment {
                     name.setText("");
                     barcode.setText("");
                     Toast.makeText(getContext(), "Dodano produkt",Toast.LENGTH_SHORT).show();
+                    requireFragmentManager().popBackStack();
                 }
             }
         });
     }
     boolean checkData(){
         if(name.getText().toString().equals("")|| barcode.getText().toString().equals("")){
-            Toast.makeText(getContext(),"Nie wprowadzono wszystkich danych", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.missing_input_data, Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

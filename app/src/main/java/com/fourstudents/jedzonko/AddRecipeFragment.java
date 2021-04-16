@@ -57,9 +57,6 @@ public class AddRecipeFragment extends Fragment {
     EditText description;
     ImageView imageView;
 
-    int imageViewWidth;
-    int imageViewHeight;
-
     private void initToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
         toolbar.setTitle("Dodaj przepis");
@@ -82,11 +79,11 @@ public class AddRecipeFragment extends Fragment {
 //            Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, imageViewWidth, imageViewHeight, true);
             Bitmap rotatedBmp = HarryHelperClass.rotateBitmapByAngle(scaledBmp, ((MainActivity) requireActivity()).imageRotation);
 
-            Log.i("Harry onResume", "bmp width="+bmp.getWidth());
-            Log.i("Harry onResume", "bmp height="+bmp.getHeight());
-            Log.i("Harry onResume", "byte size="+bytes.length);
-            Log.i("Harry onResume", "rotatedbmp width="+rotatedBmp.getWidth());
-            Log.i("Harry onResume", "rotatedbmp height="+rotatedBmp.getHeight());
+//            Log.i("Harry onResume", "bmp width="+bmp.getWidth());
+//            Log.i("Harry onResume", "bmp height="+bmp.getHeight());
+//            Log.i("Harry onResume", "byte size="+bytes.length);
+//            Log.i("Harry onResume", "rotatedbmp width="+rotatedBmp.getWidth());
+//            Log.i("Harry onResume", "rotatedbmp height="+rotatedBmp.getHeight());
             imageView.setImageBitmap(rotatedBmp);
 
         }
@@ -105,16 +102,6 @@ public class AddRecipeFragment extends Fragment {
         initToolbar(view);
 
         imageView = view.findViewById(R.id.imageView);
-
-        ViewTreeObserver viewTreeObserver = imageView.getViewTreeObserver();
-        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                imageViewWidth = imageView.getMeasuredWidth();
-                imageViewHeight = imageView.getMeasuredHeight();
-            }
-        });
-
         addIngredientButton = (Button) view.findViewById(R.id.addIngredientButton);
         addRecipeButton = view.findViewById(R.id.addRecipeButton);
         database = RoomDB.getInstance(getActivity());
@@ -164,10 +151,9 @@ public class AddRecipeFragment extends Fragment {
                 addProductButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        getActivity()
+                        requireActivity()
                                 .getSupportFragmentManager()
                                 .beginTransaction()
-                                .replace(((ViewGroup) getView().getParent()).getId(), new AddProductFragment(), "AddProductFragment")
                                 .replace(R.id.mainFrameLayout, new AddProductFragment(), "AddProductFragment")
                                 .addToBackStack("AddProductFragment")
                                 .commit();
@@ -208,6 +194,7 @@ public class AddRecipeFragment extends Fragment {
                     ingredientList.clear();
                     adapter1.notifyItemRangeRemoved(0, size);
                     ((MainActivity) requireActivity()).imageData = null;
+                    imageView.setImageResource(R.drawable.test_drawable);
                     Toast.makeText(getContext(), "Dodano przepis", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -216,7 +203,7 @@ public class AddRecipeFragment extends Fragment {
     }
     boolean checkData(){
         if(title.getText().toString().equals("") || description.getText().toString().equals("")|| ingredientList.size()==0 ){
-            Toast.makeText(getContext(),"Nie wprowadzono wszystkich danych", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.missing_input_data, Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

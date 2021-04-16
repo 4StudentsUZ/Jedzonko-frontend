@@ -1,16 +1,21 @@
 package com.fourstudents.jedzonko;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -27,6 +32,7 @@ import com.fourstudents.jedzonko.Database.RoomDB;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class AddRecipeFragment extends Fragment {
     RecyclerView recyclerView;
     public AddRecipeFragment(){super(R.layout.fragment_add_recipe);}
@@ -36,15 +42,28 @@ public class AddRecipeFragment extends Fragment {
     ProductRecyclerViewAdapter adapter1;
     ProductRecyclerViewAdapter adapter;
     Button addIngredientButton;
-    Button addRecipeButton;
     Dialog dialog;
     RecyclerView recyclerView1;
     EditText title;
     EditText description;
 
-    private void initToolbar(View view) {
+
+
+
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
         toolbar.setTitle("Dodaj przepis");
+        toolbar.inflateMenu(R.menu.add_recipe);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,17 +71,25 @@ public class AddRecipeFragment extends Fragment {
                 requireFragmentManager().popBackStack();
             }
         });
-    }
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        initToolbar(view);
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                if(item.getItemId()==R.id.action_save_note)
+                {
+                    actionSaveRecipe();
+                }
+
+
+                return false;
+            }
+        });
+
         addIngredientButton = (Button) view.findViewById(R.id.addIngredientButton);
-        addRecipeButton = view.findViewById(R.id.addRecipeButton);
         database = RoomDB.getInstance(getActivity());
         title = view.findViewById(R.id.editTextTitle);
-        description = view.findViewById(R.id. editTextDescription);
+        description = view.findViewById(R.id.editTextDescription);
         recyclerView1 = view.findViewById(R.id.recyclerView);
 
 
@@ -111,38 +138,11 @@ public class AddRecipeFragment extends Fragment {
                 });
             }
         });
-        addRecipeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                if (checkData()) {
-                    byte data[] = {0x0F, 0x10, 0x0F, 0x11};
-
-                    Recipe recipe = new Recipe();
-                    recipe.setTitle(title.getText().toString().trim());
-                    recipe.setDescription(description.getText().toString().trim());
-                    recipe.setData(data);
-                    recipe.setAuthor("Me");
-                    database.recipeDao().insert(recipe);
-                    int recipeId = database.recipeDao().getLastId();
-                    int size = ingredientList.size();
-
-                    for (int i = 0; i < size; i++) {
-                        Ingredient ingredient = new Ingredient();
-                        ingredient.setProductId(ingredientList.get(i).getProductId());
-                        ingredient.setRecipeId(recipeId);
-                        database.ingredientDao().insert(ingredient);
-                    }
-                    title.setText("");
-                    description.setText("");
-                    ingredientList.clear();
-                    adapter1.notifyItemRangeRemoved(0, size);
-                    Toast.makeText(getContext(), "Dodano przepis", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
 
     }
+
+
     boolean checkData(){
         if(title.getText().toString().equals("") || description.getText().toString().equals("")|| ingredientList.size()==0 ){
             Toast.makeText(getContext(),"Nie wprowadzono wszystkich danych", Toast.LENGTH_SHORT).show();
@@ -151,5 +151,32 @@ public class AddRecipeFragment extends Fragment {
         return true;
     }
 
+    private void actionSaveRecipe() {
+
+        if (checkData()) {
+            byte data[] = {0x0F, 0x10, 0x0F, 0x11};
+
+            Recipe recipe = new Recipe();
+            recipe.setTitle(title.getText().toString().trim());
+            recipe.setDescription(description.getText().toString().trim());
+            recipe.setData(data);
+            recipe.setAuthor("Me");
+            database.recipeDao().insert(recipe);
+            int recipeId = database.recipeDao().getLastId();
+            int size = ingredientList.size();
+
+            for (int i = 0; i < size; i++) {
+                Ingredient ingredient = new Ingredient();
+                ingredient.setProductId(ingredientList.get(i).getProductId());
+                ingredient.setRecipeId(recipeId);
+                database.ingredientDao().insert(ingredient);
+            }
+            title.setText("");
+            description.setText("");
+            ingredientList.clear();
+            adapter1.notifyItemRangeRemoved(0, size);
+            Toast.makeText(getContext(), "Dodano przepis", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
 

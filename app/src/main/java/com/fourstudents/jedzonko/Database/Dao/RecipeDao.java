@@ -7,6 +7,7 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
+import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
 import com.fourstudents.jedzonko.Database.Relations.RecipesWithTags;
 
@@ -26,8 +27,12 @@ public interface RecipeDao {
     void update(Recipe recipe);
 
     @Transaction
+
     @Query("SELECT * FROM recipe")
-    public List<RecipesWithTags> getRecipesWithTags();
+    List<Recipe> getAll();
+
+//    @Query("SELECT * FROM recipe")
+//    public List<RecipesWithTags> getRecipesWithTags();
 
     @Query("SELECT recipeId FROM recipe ORDER BY recipeId DESC")
     public int getLastId();

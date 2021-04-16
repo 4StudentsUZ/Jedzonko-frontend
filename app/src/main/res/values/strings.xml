@@ -16,4 +16,9 @@
     <string name="add_recipes_title">Dodaj przepis</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="save_recipe">Wave_recipe</string>
+    <string name="go_back">Go_back</string>
+    <string name="search_button">Wyszukaj</string>
+
 </resources>

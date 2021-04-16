@@ -25,10 +25,10 @@ public class RecipesFragment extends Fragment {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
         toolbar.setTitle(R.string.title_recipes);
         view.findViewById(R.id.floatingActionButton_add_recipe).setOnClickListener(v ->
-                getActivity()
+                requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(((ViewGroup) getView().getParent()).getId(), new AddRecipeFragment(), "AddRecipeFragment")
+//                    .replace(((ViewGroup) getView().getParent()).getId(), new AddRecipeFragment(), "AddRecipeFragment")
                     .replace(R.id.mainFrameLayout, new AddRecipeFragment(), "AddRecipeFragment")
                     .addToBackStack("AddRecipeFragment")
                     .commit()

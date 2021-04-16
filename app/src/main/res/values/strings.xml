@@ -17,4 +17,5 @@
     <string name="camera_view_take_picture_button">Zrób zdjęcie</string>
     <string name="camera_photo_captured_info">Zrobiono zdjęcie</string>
     <string name="permission_not_granted">Nie przyznano uprawnień</string>
+    <string name="missing_input_data">Nie wprowadzono wszystkich danych</string>
 </resources>

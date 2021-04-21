@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ShoppingsWithProducts {
     @Embedded
-    public Shopping playlist;
+    public Shopping shopping;
     @Relation(
             parentColumn = "shoppingId",
             entityColumn = "prodcutId",

@@ -9,13 +9,16 @@ import androidx.room.RoomDatabase;
 import com.fourstudents.jedzonko.Database.Dao.IngredientDao;
 import com.fourstudents.jedzonko.Database.Dao.ProductDao;
 import com.fourstudents.jedzonko.Database.Dao.RecipeDao;
+import com.fourstudents.jedzonko.Database.Dao.ShoppingDao;
 import com.fourstudents.jedzonko.Database.Dao.TagDao;
 import com.fourstudents.jedzonko.Database.Entities.Ingredient;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
+import com.fourstudents.jedzonko.Database.Entities.Shopping;
+import com.fourstudents.jedzonko.Database.Entities.ShoppingProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
 
-@Database(entities = {Recipe.class, Tag.class, Ingredient.class, Product.class}, version = 1, exportSchema = false)
+@Database(entities = {Recipe.class, Tag.class, Ingredient.class, Product.class, Shopping.class, ShoppingProductCrossRef.class}, version = 1, exportSchema = false)
 public abstract class RoomDB extends RoomDatabase {
     private static com.fourstudents.jedzonko.Database.RoomDB database;
     private static String DATABASE_NAME = "database";
@@ -34,4 +37,5 @@ public abstract class RoomDB extends RoomDatabase {
     public abstract TagDao tagDao();
     public abstract IngredientDao ingredientDao();
     public abstract ProductDao productDao();
+    public abstract ShoppingDao shoppingDao();
 }

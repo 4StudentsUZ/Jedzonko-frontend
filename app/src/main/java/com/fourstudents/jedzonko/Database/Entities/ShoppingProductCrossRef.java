@@ -1,11 +1,14 @@
 package com.fourstudents.jedzonko.Database.Entities;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
-@Entity(primaryKeys = {"shoppingId", "productId"})
+@Entity(tableName = "ShoppingProductCrossRef", primaryKeys = {"shoppingId", "productId"})
 public class ShoppingProductCrossRef {
-    private long shoppingId;
-    private long productId;
+    public long shoppingId;
+    public long productId;
+    @ColumnInfo(name = "quantity")
+    private String quantity;
 
     public long getShoppingId() {
         return shoppingId;
@@ -21,6 +24,14 @@ public class ShoppingProductCrossRef {
 
     public void setProductId(long productId) {
         this.productId = productId;
+    }
+
+    public String getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
     }
 }
 

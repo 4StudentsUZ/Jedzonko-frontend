@@ -18,7 +18,7 @@ import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.Entities.ShoppingProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
 
-@Database(entities = {Recipe.class, Tag.class, Ingredient.class, Product.class, Shopping.class, ShoppingProductCrossRef.class}, version = 1, exportSchema = false)
+@Database(entities = {Recipe.class, Tag.class, Ingredient.class, Product.class, Shopping.class, ShoppingProductCrossRef.class}, version = 2, exportSchema = false)
 public abstract class RoomDB extends RoomDatabase {
     private static com.fourstudents.jedzonko.Database.RoomDB database;
     private static String DATABASE_NAME = "database";

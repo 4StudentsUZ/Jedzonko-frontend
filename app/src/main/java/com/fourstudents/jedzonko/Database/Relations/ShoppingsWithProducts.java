@@ -15,7 +15,7 @@ public class ShoppingsWithProducts {
     public Shopping shopping;
     @Relation(
             parentColumn = "shoppingId",
-            entityColumn = "prodcutId",
+            entityColumn = "productId",
             associateBy = @Junction(ShoppingProductCrossRef.class)
     )
     public List<Product> products;

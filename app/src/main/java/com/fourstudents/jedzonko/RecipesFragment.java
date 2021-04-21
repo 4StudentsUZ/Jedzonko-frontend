@@ -42,6 +42,7 @@ public class RecipesFragment extends Fragment {
         database = RoomDB.getInstance(getActivity());
         recyclerView = view.findViewById(R.id.ingredientRV);
 
+        recipeList.clear();
         recipeList.addAll(database.recipeDao().getAll());
         adapter= new RecipeRecyclerViewAdapter(getContext(), recipeList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

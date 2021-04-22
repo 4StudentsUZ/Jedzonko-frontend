@@ -22,20 +22,19 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.fourstudents.jedzonko.Database.Entities.Ingredient;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
+import com.fourstudents.jedzonko.Database.Entities.RecipeProductCrossRef;
 import com.fourstudents.jedzonko.Database.RoomDB;
-
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddRecipeFragment extends Fragment {
+public class AddRecipeFragment extends Fragment implements ProductRecyclerViewAdapter.OnProductListener {
     RoomDB database;
     List<Product> ingredientList = new ArrayList<>();
     List<Product> productList = new ArrayList<>();
-    ProductRecyclerViewAdapter ingredientAdapter;
+    IngredientRecyclerViewAdapter ingredientAdapter;
     ProductRecyclerViewAdapter productAdapter;
     Button addIngredientButton;
     Dialog dialog;
@@ -126,9 +125,13 @@ public class AddRecipeFragment extends Fragment {
         dialog.setContentView(R.layout.dialog_add_ingredient);
         dialog.setCanceledOnTouchOutside(true);
         dialog.getWindow().setLayout(width, height);
+        ingredientAdapter = new IngredientRecyclerViewAdapter(getContext(), ingredientList);
+        ingredientRV.setLayoutManager(new LinearLayoutManager(getContext()));
+        ingredientRV.setAdapter(ingredientAdapter);
+
 
         productList.addAll(database.productDao().getAll());
-        productAdapter = new ProductRecyclerViewAdapter(getContext(), productList, false);
+        productAdapter = new ProductRecyclerViewAdapter(getContext(), productList, this);
         productRV = dialog.findViewById(R.id.productRV);
         productRV.setLayoutManager(new LinearLayoutManager(getContext()));
         productRV.setAdapter(productAdapter);
@@ -180,11 +183,7 @@ public class AddRecipeFragment extends Fragment {
                 addIngredientsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ingredientList = productAdapter.ingredientList;
-                        ingredientAdapter = new ProductRecyclerViewAdapter(getContext(), ingredientList, true);
-                        ingredientRV.setLayoutManager(new LinearLayoutManager(getContext()));
-                        ingredientRV.setAdapter(ingredientAdapter);
-                        productRV.setAdapter(productAdapter);
+
                         dialog.dismiss();
                     }
                 });
@@ -231,12 +230,15 @@ public class AddRecipeFragment extends Fragment {
             int recipeId = database.recipeDao().getLastId();
             int size = ingredientList.size();
 
-            for (int i = 0; i < size; i++) {
-                Ingredient ingredient = new Ingredient();
-                ingredient.setProductId(ingredientList.get(i).getProductId());
-                ingredient.setRecipeId(recipeId);
-                database.ingredientDao().insert(ingredient);
+            for (Product product: ingredientList) {
+                RecipeProductCrossRef recipeProductCrossRef=new RecipeProductCrossRef();
+                recipeProductCrossRef.setProductId(product.getProductId());
+                recipeProductCrossRef.setRecipeId(recipeId);
+                recipeProductCrossRef.setQuantity("df");
+                database.recipeDao().insertRecipeWithProduct(recipeProductCrossRef);
             }
+
+
             title.setText("");
             description.setText("");
             ingredientList.clear();
@@ -245,7 +247,22 @@ public class AddRecipeFragment extends Fragment {
             imageView.setImageResource(R.drawable.test_drawable);
             Toast.makeText(getContext(), "Dodano przepis", Toast.LENGTH_SHORT).show();
         }
+        productRV.setAdapter(productAdapter);
     }
 
+    @Override
+    public void onProductClick(int position) {
+        Product product= productList.get(position);
+        if(ingredientList.contains(product)){
+            ingredientList.remove(product);
+            ingredientAdapter.notifyDataSetChanged();
+        }else{
+            ingredientList.add(product);
+            ingredientAdapter.notifyItemInserted(ingredientList.size());
+            Toast.makeText(getContext(), "Dodano produkt", Toast.LENGTH_LONG).show();
+        }
+
+
+    }
 }
 

@@ -1,8 +1,11 @@
 package com.fourstudents.jedzonko;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,6 +31,26 @@ public class RecipesFragment extends Fragment {
     RecipeRecyclerViewAdapter adapter;
     RoomDB database;
 
+
+    private void initToolbar(View view) {
+        Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
+        toolbar.setTitle("Przepisy");
+        toolbar.inflateMenu(R.menu.recipes);
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                if(item.getItemId()==R.id.action_search)
+                {
+
+                }
+
+                return false;
+            }
+        });
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -37,8 +60,7 @@ public class RecipesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
-        toolbar.setTitle(R.string.title_recipes);
+        initToolbar(view);
         database = RoomDB.getInstance(getActivity());
         recyclerView = view.findViewById(R.id.ingredientRV);
 

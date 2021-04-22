@@ -19,17 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/search_title1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:inputType="textPersonName"
-        android:hint="search"
-        app:layout_constraintTop_toBottomOf="@id/custom_toolbar"  />
-
-
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/ingredientRV"
@@ -39,7 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_title1" />
+        app:layout_constraintTop_toBottomOf="@id/custom_toolbar" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

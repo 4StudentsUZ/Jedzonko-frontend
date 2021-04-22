@@ -4,22 +4,23 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.fourstudents.jedzonko.Database.Entities.Recipe;
+import com.fourstudents.jedzonko.Database.Entities.Shopping;
 
 import java.util.List;
 
 public class ShoppingRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingRecyclerViewAdapter.ViewHolder>{
     Context context;
-    private List<Recipe> recipeList;
+    private List<Shopping> shoppingListList;
 
-    public ShoppingRecyclerViewAdapter(Context context, List<Recipe> recipeList) {
+    public ShoppingRecyclerViewAdapter(Context context, List<Shopping> shoppingListList) {
         this.context = context;
-        this.recipeList = recipeList;
+        this.shoppingListList = shoppingListList;
     }
 
     @NonNull
@@ -34,28 +35,42 @@ public class ShoppingRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingRe
 
     @Override
     public void onBindViewHolder(@NonNull ShoppingRecyclerViewAdapter.ViewHolder viewHolder, final int position) {
-        Recipe recipe = recipeList.get(position);
-        viewHolder.getTextView().setText(recipe.getTitle());
+        Shopping shopping = shoppingListList.get(position);
+        viewHolder.getTextView().setText(shopping.getName());
+        viewHolder.deleteImageView.setVisibility(View.VISIBLE);
+
+
+        viewHolder.deleteImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
     }
 
     @Override
     public int getItemCount() {
-        return recipeList.size();
+        return shoppingListList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
+        private final ImageView deleteImageView;
 
         public ViewHolder(View view) {
             super(view);
             // Define click listener for the ViewHolder's View
-
+            deleteImageView = (ImageView) view.findViewById(R.id.itemListDeleteView);
             textView = (TextView) view.findViewById(R.id.itemListTextView);
         }
 
         public TextView getTextView() {
             return textView;
+        }
+
+        public ImageView getImageView() {
+            return deleteImageView;
         }
     }
 

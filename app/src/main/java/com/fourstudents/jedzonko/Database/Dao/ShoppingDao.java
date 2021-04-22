@@ -32,4 +32,8 @@ public interface ShoppingDao {
     @Transaction
     @Query("SELECT * FROM Shopping")
     public List<ShoppingsWithProducts> getShoppingsWithProducts();
+
+    @Transaction
+    @Query("SELECT * FROM Shopping")
+    public List<Shopping> getAll();
 }

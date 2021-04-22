@@ -1,5 +1,6 @@
 package com.fourstudents.jedzonko.Database.Dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -36,4 +37,8 @@ public interface ShoppingDao {
     @Transaction
     @Query("SELECT * FROM Shopping")
     public List<Shopping> getAll();
+
+    @Transaction
+    @Query("SELECT * FROM Shopping")
+    public LiveData<List<Shopping>> getAllLiveData();
 }

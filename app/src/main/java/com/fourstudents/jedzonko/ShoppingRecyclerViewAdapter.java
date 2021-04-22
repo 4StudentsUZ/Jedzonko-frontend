@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
@@ -15,8 +16,9 @@ import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import java.util.List;
 
 public class ShoppingRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingRecyclerViewAdapter.ViewHolder>{
+//public class ShoppingRecyclerViewAdapter extends ListAdapter<Shopping, ShoppingRecyclerViewAdapter.ViewHolder> {
     Context context;
-    private List<Shopping> shoppingListList;
+    private final List<Shopping> shoppingListList;
 
     public ShoppingRecyclerViewAdapter(Context context, List<Shopping> shoppingListList) {
         this.context = context;
@@ -61,8 +63,8 @@ public class ShoppingRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingRe
         public ViewHolder(View view) {
             super(view);
             // Define click listener for the ViewHolder's View
-            deleteImageView = (ImageView) view.findViewById(R.id.itemListDeleteView);
-            textView = (TextView) view.findViewById(R.id.itemListTextView);
+            deleteImageView = view.findViewById(R.id.itemListDeleteView);
+            textView = view.findViewById(R.id.itemListTextView);
         }
 
         public TextView getTextView() {

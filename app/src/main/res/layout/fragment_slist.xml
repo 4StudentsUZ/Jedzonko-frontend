@@ -21,10 +21,10 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/sListList"
+        android:id="@+id/shoppingRV"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/floatingActionButton_add_sList"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"

@@ -1,19 +1,21 @@
 package com.fourstudents.jedzonko;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.ViewModels.ShoppingViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,22 +26,21 @@ public class ShoppingListFragment extends Fragment {
         super(R.layout.fragment_slist);
     }
 
-    RecyclerView recyclerView;
-    List<Shopping> shoppingListList = new ArrayList<>();
-    ShoppingRecyclerViewAdapter adapter;
-    RoomDB database;
+    RecyclerView shoppingRV;
+//    List<Shopping> shoppingListList = new ArrayList<>();
+//    RoomDB database;
+    ShoppingRecyclerViewAdapter shoppingAdapter;
 
     private void initToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
-        toolbar.setTitle("Listy zakupów");
+        toolbar.setTitle(R.string.title_slist);
         toolbar.inflateMenu(R.menu.slist);
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        adapter.notifyDataSetChanged();
+        shoppingAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -47,24 +48,34 @@ public class ShoppingListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         initToolbar(view);
 
-        database = RoomDB.getInstance(getActivity());
-        recyclerView = view.findViewById(R.id.sListList);
+//        database = RoomDB.getInstance(getActivity());
+        shoppingRV = view.findViewById(R.id.shoppingRV);
+        shoppingAdapter = new ShoppingRecyclerViewAdapter();
+        shoppingRV.setAdapter(shoppingAdapter);
+        shoppingRV.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        shoppingListList.clear();
-        shoppingListList.addAll(database.shoppingDao().getAll());
-        adapter= new ShoppingRecyclerViewAdapter(getContext(), shoppingListList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
+        ShoppingViewModel shoppingViewModel = new ViewModelProvider(this).get(ShoppingViewModel.class);
+        shoppingViewModel.getAllLiveDataShoppingList().observe(getViewLifecycleOwner(), new Observer<List<Shopping>>() {
+            @Override
+            public void onChanged(List<Shopping> shoppings) {
+                if (shoppings != null) {
+                    shoppingAdapter.setProductList(shoppings);
+                }
+            }
+        });
+
+//        shoppingListList.clear();
+//        shoppingListList.addAll(database.shoppingDao().getAll());
 
 
         view.findViewById(R.id.floatingActionButton_add_sList).setOnClickListener(v ->
-                getActivity()
+                requireActivity()
                         .getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(((ViewGroup) getView().getParent()).getId(), new AddRecipeFragment(), "AddRecipeFragment")
-                        .replace(R.id.mainFrameLayout, new AddRecipeFragment(), "AddRecipeFragment")
-                        .addToBackStack("AddRecipeFragment")
+                        .replace(R.id.mainFrameLayout, new AddShoppingListFragment(), "AddShoppingListFragment")
+                        .addToBackStack("AddShoppingListFragment")
                         .commit()
         );
     }
+
 }

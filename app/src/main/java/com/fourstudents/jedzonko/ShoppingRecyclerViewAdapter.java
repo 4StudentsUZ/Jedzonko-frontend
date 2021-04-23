@@ -46,7 +46,7 @@ public class ShoppingRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingRe
     public void setProductList(final List<Shopping> listOfShoppingList) {
 //        if (this.listOfShoppingList == null) {
             this.listOfShoppingList = listOfShoppingList;
-            notifyItemRangeInserted(0, listOfShoppingList.size());
+            notifyDataSetChanged();
 //        }
     }
 

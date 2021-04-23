@@ -30,6 +30,9 @@ public interface ShoppingDao {
     @Insert
     void insertShoppingWithProduct(ShoppingProductCrossRef shoppingProductCrossRef);
 
+    @Query("SELECT shoppingId FROM Shopping ORDER BY shoppingId DESC LIMIT 1")
+    public int getLastId();
+
     @Transaction
     @Query("SELECT * FROM Shopping")
     List<ShoppingsWithProducts> getShoppingsWithProducts();

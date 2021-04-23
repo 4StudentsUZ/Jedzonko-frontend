@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Database.Entities.Product;
@@ -18,17 +20,26 @@ import java.util.List;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
-public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductRecyclerViewAdapter.ViewHolderClass> {
+public class ProductRecyclerViewAdapter extends ListAdapter<Product, ProductRecyclerViewAdapter.ViewHolderClass> {
     Context context;
-    List<Product> productList;
     boolean showTrashIcon;
     private OnProductListener onProductListener;
 
-    public ProductRecyclerViewAdapter(Context context, List<Product> productList, OnProductListener onProductListener) {
+    public ProductRecyclerViewAdapter(Context context, OnProductListener onProductListener) {
+        super(new DiffUtil.ItemCallback<Product>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull Product oldItem, @NonNull Product newItem) {
+                return false;
+            }
+
+            @Override
+            public boolean areContentsTheSame(@NonNull Product oldItem, @NonNull Product newItem) {
+                return false;
+            }
+        });
+
         this.context = context;
-        this.productList = productList;
         this.onProductListener = onProductListener;
-        notifyDataSetChanged();
     }
 
     @NonNull
@@ -43,13 +54,8 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductRecy
     @Override
     public void onBindViewHolder(@NonNull ViewHolderClass holder, int position) {
         holder.imageView.setImageResource(R.drawable.ic_recipes);
-        Product product = productList.get(position);
+        Product product = getItem(position);
         holder.textView.setText(product.getName());
-    }
-
-    @Override
-    public int getItemCount() {
-        return productList.size();
     }
 
     public static class ViewHolderClass extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -69,7 +75,7 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductRecy
 
         @Override
         public void onClick(View v) {
-            onProductListener.onProductClick(getAbsoluteAdapterPosition());
+            onProductListener.onProductClick(getBindingAdapter(), getAbsoluteAdapterPosition());
             if(addImageView.getVisibility()==VISIBLE){
                 addImageView.setVisibility(INVISIBLE);
             }else  addImageView.setVisibility(VISIBLE);
@@ -78,7 +84,7 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductRecy
     }
 
     public interface OnProductListener {
-        void onProductClick(int position);
+        void onProductClick(RecyclerView.Adapter adapter, int position);
     }
 
 }

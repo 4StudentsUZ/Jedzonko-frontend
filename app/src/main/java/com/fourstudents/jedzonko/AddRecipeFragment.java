@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,14 +28,13 @@ import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
 import com.fourstudents.jedzonko.Database.Entities.RecipeProductCrossRef;
 import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.ViewModels.IngredientsViewModel;
+
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AddRecipeFragment extends Fragment implements ProductRecyclerViewAdapter.OnProductListener {
     RoomDB database;
-    List<Product> ingredientList = new ArrayList<>();
-    List<Product> productList = new ArrayList<>();
     IngredientRecyclerViewAdapter ingredientAdapter;
     ProductRecyclerViewAdapter productAdapter;
     Button addIngredientButton;
@@ -43,6 +44,10 @@ public class AddRecipeFragment extends Fragment implements ProductRecyclerViewAd
     EditText title;
     EditText description;
     ImageView imageView;
+
+    List<Product> productList;
+
+    IngredientsViewModel viewModel;
 
     public AddRecipeFragment(){super(R.layout.fragment_add_recipe);}
 
@@ -104,6 +109,8 @@ public class AddRecipeFragment extends Fragment implements ProductRecyclerViewAd
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        viewModel = new ViewModelProvider(requireActivity()).get(IngredientsViewModel.class);
     }
 
     @Override
@@ -125,13 +132,24 @@ public class AddRecipeFragment extends Fragment implements ProductRecyclerViewAd
         dialog.setContentView(R.layout.dialog_add_ingredient);
         dialog.setCanceledOnTouchOutside(true);
         dialog.getWindow().setLayout(width, height);
-        ingredientAdapter = new IngredientRecyclerViewAdapter(getContext(), ingredientList);
+
+        ingredientAdapter = new IngredientRecyclerViewAdapter(getContext());
         ingredientRV.setLayoutManager(new LinearLayoutManager(getContext()));
         ingredientRV.setAdapter(ingredientAdapter);
 
+        viewModel.getIngredientList().observe(getViewLifecycleOwner(), products -> {
+            System.out.println("AAAAAAAA");
+            for (Product product : products) {
+                System.out.println(product.getName());
+            }
+            System.out.println("BBBBBBBB");
+            ingredientAdapter.submitList(products);
+            ingredientAdapter.notifyDataSetChanged();
+        });
 
-        productList.addAll(database.productDao().getAll());
-        productAdapter = new ProductRecyclerViewAdapter(getContext(), productList, this);
+        productList = database.productDao().getAll();
+        productAdapter = new ProductRecyclerViewAdapter(getContext(), this);
+        productAdapter.submitList(productList);
         productRV = dialog.findViewById(R.id.productRV);
         productRV.setLayoutManager(new LinearLayoutManager(getContext()));
         productRV.setAdapter(productAdapter);
@@ -163,7 +181,7 @@ public class AddRecipeFragment extends Fragment implements ProductRecyclerViewAd
 
         view.findViewById(R.id.floatingActionButton_open_camera).setOnClickListener(v -> {
 //            dialog.dismiss();
-            productList.clear();
+//            productList.clear();
             requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
@@ -190,7 +208,6 @@ public class AddRecipeFragment extends Fragment implements ProductRecyclerViewAd
                 addProductButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        productList.clear();
                         dialog.dismiss();
                         requireActivity()
                                 .getSupportFragmentManager()
@@ -205,7 +222,7 @@ public class AddRecipeFragment extends Fragment implements ProductRecyclerViewAd
 
     }
     boolean checkData(){
-        if(title.getText().toString().equals("") || description.getText().toString().equals("")|| ingredientList.size()==0 ){
+        if(title.getText().toString().equals("") || description.getText().toString().equals("")|| ingredientAdapter.getItemCount()==0 ){
             Toast.makeText(getContext(), R.string.missing_input_data, Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -214,6 +231,8 @@ public class AddRecipeFragment extends Fragment implements ProductRecyclerViewAd
 
     private void actionSaveRecipe() {
         if (checkData()) {
+            LiveData<List<Product>> ingredientList = viewModel.getIngredientList();
+
             byte[] data;
             BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
             Bitmap bmp = bitmapDrawable.getBitmap();
@@ -228,9 +247,9 @@ public class AddRecipeFragment extends Fragment implements ProductRecyclerViewAd
             recipe.setAuthor("Me");
             database.recipeDao().insert(recipe);
             int recipeId = database.recipeDao().getLastId();
-            int size = ingredientList.size();
+            int size = ingredientList.getValue().size();
 
-            for (Product product: ingredientList) {
+            for (Product product: ingredientList.getValue()) {
                 RecipeProductCrossRef recipeProductCrossRef=new RecipeProductCrossRef();
                 recipeProductCrossRef.setProductId(product.getProductId());
                 recipeProductCrossRef.setRecipeId(recipeId);
@@ -241,7 +260,7 @@ public class AddRecipeFragment extends Fragment implements ProductRecyclerViewAd
 
             title.setText("");
             description.setText("");
-            ingredientList.clear();
+            viewModel.clearIngredientList();
             ingredientAdapter.notifyItemRangeRemoved(0, size);
             ((MainActivity) requireActivity()).imageData = null;
             imageView.setImageResource(R.drawable.test_drawable);
@@ -251,18 +270,16 @@ public class AddRecipeFragment extends Fragment implements ProductRecyclerViewAd
     }
 
     @Override
-    public void onProductClick(int position) {
-        Product product= productList.get(position);
-        if(ingredientList.contains(product)){
-            ingredientList.remove(product);
-            ingredientAdapter.notifyDataSetChanged();
-        }else{
-            ingredientList.add(product);
-            ingredientAdapter.notifyItemInserted(ingredientList.size());
-            Toast.makeText(getContext(), "Dodano produkt", Toast.LENGTH_LONG).show();
+    public void onProductClick(RecyclerView.Adapter adapter, int position) {
+        Product product = productList.get(position);
+
+        if (viewModel.hasIngredient(product)) {
+            viewModel.removeIngredient(product);
+            Toast.makeText(getContext(), "Usunięto produkt", Toast.LENGTH_SHORT).show();
+        } else {
+            viewModel.addIngredient(product);
+            Toast.makeText(getContext(), "Dodano produkt", Toast.LENGTH_SHORT).show();
         }
-
-
     }
 }
 

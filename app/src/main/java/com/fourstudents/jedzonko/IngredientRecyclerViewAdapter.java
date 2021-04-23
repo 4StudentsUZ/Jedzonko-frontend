@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Database.Entities.Product;
@@ -18,15 +20,22 @@ import com.fourstudents.jedzonko.Database.Entities.Product;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IngredientRecyclerViewAdapter extends RecyclerView.Adapter<IngredientRecyclerViewAdapter.ViewHolderClass> {
+public class IngredientRecyclerViewAdapter extends ListAdapter<Product, IngredientRecyclerViewAdapter.ViewHolderClass> {
     Context context;
-    List<Product> ingredientList;
 
+    public IngredientRecyclerViewAdapter(Context context) {
+        super(new DiffUtil.ItemCallback<Product>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull Product oldItem, @NonNull Product newItem) {
+                return oldItem == newItem;
+            }
 
-    public IngredientRecyclerViewAdapter(Context context, List<Product> productList) {
+            @Override
+            public boolean areContentsTheSame(@NonNull Product oldItem, @NonNull Product newItem) {
+                return oldItem == newItem;
+            }
+        });
         this.context = context;
-        this.ingredientList = productList;
-        notifyDataSetChanged();
     }
 
     @NonNull
@@ -40,7 +49,7 @@ public class IngredientRecyclerViewAdapter extends RecyclerView.Adapter<Ingredie
     @Override
     public void onBindViewHolder(@NonNull ViewHolderClass holder, int position) {
         holder.imageView.setImageResource(R.drawable.ic_recipes);
-        Product product = ingredientList.get(position);
+        Product product = getItem(position);
         holder.textView.setText(product.getName());
         holder.editText.setVisibility(View.VISIBLE);
         holder.editText.addTextChangedListener(new TextWatcher() {
@@ -51,7 +60,6 @@ public class IngredientRecyclerViewAdapter extends RecyclerView.Adapter<Ingredie
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -59,11 +67,6 @@ public class IngredientRecyclerViewAdapter extends RecyclerView.Adapter<Ingredie
                 holder.editText.getText();
             }
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        return ingredientList.size();
     }
 
     public static class ViewHolderClass extends RecyclerView.ViewHolder{
@@ -81,12 +84,6 @@ public class IngredientRecyclerViewAdapter extends RecyclerView.Adapter<Ingredie
             editText = itemView.findViewById(R.id.itemListEditText);
         }
 
-    }
-
-    public void updateData(List<Product> ingredientList1) {
-        ingredientList.clear();
-        ingredientList.addAll(ingredientList1);
-        notifyDataSetChanged();
     }
 }
 

@@ -9,8 +9,7 @@ import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
-import com.fourstudents.jedzonko.Database.Entities.ShoppingProductCrossRef;
-import com.fourstudents.jedzonko.Database.Relations.ShoppingsWithProducts;
+import com.fourstudents.jedzonko.Database.Relations.ShoppingWithShopitemsAndProducts;
 
 import java.util.List;
 
@@ -27,15 +26,8 @@ public interface ShoppingDao {
     @Update
     void update(Shopping shopping);
 
-    @Insert
-    void insertShoppingWithProduct(ShoppingProductCrossRef shoppingProductCrossRef);
-
     @Query("SELECT shoppingId FROM Shopping ORDER BY shoppingId DESC LIMIT 1")
     public int getLastId();
-
-    @Transaction
-    @Query("SELECT * FROM Shopping")
-    List<ShoppingsWithProducts> getShoppingsWithProducts();
 
     @Transaction
     @Query("SELECT * FROM Shopping")
@@ -44,4 +36,9 @@ public interface ShoppingDao {
     @Transaction
     @Query("SELECT * FROM Shopping")
     LiveData<List<Shopping>> getAllLiveData();
+
+    @Transaction
+    @Query("SELECT * FROM Shopping")
+    public List<ShoppingWithShopitemsAndProducts> getShoppingsWithShopitemsAndProducts();
+
 }

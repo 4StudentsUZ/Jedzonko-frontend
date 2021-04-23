@@ -8,19 +8,22 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.fourstudents.jedzonko.Database.Dao.IngredientDao;
 import com.fourstudents.jedzonko.Database.Dao.ProductDao;
 import com.fourstudents.jedzonko.Database.Dao.RecipeDao;
 import com.fourstudents.jedzonko.Database.Dao.ShoppingDao;
 import com.fourstudents.jedzonko.Database.Dao.TagDao;
+import com.fourstudents.jedzonko.Database.Entities.Ingredient;
+import com.fourstudents.jedzonko.Database.Entities.IngredientProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
-import com.fourstudents.jedzonko.Database.Entities.RecipeProductCrossRef;
+import com.fourstudents.jedzonko.Database.Entities.Shopitem;
+import com.fourstudents.jedzonko.Database.Entities.ShopitemProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
-import com.fourstudents.jedzonko.Database.Entities.ShoppingProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-@Database(entities = {Recipe.class, Tag.class,Product.class, Shopping.class, ShoppingProductCrossRef.class, RecipeProductCrossRef.class}, version = 3, exportSchema = false)
+@Database(entities = {Recipe.class, Tag.class,Product.class, Shopping.class, Ingredient.class, IngredientProductCrossRef.class, Shopitem.class, ShopitemProductCrossRef.class}, version = 7, exportSchema = false)
 public abstract class RoomDB extends RoomDatabase {
     private static volatile RoomDB database;
     private final static String DATABASE_NAME = "database";
@@ -79,4 +82,5 @@ public abstract class RoomDB extends RoomDatabase {
     public abstract TagDao tagDao();
     public abstract ProductDao productDao();
     public abstract ShoppingDao shoppingDao();
+    public abstract IngredientDao ingredientDao();
 }

@@ -4,20 +4,19 @@ import androidx.room.Embedded;
 import androidx.room.Junction;
 import androidx.room.Relation;
 
+import com.fourstudents.jedzonko.Database.Entities.Ingredient;
+import com.fourstudents.jedzonko.Database.Entities.IngredientProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Product;
-import com.fourstudents.jedzonko.Database.Entities.Recipe;
-import com.fourstudents.jedzonko.Database.Entities.RecipeProductCrossRef;
-
 
 import java.util.List;
 
-public class RecipesWithProducts {
+public class IngredientsWithProducts {
     @Embedded
-    public Recipe recipe;
+    public Ingredient ingredient;
     @Relation(
-            parentColumn = "recipeId",
+            parentColumn = "ingredientId",
             entityColumn = "productId",
-            associateBy = @Junction(RecipeProductCrossRef.class)
+            associateBy = @Junction(IngredientProductCrossRef.class)
     )
     public List<Product> products;
 }

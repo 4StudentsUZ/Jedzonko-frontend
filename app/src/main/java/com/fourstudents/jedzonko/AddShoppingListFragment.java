@@ -1,16 +1,12 @@
 package com.fourstudents.jedzonko;
 
 import android.app.Dialog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,15 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Database.Entities.Product;
-import com.fourstudents.jedzonko.Database.Entities.Recipe;
-import com.fourstudents.jedzonko.Database.Entities.RecipeProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
-import com.fourstudents.jedzonko.Database.Entities.ShoppingProductCrossRef;
 import com.fourstudents.jedzonko.Database.RoomDB;
 import com.fourstudents.jedzonko.ViewModels.ProductViewModel;
-import com.fourstudents.jedzonko.ViewModels.ShoppingViewModel;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -181,11 +172,11 @@ public class AddShoppingListFragment extends Fragment implements ProductRecycler
             int size = ingredientList.size();
 
             for (Product product: ingredientList) {
-                ShoppingProductCrossRef shoppingProductCrossRef = new ShoppingProductCrossRef();
-                shoppingProductCrossRef.setProductId(product.getProductId());
-                shoppingProductCrossRef.setShoppingId(shoppingId);
-                shoppingProductCrossRef.setQuantity("df");
-                database.shoppingDao().insertShoppingWithProduct(shoppingProductCrossRef);
+             //   ShoppingProductCrossRef shoppingProductCrossRef = new ShoppingProductCrossRef();
+             //   shoppingProductCrossRef.setProductId(product.getProductId());
+              //  shoppingProductCrossRef.setShoppingId(shoppingId);
+              //  shoppingProductCrossRef.setQuantity("df");
+              //  database.shoppingDao().insertShoppingWithProduct(shoppingProductCrossRef);
             }
 
             editTextName.setText("");

@@ -36,7 +36,6 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductRecy
     public ViewHolderClass onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, parent, false);
         ViewHolderClass viewHolderClass = new ViewHolderClass(view, onProductListener);
-        viewHolderClass.addImageView.setVisibility(INVISIBLE);
             return viewHolderClass;
     }
 
@@ -55,14 +54,12 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductRecy
     public static class ViewHolderClass extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView imageView;
         TextView textView;
-        ImageView addImageView;
         OnProductListener onProductListener;
 
         public ViewHolderClass(@NonNull View itemView, OnProductListener onProductListener) {
             super(itemView);
             imageView = itemView.findViewById(R.id.itemListImageView);
             textView = itemView.findViewById(R.id.itemListTextView);
-            addImageView = itemView.findViewById(R.id.itemListAddView);
             this.onProductListener = onProductListener;
             itemView.setOnClickListener(this);
         }
@@ -70,10 +67,6 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductRecy
         @Override
         public void onClick(View v) {
             onProductListener.onProductClick(getAbsoluteAdapterPosition());
-            if(addImageView.getVisibility()==VISIBLE){
-                addImageView.setVisibility(INVISIBLE);
-            }else  addImageView.setVisibility(VISIBLE);
-
         }
     }
 

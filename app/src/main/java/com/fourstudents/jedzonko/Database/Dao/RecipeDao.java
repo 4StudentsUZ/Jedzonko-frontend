@@ -7,13 +7,8 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
-import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
-import com.fourstudents.jedzonko.Database.Entities.RecipeProductCrossRef;
-import com.fourstudents.jedzonko.Database.Entities.ShoppingProductCrossRef;
-import com.fourstudents.jedzonko.Database.Relations.RecipesWithProducts;
-import com.fourstudents.jedzonko.Database.Relations.RecipesWithTags;
-import com.fourstudents.jedzonko.Database.Relations.ShoppingsWithProducts;
+import com.fourstudents.jedzonko.Database.Relations.RecipeWithIngredientsAndProducts;
 
 import java.util.List;
 
@@ -37,9 +32,7 @@ public interface RecipeDao {
     @Query("SELECT * FROM recipe")
     List<Recipe> getAll();
 
-    @Insert
-    void insertRecipeWithProduct(RecipeProductCrossRef recipeProductCrossRef);
     @Transaction
     @Query("SELECT * FROM Recipe")
-    public List<RecipesWithProducts> getRecipesWithProducts();
+    public List<RecipeWithIngredientsAndProducts> getRecipesWithIngredientsAndProducts();
 }

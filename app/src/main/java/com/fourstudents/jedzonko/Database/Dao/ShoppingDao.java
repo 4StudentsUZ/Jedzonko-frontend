@@ -32,13 +32,13 @@ public interface ShoppingDao {
 
     @Transaction
     @Query("SELECT * FROM Shopping")
-    public List<ShoppingsWithProducts> getShoppingsWithProducts();
+    List<ShoppingsWithProducts> getShoppingsWithProducts();
 
     @Transaction
     @Query("SELECT * FROM Shopping")
-    public List<Shopping> getAll();
+    List<Shopping> getAll();
 
     @Transaction
     @Query("SELECT * FROM Shopping")
-    public LiveData<List<Shopping>> getAllLiveData();
+    LiveData<List<Shopping>> getAllLiveData();
 }

@@ -11,8 +11,8 @@ import com.fourstudents.jedzonko.Database.RoomDB;
 import java.util.List;
 
 public class ShoppingRepository {
-    private ShoppingDao shoppingDao;
-    private LiveData<List<Shopping>> allLiveDataShoppingList;
+    private final ShoppingDao shoppingDao;
+    private final LiveData<List<Shopping>> allLiveDataShoppingList;
 
 
     public ShoppingRepository(Application application) {

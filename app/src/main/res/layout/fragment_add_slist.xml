@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AddRecipeFragment">
+    tools:context=".MainActivity">
 
 
     <androidx.appcompat.widget.Toolbar
@@ -23,59 +23,55 @@
 
 
     <EditText
-        android:id="@+id/editTextTitle"
+        android:id="@+id/editTextName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusedByDefault="true"
-        android:hint="Tytuł"
+        android:hint="@string/edit_text_name_field"
         android:inputType="text"
         android:maxLength="100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/custom_toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/custom_toolbar"
+        android:importantForAutofill="no" />
 
     <TextView
         android:id="@+id/textViewAddRecipeIngredients"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="1dp"
-        android:text="Składniki:"
+        android:text="@string/shopping_list_product_header"
         android:textColor="#16B60A"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/ingredientRV"
+        app:layout_constraintBottom_toTopOf="@+id/shoppingProductRV"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextName" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/ingredientRV"
+        android:id="@+id/shoppingProductRV"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/addIngredientButton"
+        android:padding="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/editShoppingProductsBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewAddRecipeIngredients" />
 
     <Button
-        android:id="@+id/addIngredientButton"
+        android:id="@+id/editShoppingProductsBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dodaj składnik"
+        android:layout_marginBottom="16dp"
+        android:text="@string/shopping_list_edit_products_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ingredientRV" />
-
-
-    <!--    <Button-->
-    <!--        android:id="@+id/button"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="Galeria" />-->
+        app:layout_constraintTop_toBottomOf="@+id/shoppingProductRV" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

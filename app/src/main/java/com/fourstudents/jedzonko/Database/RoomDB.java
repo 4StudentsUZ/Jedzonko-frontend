@@ -46,14 +46,35 @@ public abstract class RoomDB extends RoomDatabase {
             databaseWriteExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    ShoppingDao shoppingDao = database.shoppingDao();
-                    Shopping list1 = new Shopping();
-                    list1.setName("lista1");
-                    shoppingDao.insert(list1);
+                    shoppingTemplate();
+                    productTemplate();
                 }
             });
         }
     };
+
+    private static void shoppingTemplate() {
+        ShoppingDao shoppingDao = database.shoppingDao();
+        Shopping list = new Shopping();
+        for (int i = 0; i < 4; i++) {
+            list.setName("Lista zakupów - #" + (i+1));
+            shoppingDao.insert(list);
+        }
+    }
+
+    private static void productTemplate() {
+        ProductDao productDao = database.productDao();
+        Product product = new Product();
+        product.setName("Pomidor");
+        product.setBarcode("000");
+        product.setData(new byte[] {0x00, 0x01});
+        productDao.insert(product);
+        product.setName("Banan");
+        productDao.insert(product);
+        product.setName("Mąka");
+        productDao.insert(product);
+    }
+
     public abstract RecipeDao recipeDao();
     public abstract TagDao tagDao();
     public abstract ProductDao productDao();

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ShoppingViewModel extends AndroidViewModel {
 
-    private ShoppingRepository repository;
+    private final ShoppingRepository repository;
     private final LiveData<List<Shopping>> allLiveDataShoppingList;
 
     public ShoppingViewModel(@NonNull Application application) {

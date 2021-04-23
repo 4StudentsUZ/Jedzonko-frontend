@@ -1,5 +1,6 @@
 package com.fourstudents.jedzonko.Database.Dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -7,6 +8,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.fourstudents.jedzonko.Database.Entities.Product;
+import com.fourstudents.jedzonko.Database.Entities.Shopping;
 
 import java.util.List;
 
@@ -25,4 +27,7 @@ public interface ProductDao {
 
     @Query("SELECT * FROM product")
     List<Product> getAll();
+
+    @Query("SELECT * FROM product")
+    LiveData<List<Product>> getAllLiveData();
 }

@@ -1,15 +1,22 @@
 package com.fourstudents.jedzonko;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +43,23 @@ public class RecipesFragment extends Fragment {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
         toolbar.setTitle("Przepisy");
         toolbar.inflateMenu(R.menu.recipes);
+        toolbar.getMenu();
+
+        MenuItem search = toolbar.getMenu().findItem(R.id.action_search);
+        SearchView searchView = (SearchView) search.getActionView();
+        searchView.setOnQueryTextListener(new OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+
 
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -50,6 +74,8 @@ public class RecipesFragment extends Fragment {
             }
         });
     }
+
+
 
     @Override
     public void onResume() {
@@ -89,4 +115,6 @@ public class RecipesFragment extends Fragment {
                         .commit()
         );
     }
+
 }
+

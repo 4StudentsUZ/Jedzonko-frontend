@@ -1,4 +1,4 @@
-package com.fourstudents.jedzonko;
+package com.fourstudents.jedzonko.Fragments;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -18,9 +18,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fourstudents.jedzonko.Adapters.IngredientRecyclerViewAdapter;
+import com.fourstudents.jedzonko.Adapters.ProductRecyclerViewAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.ProductViewModel;
 
 import java.util.ArrayList;
@@ -93,7 +96,7 @@ public class AddShoppingListFragment extends Fragment implements ProductRecycler
                         requireActivity()
                                 .getSupportFragmentManager()
                                 .beginTransaction()
-                                .replace(R.id.mainFrameLayout, new AddProductFragment(), "AddProductFragment")
+                                .replace(R.id.mainFrameLayout, new AddTagFragment(), "AddProductFragment")
                                 .addToBackStack("AddProductFragment")
                                 .commit();
                     }

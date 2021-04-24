@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AddRecipeFragment">
+    tools:context=".Fragments.AddRecipeFragment">
 
 
     <androidx.appcompat.widget.Toolbar
@@ -74,31 +74,69 @@
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/ingredientRV"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textInputLayout" />
+    <TextView
+        android:id="@+id/textViewAddRecipeTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="1dp"
+        android:text="Tagi:"
+        android:textColor="#16B60A"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/ingredientRV"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayout" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/ingredientRV"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:layout_constraintWidth_max="250dp"
         app:layout_constraintBottom_toTopOf="@+id/addIngredientButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toStartOf="@id/tagRV"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewAddRecipeIngredients" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tagRV"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_max="200dp"
+        app:layout_constraintBottom_toTopOf="@+id/addIngredientButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ingredientRV"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewAddRecipeIngredients" />
+
 
     <Button
         android:id="@+id/addIngredientButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edytuj składniki"
+        android:text="Dodaj składniki"
         app:layout_constraintBottom_toTopOf="@+id/view_add_recipe_ingredients"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.016"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ingredientRV" />
 
+    <Button
+        android:id="@+id/addTagButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dodaj tagi"
+        app:layout_constraintBottom_toTopOf="@+id/view_add_recipe_ingredients"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.984"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ingredientRV" />
 
     <TextView
         android:id="@+id/view_add_recipe_ingredients"

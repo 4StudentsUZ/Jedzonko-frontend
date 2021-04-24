@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".AddProductFragment"
+    tools:context=".Fragments.AddTagFragment"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -14,15 +14,6 @@
         android:elevation="4dp"
         android:background="@color/primaryColor"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="200dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center_horizontal"
-        android:text="Dodaj produkt"
-        android:textAlignment="center"
-        android:textColor="#16B60A"
-        android:textSize="32sp" />
     <EditText
         android:id="@+id/productNameEditText"
         android:layout_width="match_parent"

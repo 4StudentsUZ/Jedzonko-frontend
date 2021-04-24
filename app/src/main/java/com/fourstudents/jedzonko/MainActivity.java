@@ -1,24 +1,18 @@
 package com.fourstudents.jedzonko;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import android.app.Application;
 import android.os.Bundle;
-import android.os.Debug;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.Window;
-import android.widget.FrameLayout;
 
+import com.fourstudents.jedzonko.Fragments.AccountFragment;
+import com.fourstudents.jedzonko.Fragments.RecipesFragment;
+import com.fourstudents.jedzonko.Fragments.SearchFragment;
+import com.fourstudents.jedzonko.Fragments.ShoppingListFragment;
+import com.fourstudents.jedzonko.Fragments.ShopsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 

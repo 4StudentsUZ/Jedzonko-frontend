@@ -11,35 +11,24 @@ import java.util.Set;
 @Entity(tableName = "tag")
 public class Tag {
     @PrimaryKey(autoGenerate = true)
-    private long id;
+    private long tagId;
 
-    @ColumnInfo(name = "text")
-    private String text;
+    @ColumnInfo(name = "name")
+    private String name;
 
-    @ColumnInfo(name = "recipeId")
-    private long recipeId;
-
-    public long getId() {
-        return id;
+    public long getTagId() {
+        return tagId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setTagId(long tagId) {
+        this.tagId = tagId;
     }
 
-    public String getText() {
-        return text;
+    public String getName() {
+        return name;
     }
 
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public long getRecipeId() {
-        return recipeId;
-    }
-
-    public void setRecipeId(long recipeId) {
-        this.recipeId = recipeId;
+    public void setName(String name) {
+        this.name = name;
     }
 }

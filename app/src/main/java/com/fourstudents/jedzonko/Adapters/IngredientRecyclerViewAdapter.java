@@ -1,4 +1,4 @@
-package com.fourstudents.jedzonko;
+package com.fourstudents.jedzonko.Adapters;
 
 import android.content.Context;
 import android.text.Editable;
@@ -14,8 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Database.Entities.Product;
+import com.fourstudents.jedzonko.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class IngredientRecyclerViewAdapter extends RecyclerView.Adapter<IngredientRecyclerViewAdapter.ViewHolderClass> {

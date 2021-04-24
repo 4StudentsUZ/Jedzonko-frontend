@@ -1,4 +1,4 @@
-package com.fourstudents.jedzonko;
+package com.fourstudents.jedzonko.Fragments;
 
 import android.os.Bundle;
 import android.view.View;
@@ -7,17 +7,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fourstudents.jedzonko.Adapters.ShoppingRecyclerViewAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
-import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.Fragments.AddShoppingListFragment;
+import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.ShoppingViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingListFragment extends Fragment {

@@ -1,4 +1,4 @@
-package com.fourstudents.jedzonko;
+package com.fourstudents.jedzonko.Fragments;
 
 import android.os.Bundle;
 
@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.R;
 
 import java.util.ArrayList;
 import java.util.List;

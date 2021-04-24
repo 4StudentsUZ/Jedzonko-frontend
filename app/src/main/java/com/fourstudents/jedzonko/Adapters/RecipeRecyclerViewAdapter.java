@@ -1,4 +1,4 @@
-package com.fourstudents.jedzonko;
+package com.fourstudents.jedzonko.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,8 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
+import com.fourstudents.jedzonko.R;
 
 import java.util.ArrayList;
 import java.util.List;

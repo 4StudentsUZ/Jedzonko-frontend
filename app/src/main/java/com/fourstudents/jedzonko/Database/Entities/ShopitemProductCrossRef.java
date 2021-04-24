@@ -2,7 +2,7 @@ package com.fourstudents.jedzonko.Database.Entities;
 
 import androidx.room.Entity;
 
-@Entity(tableName="shopItemsProductCrossRef", primaryKeys = {"shopitemId", "productId"})
+@Entity(tableName="shopItemProductCrossRef", primaryKeys = {"shopitemId", "productId"})
 public class ShopitemProductCrossRef {
     public long shopitemId;
     public long productId;

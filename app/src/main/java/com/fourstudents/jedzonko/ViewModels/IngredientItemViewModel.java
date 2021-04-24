@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.IngredientItem;
 
 import java.util.ArrayList;

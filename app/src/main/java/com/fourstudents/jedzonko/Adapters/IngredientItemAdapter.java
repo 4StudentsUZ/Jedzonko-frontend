@@ -1,4 +1,4 @@
-package com.fourstudents.jedzonko;
+package com.fourstudents.jedzonko.Adapters;
 
 import android.content.Context;
 import android.text.Editable;
@@ -15,9 +15,12 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fourstudents.jedzonko.IngredientItem;
+import com.fourstudents.jedzonko.R;
+
 public class IngredientItemAdapter extends ListAdapter<IngredientItem, IngredientItemAdapter.ViewHolderClass> {
     Context context;
-    private OnIngredientItemListener onIngredientItemListener;
+    private final OnIngredientItemListener onIngredientItemListener;
 
     public IngredientItemAdapter(Context context, OnIngredientItemListener onIngredientItemListener) {
         super(new DiffUtil.ItemCallback<IngredientItem>() {
@@ -89,11 +92,11 @@ public class IngredientItemAdapter extends ListAdapter<IngredientItem, Ingredien
 
         @Override
         public void onClick(View v) {
-            onIngredientItemListener.onDeleteClick(getAbsoluteAdapterPosition());
+            onIngredientItemListener.onIngredientItemDeleteClick(getAbsoluteAdapterPosition());
         }
     }
     public interface OnIngredientItemListener {
-        void onDeleteClick(int position);
+        void onIngredientItemDeleteClick(int position);
         void onTextChange(int position, CharSequence s);
     }
 }

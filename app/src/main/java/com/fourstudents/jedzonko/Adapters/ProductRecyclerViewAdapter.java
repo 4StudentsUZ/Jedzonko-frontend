@@ -1,4 +1,4 @@
-package com.fourstudents.jedzonko;
+package com.fourstudents.jedzonko.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,18 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Database.Entities.Product;
+import com.fourstudents.jedzonko.R;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static android.view.View.INVISIBLE;
-import static android.view.View.VISIBLE;
 
 public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductRecyclerViewAdapter.ViewHolderClass> {
     Context context;
     List<Product> productList;
-    boolean showTrashIcon;
-    private OnProductListener onProductListener;
+    private final OnProductListener onProductListener;
 
     public ProductRecyclerViewAdapter(Context context, List<Product> productList, OnProductListener onProductListener) {
         this.context = context;

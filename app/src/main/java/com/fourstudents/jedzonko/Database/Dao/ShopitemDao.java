@@ -12,11 +12,12 @@ import com.fourstudents.jedzonko.Database.Entities.ShopitemProductCrossRef;
 
 import java.util.List;
 
+import static androidx.room.OnConflictStrategy.ABORT;
 import static androidx.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface ShopitemDao {
-    @Insert(onConflict = REPLACE)
+    @Insert
     void insert(Shopitem shopitem);
 
     @Delete
@@ -26,7 +27,7 @@ public interface ShopitemDao {
     void update (Shopitem shopitem);
 
     @Query("SELECT * FROM shopitem")
-    List<Ingredient> getAll();
+    List<Shopitem> getAll();
 
     @Query("SELECT shopitemId FROM shopitem ORDER BY shopitemId DESC LIMIT 1")
     public int getLastId();

@@ -11,6 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.fourstudents.jedzonko.Database.Dao.IngredientDao;
 import com.fourstudents.jedzonko.Database.Dao.ProductDao;
 import com.fourstudents.jedzonko.Database.Dao.RecipeDao;
+import com.fourstudents.jedzonko.Database.Dao.ShopitemDao;
 import com.fourstudents.jedzonko.Database.Dao.ShoppingDao;
 import com.fourstudents.jedzonko.Database.Dao.TagDao;
 import com.fourstudents.jedzonko.Database.Entities.Ingredient;
@@ -24,7 +25,7 @@ import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-@Database(entities = {Recipe.class, Tag.class,Product.class, Shopping.class, Ingredient.class, IngredientProductCrossRef.class, Shopitem.class, ShopitemProductCrossRef.class, RecipeTagCrossRef.class}, version = 9, exportSchema = false)
+@Database(entities = {Recipe.class, Tag.class,Product.class, Shopping.class, Ingredient.class, IngredientProductCrossRef.class, Shopitem.class, ShopitemProductCrossRef.class, RecipeTagCrossRef.class}, version = 10, exportSchema = false)
 public abstract class RoomDB extends RoomDatabase {
     private static volatile RoomDB database;
     private final static String DATABASE_NAME = "database";
@@ -43,7 +44,7 @@ public abstract class RoomDB extends RoomDatabase {
         return database;
     }
 
-    private static RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
+    private static final RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
@@ -84,4 +85,5 @@ public abstract class RoomDB extends RoomDatabase {
     public abstract ProductDao productDao();
     public abstract ShoppingDao shoppingDao();
     public abstract IngredientDao ingredientDao();
+    public abstract ShopitemDao shopitemDao();
 }

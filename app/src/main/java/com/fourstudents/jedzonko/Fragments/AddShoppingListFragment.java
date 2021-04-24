@@ -2,6 +2,7 @@ package com.fourstudents.jedzonko.Fragments;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,32 +19,58 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fourstudents.jedzonko.Adapters.IngredientItemAdapter;
 import com.fourstudents.jedzonko.Adapters.IngredientRecyclerViewAdapter;
 import com.fourstudents.jedzonko.Adapters.ProductRecyclerViewAdapter;
+import com.fourstudents.jedzonko.Database.Entities.Ingredient;
+import com.fourstudents.jedzonko.Database.Entities.IngredientProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Product;
+import com.fourstudents.jedzonko.Database.Entities.Shopitem;
+import com.fourstudents.jedzonko.Database.Entities.ShopitemProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.IngredientItem;
 import com.fourstudents.jedzonko.R;
+import com.fourstudents.jedzonko.ViewModels.IngredientItemViewModel;
 import com.fourstudents.jedzonko.ViewModels.ProductViewModel;
+import com.google.android.gms.common.util.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddShoppingListFragment extends Fragment implements ProductRecyclerViewAdapter.OnProductListener {
-    EditText editTextName;
-    Button editShoppingProductsBtn;
-    Dialog editShoppingProductDialog;
-//    ProductRecyclerViewAdapter2VM productAdapter;
-    ProductRecyclerViewAdapter productAdapter;
-    IngredientRecyclerViewAdapter ingredientAdapter;
-    RecyclerView productRV;
-    RecyclerView shoppingProductRV;
+public class AddShoppingListFragment extends Fragment implements ProductRecyclerViewAdapter.OnProductListener, IngredientItemAdapter.OnIngredientItemListener {
+    EditText name;
+    Button addIngredientButton;
+    Dialog ingredientDialog;
     RoomDB database;
 
-    List<Product> ingredientList = new ArrayList<>();
+    RecyclerView ingredientRV;
+    IngredientItemAdapter ingredientItemAdapter;
+    IngredientItemViewModel ingredientItemViewModel;
+
+    RecyclerView productRV;
+    ProductRecyclerViewAdapter productAdapter;
     List<Product> productList = new ArrayList<>();
 
     public AddShoppingListFragment(){super(R.layout.fragment_add_slist);}
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ingredientItemViewModel = new ViewModelProvider(requireActivity()).get(IngredientItemViewModel.class);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initToolbar(view);
+        initLayout(view);
+        initDialog();
+        database = RoomDB.getInstance(getActivity());
+        initRV();
+//        initVM();
+        initVMnew();
+    }
 
     private void initToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
@@ -73,30 +100,30 @@ public class AddShoppingListFragment extends Fragment implements ProductRecycler
     }
 
     private void initLayout(View view) {
-        editTextName = view.findViewById(R.id.editTextName);
-        shoppingProductRV = view.findViewById(R.id.shoppingProductRV);
-        editShoppingProductsBtn = view.findViewById(R.id.editShoppingProductsBtn);
-        editShoppingProductsBtn.setOnClickListener(new View.OnClickListener() {
+        name = view.findViewById(R.id.editTextName);
+        ingredientRV = view.findViewById(R.id.ingredientRV);
+        addIngredientButton = view.findViewById(R.id.editShoppingProductsBtn);
+        addIngredientButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editShoppingProductDialog.show();
-                Button addProductButton = editShoppingProductDialog.findViewById(R.id.addProductButton);
-                Button addIngredientsButton = editShoppingProductDialog.findViewById(R.id.addIngredientsButton);
+                ingredientDialog.show();
+                Button addProductButton = ingredientDialog.findViewById(R.id.addProductButton);
+                Button addIngredientsButton = ingredientDialog.findViewById(R.id.addIngredientsButton);
                 addIngredientsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        editShoppingProductDialog.dismiss();
+                        ingredientDialog.dismiss();
                     }
                 });
                 addProductButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         productList.clear();
-                        editShoppingProductDialog.dismiss();
+                        ingredientDialog.dismiss();
                         requireActivity()
                                 .getSupportFragmentManager()
                                 .beginTransaction()
-                                .replace(R.id.mainFrameLayout, new AddTagFragment(), "AddProductFragment")
+                                .replace(R.id.mainFrameLayout, new AddProductFragment(), "AddProductFragment")
                                 .addToBackStack("AddProductFragment")
                                 .commit();
                     }
@@ -106,31 +133,24 @@ public class AddShoppingListFragment extends Fragment implements ProductRecycler
     }
 
     private void initDialog() {
-        editShoppingProductDialog = new Dialog(getContext());
-        editShoppingProductDialog.setContentView(R.layout.dialog_add_ingredient);
-        editShoppingProductDialog.setCanceledOnTouchOutside(true);
-        editShoppingProductDialog.getWindow()
+        ingredientDialog = new Dialog(getContext());
+        ingredientDialog.setContentView(R.layout.dialog_add_ingredient);
+        ingredientDialog.setCanceledOnTouchOutside(true);
+        ingredientDialog.getWindow()
                 .setLayout(
                         WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.WRAP_CONTENT
                 );
     }
 
-//    private void initRVVM() {
-//        productAdapter = new ProductRecyclerViewAdapter2VM();
-//        productRV = editShoppingProductDialog.findViewById(R.id.productRV);
-//        productRV.setAdapter(productAdapter);
-//        productRV.setLayoutManager(new LinearLayoutManager(getContext()));
-//    }
-
     private void initRV() {
-        ingredientAdapter = new IngredientRecyclerViewAdapter(getContext(), ingredientList);
-        shoppingProductRV.setLayoutManager(new LinearLayoutManager(getContext()));
-        shoppingProductRV.setAdapter(ingredientAdapter);
+        ingredientItemAdapter = new IngredientItemAdapter(getContext(), this);
+        ingredientRV.setLayoutManager(new LinearLayoutManager(getContext()));
+        ingredientRV.setAdapter(ingredientItemAdapter);
 
         productList.addAll(database.productDao().getAll());
         productAdapter = new ProductRecyclerViewAdapter(getContext(), productList, this);
-        productRV = editShoppingProductDialog.findViewById(R.id.productRV);
+        productRV = ingredientDialog.findViewById(R.id.productRV);
         productRV.setLayoutManager(new LinearLayoutManager(getContext()));
         productRV.setAdapter(productAdapter);
     }
@@ -147,60 +167,75 @@ public class AddShoppingListFragment extends Fragment implements ProductRecycler
         });
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        initToolbar(view);
-        initLayout(view);
-        initDialog();
-        database = RoomDB.getInstance(getActivity());
-        initRV();
-//        initVM();
+    private void initVMnew() {
+        ingredientItemViewModel.getIngredientItemList().observe(getViewLifecycleOwner(), ingredientItems -> {
+            ingredientItemAdapter.submitList(ingredientItems);
+            ingredientItemAdapter.notifyDataSetChanged();
+        });
     }
 
     boolean checkData(){
-        if(editTextName.getText().toString().equals("") || ingredientList.size()==0 ){
+        if (TextUtils.isEmpty(name.getText().toString()) ||
+            ingredientItemViewModel.getIngredientItemsListSize() == 0 ||
+            !ingredientItemViewModel.isQuantityFilled()
+        ) {
             Toast.makeText(getContext(), R.string.missing_input_data, Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
     }
 
+
     private void menuSaveButtonPressed() {
         if (checkData()) {
             Shopping shopping = new Shopping();
-            shopping.setName(editTextName.getText().toString().trim());
+            shopping.setName(name.getText().toString().trim());
             database.shoppingDao().insert(shopping);
             int shoppingId = database.shoppingDao().getLastId();
-            int size = ingredientList.size();
 
-            for (Product product: ingredientList) {
-             //   ShoppingProductCrossRef shoppingProductCrossRef = new ShoppingProductCrossRef();
-             //   shoppingProductCrossRef.setProductId(product.getProductId());
-              //  shoppingProductCrossRef.setShoppingId(shoppingId);
-              //  shoppingProductCrossRef.setQuantity("df");
-              //  database.shoppingDao().insertShoppingWithProduct(shoppingProductCrossRef);
+            List<IngredientItem> ingredientItems = ingredientItemViewModel.getIngredientItemsList();
+
+            for (IngredientItem ingredientItem: ingredientItems) {
+                Shopitem shopitem = new Shopitem();
+                shopitem.setShoppingOwnerId(shoppingId);
+                shopitem.setQuantity(ingredientItem.quantity);
+                database.shopitemDao().insert(shopitem);
+
+                ShopitemProductCrossRef shopitemProductCrossRef = new ShopitemProductCrossRef();
+                shopitemProductCrossRef.shopitemId = database.shopitemDao().getLastId();
+                shopitemProductCrossRef.productId = ingredientItem.product.getProductId();
+                database.shopitemDao().insertShopitemWithProduct(shopitemProductCrossRef);
             }
 
-            editTextName.setText("");
-            ingredientList.clear();
-            ingredientAdapter.notifyItemRangeRemoved(0, size);
+            name.setText("");
+            ingredientItemViewModel.clearIngredientItemList();
             Toast.makeText(getContext(), "Dodano listę", Toast.LENGTH_SHORT).show();
+            getParentFragmentManager().popBackStack();
         }
         productRV.setAdapter(productAdapter);
     }
 
     @Override
     public void onProductClick(int position) {
-        Product product= productList.get(position);
-        if (ingredientList.contains(product)){
-            ingredientList.remove(product);
-            ingredientAdapter.notifyDataSetChanged();
+        IngredientItem ingredientItem= new IngredientItem();
+        ingredientItem.product = productList.get(position);
+        if (ingredientItemViewModel.hasIngredientItem(ingredientItem)) {
+            Toast.makeText(getContext(), "Produkt już jest na liście", Toast.LENGTH_SHORT).show();
         } else {
-            ingredientList.add(product);
-            ingredientAdapter.notifyItemInserted(ingredientList.size());
-//            Toast.makeText(getContext(), "Dodano produkt", Toast.LENGTH_LONG).show();
+            ingredientItemViewModel.addIngredientItem(ingredientItem);
+            Toast.makeText(getContext(), "Dodano produkt", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onIngredientItemDeleteClick(int position) {
+        IngredientItem ingredientItem = ingredientItemViewModel.getIngredientItem(position);
+        ingredientItemViewModel.removeIngredientItem(ingredientItem);
+    }
+
+    @Override
+    public void onTextChange(int position, CharSequence s) {
+        ingredientItemViewModel.getIngredientItem(position).quantity=s.toString();
     }
 }
 

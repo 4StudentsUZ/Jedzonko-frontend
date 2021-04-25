@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "shopping")
 public class Shopping {
     @PrimaryKey(autoGenerate = true)
-    public long shoppingId;
+    private long shoppingId;
 
     @ColumnInfo(name = "name")
     private String name;

@@ -7,11 +7,11 @@ import androidx.fragment.app.FragmentManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.fourstudents.jedzonko.Fragments.AccountFragment;
-import com.fourstudents.jedzonko.Fragments.RecipesFragment;
-import com.fourstudents.jedzonko.Fragments.SearchFragment;
-import com.fourstudents.jedzonko.Fragments.ShoppingListFragment;
-import com.fourstudents.jedzonko.Fragments.ShopsFragment;
+import com.fourstudents.jedzonko.Fragments.Account.AccountFragment;
+import com.fourstudents.jedzonko.Fragments.Recipe.RecipeFragment;
+import com.fourstudents.jedzonko.Fragments.Search.SearchFragment;
+import com.fourstudents.jedzonko.Fragments.ShoppingList.ShoppingListFragment;
+import com.fourstudents.jedzonko.Fragments.Shop.ShopsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupBottomNavigationView() {
         Fragment searchFragment = new SearchFragment();
         Fragment shoppingListFragment = new ShoppingListFragment();
-        Fragment recipesFragment = new RecipesFragment();
+        Fragment recipesFragment = new RecipeFragment();
         Fragment shopsFragment = new ShopsFragment();
         Fragment accountFragment = new AccountFragment();
 

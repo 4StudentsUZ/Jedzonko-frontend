@@ -25,7 +25,7 @@ import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-@Database(entities = {Recipe.class, Tag.class,Product.class, Shopping.class, Ingredient.class, IngredientProductCrossRef.class, Shopitem.class, ShopitemProductCrossRef.class, RecipeTagCrossRef.class}, version = 10, exportSchema = false)
+@Database(entities = {Recipe.class, Tag.class,Product.class, Shopping.class, Ingredient.class, IngredientProductCrossRef.class, Shopitem.class, ShopitemProductCrossRef.class, RecipeTagCrossRef.class}, version = 11, exportSchema = false)
 public abstract class RoomDB extends RoomDatabase {
     private static volatile RoomDB database;
     private final static String DATABASE_NAME = "database";
@@ -53,6 +53,7 @@ public abstract class RoomDB extends RoomDatabase {
                 public void run() {
                     shoppingTemplate();
                     productTemplate();
+                    tagTemplate();
                 }
             });
         }
@@ -78,6 +79,19 @@ public abstract class RoomDB extends RoomDatabase {
         productDao.insert(product);
         product.setName("Mąka");
         productDao.insert(product);
+    }
+
+    private static void tagTemplate() {
+        TagDao tagDao = database.tagDao();
+        Tag tag = new Tag();
+        tag.setName("Deser");
+        tagDao.insert(tag);
+        tag.setName("Pizza");
+        tagDao.insert(tag);
+        tag.setName("Wegetariańskie");
+        tagDao.insert(tag);
+        tag.setName("Słone");
+        tagDao.insert(tag);
     }
 
     public abstract RecipeDao recipeDao();

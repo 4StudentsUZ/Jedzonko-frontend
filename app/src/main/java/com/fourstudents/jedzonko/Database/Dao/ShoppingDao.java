@@ -17,7 +17,7 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface ShoppingDao {
-    @Insert(onConflict = REPLACE)
+    @Insert
     void insert(Shopping shopping);
 
     @Delete
@@ -27,7 +27,7 @@ public interface ShoppingDao {
     void update(Shopping shopping);
 
     @Query("SELECT shoppingId FROM Shopping ORDER BY shoppingId DESC LIMIT 1")
-    public int getLastId();
+    int getLastId();
 
     @Transaction
     @Query("SELECT * FROM Shopping")
@@ -39,6 +39,6 @@ public interface ShoppingDao {
 
     @Transaction
     @Query("SELECT * FROM Shopping")
-    public List<ShoppingWithShopitemsAndProducts> getShoppingsWithShopitemsAndProducts();
+    List<ShoppingWithShopitemsAndProducts> getShoppingsWithShopitemsAndProducts();
 
 }

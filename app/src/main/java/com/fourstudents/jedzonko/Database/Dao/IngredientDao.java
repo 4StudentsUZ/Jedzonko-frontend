@@ -15,7 +15,7 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface IngredientDao {
-    @Insert(onConflict = REPLACE)
+    @Insert
     void insert(Ingredient ingredient);
 
     @Delete
@@ -28,7 +28,7 @@ public interface IngredientDao {
     List<Ingredient> getAll();
 
     @Query("SELECT ingredientId FROM ingredient ORDER BY ingredientId DESC LIMIT 1")
-    public int getLastId();
+    int getLastId();
 
     @Insert
     void insertIngredientWithProduct(IngredientProductCrossRef ingredientProductCrossRef);

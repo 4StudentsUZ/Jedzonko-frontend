@@ -19,7 +19,7 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface RecipeDao {
-    @Insert(onConflict = REPLACE)
+    @Insert
     void insert(Recipe recipe);
 
     @Delete
@@ -29,7 +29,7 @@ public interface RecipeDao {
     void update(Recipe recipe);
 
     @Query("SELECT recipeId FROM recipe ORDER BY recipeId DESC LIMIT 1")
-    public int getLastId();
+    int getLastId();
 
     @Transaction
     @Query("SELECT * FROM recipe")
@@ -37,11 +37,11 @@ public interface RecipeDao {
 
     @Transaction
     @Query("SELECT * FROM Recipe")
-    public List<RecipeWithIngredientsAndProducts> getRecipesWithIngredientsAndProducts();
+    List<RecipeWithIngredientsAndProducts> getRecipesWithIngredientsAndProducts();
 
     @Transaction
     @Query("SELECT * FROM Recipe")
-    public List<RecipesWithTags> getRecipesWithTags();
+    List<RecipesWithTags> getRecipesWithTags();
 
     @Insert
     void insertRecipeWithTag(RecipeTagCrossRef recipeTagCrossRef);

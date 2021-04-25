@@ -15,7 +15,7 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface TagDao {
-    @Insert(onConflict = REPLACE)
+    @Insert
     void insert(Tag tag);
 
     @Delete

@@ -30,7 +30,7 @@ public interface ShopitemDao {
     List<Shopitem> getAll();
 
     @Query("SELECT shopitemId FROM shopitem ORDER BY shopitemId DESC LIMIT 1")
-    public int getLastId();
+    int getLastId();
 
     @Insert
     void insertShopitemWithProduct(ShopitemProductCrossRef shopitemProductCrossRef);

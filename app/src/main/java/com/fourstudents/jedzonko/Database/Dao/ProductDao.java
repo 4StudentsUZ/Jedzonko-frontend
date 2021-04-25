@@ -16,7 +16,7 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface ProductDao {
-    @Insert(onConflict = REPLACE)
+    @Insert
     void insert(Product product);
 
     @Delete

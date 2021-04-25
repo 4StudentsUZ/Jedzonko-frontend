@@ -7,14 +7,12 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "shopitem")
 public class Shopitem {
     @PrimaryKey(autoGenerate = true)
-    public long shopitemId;
+    private long shopitemId;
 
-    public long shoppingOwnerId;
+    private long shoppingOwnerId;
 
     @ColumnInfo(name = "quantity")
     private String quantity;
-
-
 
     public long getShoppingOwnerId() {
         return shoppingOwnerId;
@@ -31,7 +29,6 @@ public class Shopitem {
     public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
-
 
     public long getShopitemId() {
         return shopitemId;

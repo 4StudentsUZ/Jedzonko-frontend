@@ -4,8 +4,8 @@ import androidx.room.Entity;
 
 @Entity(tableName="shopItemProductCrossRef", primaryKeys = {"shopitemId", "productId"})
 public class ShopitemProductCrossRef {
-    public long shopitemId;
-    public long productId;
+    private long shopitemId;
+    private long productId;
 
     public long getShopitemId() {
         return shopitemId;

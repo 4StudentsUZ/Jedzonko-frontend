@@ -9,7 +9,7 @@ import java.util.Set;
 @Entity(tableName = "product")
 public class Product {
     @PrimaryKey(autoGenerate = true)
-    public long productId;
+    private long productId;
 
     @ColumnInfo(name = "name")
     private String name;

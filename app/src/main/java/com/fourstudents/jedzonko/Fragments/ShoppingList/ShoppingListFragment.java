@@ -1,7 +1,10 @@
 package com.fourstudents.jedzonko.Fragments.ShoppingList;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,12 +37,39 @@ public class ShoppingListFragment extends Fragment {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
         toolbar.setTitle(R.string.title_slist);
         toolbar.inflateMenu(R.menu.slist);
+
+        toolbar.getMenu();
+
+        MenuItem search = toolbar.getMenu().findItem(R.id.action_search);
+        SearchView searchView = (SearchView) search.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Do poprawy
+                new CountDownTimer(100, 100) {
+                    public void onFinish() {
+                        shoppingAdapter.getFilter().filter(newText);
+                    }
+                    public void onTick(long millisUntilFinished) {
+
+                    }
+                }.start();
+
+                return false;
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
         shoppingAdapter.notifyDataSetChanged();
+
     }
 
     @Override
@@ -49,11 +79,12 @@ public class ShoppingListFragment extends Fragment {
 
 //        database = RoomDB.getInstance(getActivity());
         shoppingRV = view.findViewById(R.id.shoppingRV);
+
+
+        ShoppingViewModel shoppingViewModel = new ViewModelProvider(this).get(ShoppingViewModel.class);
         shoppingAdapter = new ShoppingAdapter();
         shoppingRV.setAdapter(shoppingAdapter);
         shoppingRV.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        ShoppingViewModel shoppingViewModel = new ViewModelProvider(this).get(ShoppingViewModel.class);
         shoppingViewModel.getAllLiveDataShoppingList().observe(getViewLifecycleOwner(), new Observer<List<Shopping>>() {
             @Override
             public void onChanged(List<Shopping> shoppings) {
@@ -62,6 +93,7 @@ public class ShoppingListFragment extends Fragment {
                 }
             }
         });
+
 
 //        shoppingListList.clear();
 //        shoppingListList.addAll(database.shoppingDao().getAll());

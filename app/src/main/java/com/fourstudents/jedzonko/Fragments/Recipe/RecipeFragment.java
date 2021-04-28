@@ -55,18 +55,18 @@ public class RecipeFragment extends Fragment {
         });
 
 
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-
-                if(item.getItemId()==R.id.action_search)
-                {
-
-                }
-
-                return false;
-            }
-        });
+//        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(MenuItem item) {
+//
+//                if(item.getItemId()==R.id.action_search)
+//                {
+//
+//                }
+//
+//                return false;
+//            }
+//        });
     }
 
 

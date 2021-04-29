@@ -12,49 +12,57 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fourstudents.jedzonko.Adapters.ShoppingList.ShoppingAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
+import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder> implements Filterable {
-    Context context;
     private List<Recipe> recipeList;
     private List<Recipe> recipeListFull;
 
-    public RecipeAdapter(Context context, List<Recipe> recipeList) {
-        this.context = context;
-        this.recipeList = recipeList;
-        recipeListFull = new ArrayList<>(recipeList);
+    public RecipeAdapter() {
+        recipeList = new ArrayList<>();
+        recipeListFull = new ArrayList<>();
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
+    public RecipeAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_list, parent, false);
-
-        return new ViewHolder(view);
+        return new RecipeAdapter.ViewHolder(view);
 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(@NonNull RecipeAdapter.ViewHolder viewHolder, final int position) {
         Recipe recipe = recipeList.get(position);
         viewHolder.getTextView().setText(recipe.getTitle());
+        viewHolder.getTagView().setText(recipe.getTitle());
 
 //        viewHolder.getImageView().setImageBitmap(recipe.getData());
 
     }
 
+    public void setRecipeList(final List<Recipe> recipeList) {
+
+        this.recipeList = recipeList;
+        recipeListFull = new ArrayList<>(recipeList);
+        notifyDataSetChanged();
+
+    }
+
     @Override
     public int getItemCount() {
-        return recipeList.size();
+        return recipeList == null ? 0 : recipeList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
+        private final TextView tagView;
         private final ImageView imageView;
 
         public ViewHolder(View view) {
@@ -63,10 +71,15 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
             // Define click listener for the ViewHolder's View
             imageView = (ImageView) view.findViewById(R.id.itemListImageView);
             textView = (TextView) view.findViewById(R.id.itemListTextView);
+            tagView = (TextView) view.findViewById(R.id.itemListTagView);
         }
 
         public TextView getTextView() {
             return textView;
+        }
+
+        public TextView getTagView() {
+            return tagView;
         }
 
         public ImageView getImageView() {

@@ -1,5 +1,6 @@
 package com.fourstudents.jedzonko.Database.Dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -8,6 +9,7 @@ import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.fourstudents.jedzonko.Database.Entities.IngredientProductCrossRef;
+import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
 import com.fourstudents.jedzonko.Database.Entities.RecipeTagCrossRef;
 import com.fourstudents.jedzonko.Database.Relations.RecipeWithIngredientsAndProducts;
@@ -45,4 +47,7 @@ public interface RecipeDao {
 
     @Insert
     void insertRecipeWithTag(RecipeTagCrossRef recipeTagCrossRef);
+
+    @Query("SELECT * FROM Recipe")
+    LiveData<List<Recipe>> getAllLiveData();
 }

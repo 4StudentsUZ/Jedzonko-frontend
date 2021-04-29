@@ -29,17 +29,13 @@ public class ShoppingListFragment extends Fragment {
     }
 
     RecyclerView shoppingRV;
-//    List<Shopping> shoppingListList = new ArrayList<>();
-//    RoomDB database;
     ShoppingAdapter shoppingAdapter;
 
     private void initToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
         toolbar.setTitle(R.string.title_slist);
         toolbar.inflateMenu(R.menu.slist);
-
         toolbar.getMenu();
-
         MenuItem search = toolbar.getMenu().findItem(R.id.action_search);
         SearchView searchView = (SearchView) search.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -50,16 +46,7 @@ public class ShoppingListFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //Do poprawy
-                new CountDownTimer(100, 100) {
-                    public void onFinish() {
-                        shoppingAdapter.getFilter().filter(newText);
-                    }
-                    public void onTick(long millisUntilFinished) {
-
-                    }
-                }.start();
-
+                shoppingAdapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -68,19 +55,13 @@ public class ShoppingListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        shoppingAdapter.notifyDataSetChanged();
-
+        initToolbar(requireView());
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initToolbar(view);
-
-//        database = RoomDB.getInstance(getActivity());
         shoppingRV = view.findViewById(R.id.shoppingRV);
-
-
         ShoppingViewModel shoppingViewModel = new ViewModelProvider(this).get(ShoppingViewModel.class);
         shoppingAdapter = new ShoppingAdapter();
         shoppingRV.setAdapter(shoppingAdapter);
@@ -94,11 +75,6 @@ public class ShoppingListFragment extends Fragment {
             }
         });
 
-
-//        shoppingListList.clear();
-//        shoppingListList.addAll(database.shoppingDao().getAll());
-
-
         view.findViewById(R.id.floatingActionButton_add_sList).setOnClickListener(v ->
                 requireActivity()
                         .getSupportFragmentManager()
@@ -108,5 +84,4 @@ public class ShoppingListFragment extends Fragment {
                         .commit()
         );
     }
-
 }

@@ -3,7 +3,12 @@ package com.fourstudents.jedzonko.Other;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 
+import com.fourstudents.jedzonko.Network.JedzonkoService;
+
 import java.nio.ByteBuffer;
+
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HarryHelperClass {
 

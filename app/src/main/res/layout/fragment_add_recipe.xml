@@ -75,7 +75,7 @@
                 app:layout_constraintTop_toBottomOf="@id/textInputLayout" />
 
             <TextView
-                android:id="@+id/textViewAddRecipeTag"
+                android:id="@+id/showRecipeIngredientsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tagi:"
@@ -87,7 +87,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/ingredientRV" />
 
             <Button
-                android:id="@+id/addIngredientButton"
+                android:id="@+id/showRecipeDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Dodaj składniki"
@@ -103,7 +103,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.51"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addIngredientButton"
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeDescription"
                 app:layout_constraintWidth_max="250dp" />
 
             <Button
@@ -114,10 +114,10 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewAddRecipeTag" />
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeIngredientsTitle" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/tagRV"
+                android:id="@+id/showRecipeIngredientRV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -136,7 +136,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tagRV" />
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeIngredientRV" />
 
             <Button
                 android:id="@+id/addPhotoButton"

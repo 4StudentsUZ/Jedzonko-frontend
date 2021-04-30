@@ -9,7 +9,9 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface JedzonkoService {
 
@@ -23,4 +25,7 @@ public interface JedzonkoService {
 
     @GET("users/all")
     Call<List<RegisterResponse>> getAllUsers(@Body JsonObject object);
+
+    @GET("users/{id}")
+    Call<RegisterResponse> getUser(@Header("Authorization") String token, @Path("id") int id);
 }

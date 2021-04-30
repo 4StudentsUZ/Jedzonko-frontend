@@ -34,7 +34,9 @@ public class MainActivity extends AppCompatActivity {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(JedzonkoService.class);
+    //// Login Auth
     public String token = "";
+    public int userid = -1;
 
 
     @Override

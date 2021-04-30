@@ -1,9 +1,12 @@
 package com.fourstudents.jedzonko.Fragments.Account;
 
 import android.os.Bundle;
+import android.os.Debug;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -18,6 +21,7 @@ import androidx.fragment.app.FragmentManager;
 import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.Network.JedzonkoService;
 import com.fourstudents.jedzonko.Network.Responses.LoginResponse;
+import com.fourstudents.jedzonko.Network.Responses.RegisterResponse;
 import com.fourstudents.jedzonko.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.JsonObject;
@@ -40,11 +44,21 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
     TextView exampleText;
     TextView infoText;
 
+    TextView idusername;
+    TextView usertoken;
+
     JedzonkoService api;
 
 
-    public AccountFragment() {
-        super(R.layout.fragment_account);
+    public AccountFragment() {}
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        int layoutId = R.layout.fragment_account;
+        if (((MainActivity) requireActivity()).token.length() > 0) layoutId = R.layout.fragment_account_profile;
+        return inflater.inflate(layoutId, container, false);
     }
 
     @Override
@@ -69,22 +83,30 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
     }
 
     private void initViewsAuth(View view) {
-        loginButton = view.findViewById(R.id.loginButton);
-        forgotPasswordText = view.findViewById(R.id.forgotPasswordText);
-        registerText = view.findViewById(R.id.registerText);
-        usernameText = view.findViewById(R.id.usernameText);
-        passwordText = view.findViewById(R.id.passwordText);
-        exampleText = view.findViewById(R.id.exampleText);
-        infoText = view.findViewById(R.id.infoText);
+        idusername = view.findViewById(R.id.idusername);
+        usertoken = view.findViewById(R.id.usertoken);
+        Call<RegisterResponse> call = api.getUser("Bearer "+((MainActivity) requireActivity()).token, ((MainActivity) requireActivity()).userid);
+        call.enqueue(new Callback<RegisterResponse>() {
+            @Override
+            public void onResponse(@NotNull Call<RegisterResponse> call, @NotNull Response<RegisterResponse> response) {
+                if (response.isSuccessful()) {
+                    idusername.setText("" + response.body().getId() + " " + response.body().getUsername());
+                    usertoken.setText(((MainActivity) requireActivity()).token);
+                } else if (response.errorBody() != null) {
+                    try {
+                        Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                        Log.i("Harry", response.errorBody().string());
+                    } catch (IOException e) {
+                        Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
 
-        loginButton.setVisibility(View.INVISIBLE);
-        forgotPasswordText.setVisibility(View.INVISIBLE);
-        registerText.setVisibility(View.INVISIBLE);
-        usernameText.setVisibility(View.INVISIBLE);
-        passwordText.setVisibility(View.INVISIBLE);
-        exampleText.setVisibility(View.INVISIBLE);
+            @Override
+            public void onFailure(@NotNull Call<RegisterResponse> call, @NotNull Throwable t) {
 
-        infoText.setText(((MainActivity) requireActivity()).token);
+            }
+        });
     }
 
     private void initViews(View view) {
@@ -94,6 +116,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         usernameText = view.findViewById(R.id.usernameText);
         passwordText = view.findViewById(R.id.passwordText);
         exampleText = view.findViewById(R.id.exampleText);
+        infoText = view.findViewById(R.id.infoText);
 
         exampleText.setOnClickListener(v -> {
             usernameText.setText("sikreto2020@protonmail.com");
@@ -144,6 +167,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         if (response.isSuccessful()) {
             Toast.makeText(requireContext(), "Logowanie pomyślne", Toast.LENGTH_LONG).show();
             ((MainActivity) requireActivity()).token = response.body().getToken();
+            ((MainActivity) requireActivity()).userid = response.body().getId();
             Fragment frg = getParentFragmentManager().findFragmentByTag("root_fragment");
             getParentFragmentManager().beginTransaction().detach(frg).commitNowAllowingStateLoss();
             getParentFragmentManager().beginTransaction().attach(frg).commitAllowingStateLoss();

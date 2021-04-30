@@ -136,13 +136,13 @@ public class AddRecipeFragment extends Fragment implements ProductAdapter.OnProd
         initToolbar(view);
 
         imageView = view.findViewById(R.id.imageView);
-        addIngredientButton = view.findViewById(R.id.addIngredientButton);
+        addIngredientButton = view.findViewById(R.id.showRecipeDescription);
         addTagButton = view.findViewById(R.id.addTagButton);
         database = RoomDB.getInstance(getActivity());
         title = view.findViewById(R.id.editTextTitle);
         description = view.findViewById(R.id. editTextDescription);
         ingredientRV = view.findViewById(R.id.ingredientRV);
-        recipeTagRV = view.findViewById(R.id.tagRV);
+        recipeTagRV = view.findViewById(R.id.showRecipeIngredientRV);
 
         int width = WindowManager.LayoutParams.MATCH_PARENT;
         int height = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -174,7 +174,7 @@ public class AddRecipeFragment extends Fragment implements ProductAdapter.OnProd
 
         tagList.addAll(database.tagDao().getAll());
         tagAdapter = new TagAdapter(getContext(), tagList, this );
-        tagRV = tagDialog.findViewById(R.id.tagRV);
+        tagRV = tagDialog.findViewById(R.id.showRecipeIngredientRV);
         tagRV.setLayoutManager(new LinearLayoutManager(getContext()));
         tagRV.setAdapter(tagAdapter);
 

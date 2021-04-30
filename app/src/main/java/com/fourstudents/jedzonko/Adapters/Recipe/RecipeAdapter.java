@@ -23,17 +23,20 @@ import java.util.List;
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder> implements Filterable {
     private List<Recipe> recipeList;
     private List<Recipe> recipeListFull;
+    private final OnRecipeListener onRecipeListener;
 
-    public RecipeAdapter() {
+
+    public RecipeAdapter(OnRecipeListener onRecipeListener) {
         recipeList = new ArrayList<>();
         recipeListFull = new ArrayList<>();
+        this.onRecipeListener=onRecipeListener;
     }
 
     @NonNull
     @Override
     public RecipeAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_list, parent, false);
-        return new RecipeAdapter.ViewHolder(view);
+        return new RecipeAdapter.ViewHolder(view, onRecipeListener);
 
     }
 
@@ -43,7 +46,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         viewHolder.getTextView().setText(recipe.getTitle());
         viewHolder.getTagView().setText(recipe.getTitle());
 
-//        viewHolder.getImageView().setImageBitmap(recipe.getData());
+       // viewHolder.getImageView().setImageBitmap(recipe.getData());
 
     }
 
@@ -60,18 +63,21 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         return recipeList == null ? 0 : recipeList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener {
         private final TextView textView;
         private final TextView tagView;
         private final ImageView imageView;
+        OnRecipeListener onRecipeListener;
 
-        public ViewHolder(View view) {
+        public ViewHolder(View view, OnRecipeListener onRecipeListener) {
             super(view);
 
             // Define click listener for the ViewHolder's View
             imageView = (ImageView) view.findViewById(R.id.itemListImageView);
             textView = (TextView) view.findViewById(R.id.itemListTextView);
             tagView = (TextView) view.findViewById(R.id.itemListTagView);
+            this.onRecipeListener = onRecipeListener;
+            itemView.setOnClickListener(this);
         }
 
         public TextView getTextView() {
@@ -84,6 +90,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
 
         public ImageView getImageView() {
             return imageView;
+        }
+
+        @Override
+        public void onClick(View v) {
+            onRecipeListener.onRecipeClick(getAbsoluteAdapterPosition());
         }
     }
 
@@ -126,4 +137,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
             notifyDataSetChanged();
         }
     };
+    public Recipe getRecipe(int position){
+        return recipeList.get(position);
+    }
+
+    public interface OnRecipeListener {
+        void onRecipeClick(int position);
+    }
 }

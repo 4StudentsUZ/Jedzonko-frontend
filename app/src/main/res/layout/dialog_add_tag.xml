@@ -11,14 +11,14 @@
         android:text="Tagi:"
         android:textColor="#16B60A"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/tagRV"
+        app:layout_constraintBottom_toTopOf="@+id/showRecipeIngredientRV"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tagRV"
+        android:id="@+id/showRecipeIngredientRV"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/addTagButton"
@@ -38,7 +38,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/addTagsButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tagRV" />
+        app:layout_constraintTop_toBottomOf="@+id/showRecipeIngredientRV" />
 
 
     <Button
@@ -51,7 +51,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/addTagButton"
-        app:layout_constraintTop_toBottomOf="@+id/tagRV" />
+        app:layout_constraintTop_toBottomOf="@+id/showRecipeIngredientRV" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

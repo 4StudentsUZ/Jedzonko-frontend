@@ -7,10 +7,11 @@ import androidx.room.Entity;
 
 import androidx.room.*;
 
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity(tableName = "recipe")
-public class Recipe{
+public class Recipe implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private long recipeId;
 

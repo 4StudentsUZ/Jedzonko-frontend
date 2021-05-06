@@ -2,12 +2,15 @@ package com.fourstudents.jedzonko.Fragments.Shop;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import com.fourstudents.jedzonko.Fragments.Recipe.AddTagFragment;
+import com.fourstudents.jedzonko.Fragments.Recipe.EditRecipeFragment;
 import com.fourstudents.jedzonko.R;
 
 public class ShopsFragment extends Fragment {
@@ -21,5 +24,18 @@ public class ShopsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
         toolbar.setTitle(R.string.title_shops);
+        Button editRecipeButton = view.findViewById(R.id.editButton);
+
+        editRecipeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requireActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainFrameLayout, new EditRecipeFragment(), "EditRecipeFragment")
+                        .addToBackStack("EditRecipeFragment")
+                        .commit();
+            }
+        });
     }
 }

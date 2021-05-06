@@ -10,12 +10,15 @@ import com.fourstudents.jedzonko.Database.Entities.Product;
 
 import java.util.List;
 
+import static androidx.room.ForeignKey.CASCADE;
+
 public class IngredientsWithProducts {
     @Embedded
     public Ingredient ingredient;
     @Relation(
             parentColumn = "ingredientId",
             entityColumn = "productId",
+
             associateBy = @Junction(IngredientProductCrossRef.class)
     )
     public List<Product> products;

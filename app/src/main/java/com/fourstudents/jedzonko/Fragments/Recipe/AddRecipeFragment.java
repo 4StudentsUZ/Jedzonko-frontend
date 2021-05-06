@@ -86,7 +86,7 @@ public class AddRecipeFragment extends Fragment implements ProductAdapter.OnProd
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
-                if(item.getItemId()==R.id.action_save_note)
+                if(item.getItemId()==R.id.action_save_recipe)
                 {
                     actionSaveRecipe();
                 }

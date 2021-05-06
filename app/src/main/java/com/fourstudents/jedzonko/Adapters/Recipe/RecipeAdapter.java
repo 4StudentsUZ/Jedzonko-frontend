@@ -8,6 +8,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,7 +45,14 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
     public void onBindViewHolder(@NonNull RecipeAdapter.ViewHolder viewHolder, final int position) {
         Recipe recipe = recipeList.get(position);
         viewHolder.getTextView().setText(recipe.getTitle());
-        viewHolder.getTagView().setText(recipe.getTitle());
+        viewHolder.getTagView().setText(recipe.getDescription());
+
+//        viewHolder.getTextView().setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
 
        // viewHolder.getImageView().setImageBitmap(recipe.getData());
 

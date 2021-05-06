@@ -38,15 +38,28 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-           <TextView
-               android:id="@+id/showRecipeTags"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:text="Tagi"
+            <TextView
+                android:id="@+id/showRecipeDescTags"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tagi:"
+                android:textColor="#16B60A"
+                android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/showRecipeTitle"/>
+                app:layout_constraintTop_toBottomOf="@id/showRecipeDescription" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/showRecipeTagRV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeDescTags"
+                app:layout_constraintWidth_max="200dp" />
 
             <TextView
                 android:id="@+id/showRecipeDescTitle"
@@ -58,7 +71,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/imageView" />
+                app:layout_constraintTop_toBottomOf="@id/showRecipeTitle" />
             <TextView
                 android:id="@+id/showRecipeDescription"
                 android:layout_width="wrap_content"
@@ -79,7 +92,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/showRecipeDescription" />
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeTagRV" />
 
 
             <androidx.recyclerview.widget.RecyclerView
@@ -92,6 +105,18 @@
                 app:layout_constraintTop_toBottomOf="@+id/showRecipeIngredientsTitle"
                 app:layout_constraintWidth_max="200dp" />
 
+            <TextView
+                android:id="@+id/showRecipeDescImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Zdjęcie:"
+                android:textColor="#16B60A"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeIngredientRV" />
+
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
@@ -101,7 +126,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/showRecipeTags" />
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeDescImage" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

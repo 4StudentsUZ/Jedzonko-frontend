@@ -73,7 +73,7 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
     ImageView imageView;
     IngredientItemViewModel ingredientItemViewModel;
     TagViewModel tagViewModel;
-    int recipeId=4;
+    long recipeId;
 
 
     public EditRecipeFragment() {super(R.layout.fragment_edit_recipe);}
@@ -94,7 +94,7 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
-                if(item.getItemId()==R.id.action_save_note)
+                if(item.getItemId()==R.id.action_save_recipe)
                 {
                     actionEditRecipe();
                 }
@@ -142,6 +142,9 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initToolbar(view);
+
+        Bundle bundle = getArguments();
+        recipeId= bundle.getLong("recipeId");
 
         imageView = view.findViewById(R.id.imageView);
         addIngredientButton = view.findViewById(R.id.showRecipeDescription);
@@ -324,10 +327,16 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
             tagViewModel.clearTagList();
             ((MainActivity) requireActivity()).imageData = null;
             imageView.setImageResource(R.drawable.test_drawable);
-            Toast.makeText(getContext(), "Dodano przepis", Toast.LENGTH_SHORT).show();
-            getParentFragmentManager().popBackStack();
+            Toast.makeText(getContext(), "Zapisano zmiany", Toast.LENGTH_SHORT).show();
+            requireActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.mainFrameLayout, new RecipeFragment(), "RecipeFragment")
+                    .addToBackStack("RecipeFragment")
+                    .commit();
         }
         productRV.setAdapter(productAdapter);
+
     }
     boolean checkData(){
         if(title.getText().toString().equals("") || description.getText().toString().equals("")|| ingredientItemViewModel.getIngredientItemsListSize()==0 || !ingredientItemViewModel.isQuantityFilled() ){
@@ -396,6 +405,7 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
     @Override
     public void onIngredientItemDeleteClick(int position) {
         IngredientItem ingredientItem = ingredientItemViewModel.getIngredientItem(position);
+        ingredientItem.setQuantity("");
         ingredientItemViewModel.removeIngredientItem(ingredientItem);
     }
 

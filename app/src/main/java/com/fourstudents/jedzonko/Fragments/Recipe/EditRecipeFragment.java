@@ -73,7 +73,7 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
     ImageView imageView;
     IngredientItemViewModel ingredientItemViewModel;
     TagViewModel tagViewModel;
-    int recipeId=5;
+    int recipeId=4;
 
 
     public EditRecipeFragment() {super(R.layout.fragment_edit_recipe);}
@@ -401,7 +401,10 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
 
     @Override
     public void onTextChange(int position, CharSequence s) {
-        ingredientItemViewModel.getIngredientItem(position).quantity=s.toString();
+        IngredientItem ingredientItem = ingredientItemViewModel.getIngredientItem(position);
+        if (ingredientItem != null) {
+            ingredientItem.setQuantity(s.toString());
+        }
     }
 
     @Override

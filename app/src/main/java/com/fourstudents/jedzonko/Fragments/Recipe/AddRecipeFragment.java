@@ -347,7 +347,10 @@ public class AddRecipeFragment extends Fragment implements ProductAdapter.OnProd
 
     @Override
     public void onTextChange(int position, CharSequence s) {
-        ingredientItemViewModel.getIngredientItem(position).setQuantity(s.toString());
+        IngredientItem ingredientItem = ingredientItemViewModel.getIngredientItem(position);
+        if (ingredientItem != null) {
+            ingredientItem.setQuantity(s.toString());
+        }
     }
 
     @Override

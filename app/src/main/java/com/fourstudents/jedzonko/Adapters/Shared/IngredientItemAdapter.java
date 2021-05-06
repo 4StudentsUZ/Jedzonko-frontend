@@ -69,7 +69,8 @@ public class IngredientItemAdapter extends ListAdapter<IngredientItem, Ingredien
                 holder.editText.getText();
             }
         });
-       if(ingredientItem.getQuantity()!=null && !ingredientItem.getQuantity().equals("")) holder.editText.setText(ingredientItem.getQuantity()); // <--- TUTAJ
+       //if(ingredientItem.getQuantity()!=null && !ingredientItem.getQuantity().equals(""))
+         holder.editText.setText(ingredientItem.getQuantity()); // <--- TUTAJ
     }
 
     public static class ViewHolderClass extends RecyclerView.ViewHolder implements  View.OnClickListener{

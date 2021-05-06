@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,6 +43,7 @@ public class ShowRecipeFragment extends Fragment implements  TagAdapter.OnTagLis
     TagAdapter tagAdapter;
     List<IngredientItem> ingredientItemList = new ArrayList<>();
     List<Tag> tagList= new ArrayList<>();
+    Recipe recipe;
 
     public ShowRecipeFragment(){super(R.layout.fragment_show_recipe);}
 
@@ -63,7 +65,20 @@ public class ShowRecipeFragment extends Fragment implements  TagAdapter.OnTagLis
 
                 if(item.getItemId()==R.id.action_edit_recipe)
                 {
-                   // tutaj odpalić fragment edycji
+                    FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    EditRecipeFragment editRecipeFragment = new EditRecipeFragment();
+
+                    Bundle recipeBundle = new Bundle();
+                    long recipeId = recipe.getRecipeId();
+                    recipeBundle.putLong("recipeId", recipeId);
+                    editRecipeFragment.setArguments(recipeBundle);
+                    requireActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.mainFrameLayout, editRecipeFragment, "EditRecipeFragment")
+                            .addToBackStack("EditRecipeFragment")
+                            .commit();
                 }
                 return false;
             }
@@ -85,6 +100,7 @@ public class ShowRecipeFragment extends Fragment implements  TagAdapter.OnTagLis
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         initToolbar(view);
         database = RoomDB.getInstance(getActivity());
         ingredientItemAdapter = new IngredientItemAdapter(getContext(), this);
@@ -93,7 +109,8 @@ public class ShowRecipeFragment extends Fragment implements  TagAdapter.OnTagLis
         RecyclerView tagRV = view.findViewById(R.id.showRecipeTagRV);
 
         Bundle bundle = getArguments();
-        Recipe recipe= (Recipe) bundle.getSerializable("recipe");
+        recipe= (Recipe) bundle.getSerializable("recipe");
+
         TextView recipeTitle = view.findViewById(R.id.showRecipeTitle);
         TextView recipeDescription = view.findViewById(R.id.showRecipeDescription);
         ImageView recipeImage = view.findViewById(R.id.imageView);
@@ -103,16 +120,18 @@ public class ShowRecipeFragment extends Fragment implements  TagAdapter.OnTagLis
         Bitmap recipePhoto = BitmapFactory.decodeByteArray(data,0,data.length);
         recipeImage.setImageBitmap(recipePhoto);
 
-        getRecipeData(recipe, view);
+        getRecipeData(recipe);
 
         ingredientRV.setLayoutManager(new LinearLayoutManager(getContext()));
         ingredientRV.setAdapter(ingredientItemAdapter);
         ingredientItemAdapter.submitList(ingredientItemList);
         tagRV.setLayoutManager(new LinearLayoutManager(getContext()));
         tagRV.setAdapter(tagAdapter);
+
+
     }
 
-    public void getRecipeData(Recipe recipe, View view){
+    public void getRecipeData(Recipe recipe){
         List<RecipesWithTags> recipesWithTags = database.recipeDao().getRecipesWithTags();
         List<RecipeWithIngredientsAndProducts> recipesWithIngredientsAndProducts = database.recipeDao().getRecipesWithIngredientsAndProducts();
         for(RecipesWithTags recipeWithTags : recipesWithTags){
@@ -137,6 +156,13 @@ public class ShowRecipeFragment extends Fragment implements  TagAdapter.OnTagLis
             }
         }
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        tagList.clear();
+        ingredientItemList.clear();
     }
 
     @Override

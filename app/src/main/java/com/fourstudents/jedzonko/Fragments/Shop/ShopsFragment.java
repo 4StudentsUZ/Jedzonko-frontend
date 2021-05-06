@@ -24,18 +24,5 @@ public class ShopsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
         toolbar.setTitle(R.string.title_shops);
-        Button editRecipeButton = view.findViewById(R.id.editButton);
-
-        editRecipeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requireActivity()
-                        .getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.mainFrameLayout, new EditRecipeFragment(), "EditRecipeFragment")
-                        .addToBackStack("EditRecipeFragment")
-                        .commit();
-            }
-        });
     }
 }

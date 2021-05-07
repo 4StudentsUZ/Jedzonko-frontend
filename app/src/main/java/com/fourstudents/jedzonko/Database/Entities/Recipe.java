@@ -7,12 +7,15 @@ import androidx.room.Entity;
 
 import androidx.room.*;
 
+import java.io.Serializable;
 import java.util.Set;
 
+import static androidx.room.ForeignKey.CASCADE;
+
 @Entity(tableName = "recipe")
-public class Recipe{
+public class Recipe implements Serializable {
     @PrimaryKey(autoGenerate = true)
-    private long recipeId;
+    private long  recipeId;
 
     @ColumnInfo(name = "title")
     private String title;

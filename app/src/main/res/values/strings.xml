@@ -28,4 +28,5 @@
     <string name="shopping_list_product_header">Produkty:</string>
     <string name="shopping_list_edit_products_button">Edytuj produkty</string>
     <string name="title_register_account">Zarejestruj się</string>
+    <string name="edit_recipe">Edytuj przepis</string>
 </resources>

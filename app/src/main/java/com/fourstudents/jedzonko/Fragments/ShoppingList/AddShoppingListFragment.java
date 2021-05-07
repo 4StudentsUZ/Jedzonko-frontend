@@ -86,7 +86,7 @@ public class AddShoppingListFragment extends Fragment implements ProductAdapter.
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
-                if (item.getItemId() == R.id.action_save_note)
+                if (item.getItemId() == R.id.action_save_recipe)
                 {
                     menuSaveButtonPressed();
                 }

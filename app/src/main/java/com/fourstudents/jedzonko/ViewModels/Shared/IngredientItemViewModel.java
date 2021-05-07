@@ -46,6 +46,7 @@ public class IngredientItemViewModel extends ViewModel {
 
     public IngredientItem getIngredientItem(int position){
         List<IngredientItem> ingredientItems = ingredientItemList.getValue();
+        if (position >= ingredientItems.size()) return null;
         IngredientItem ingredientItem = ingredientItems.get(position);
         return ingredientItem;
     }

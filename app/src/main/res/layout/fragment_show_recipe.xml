@@ -39,27 +39,17 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/showRecipeDescTags"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tagi:"
-                android:textColor="#16B60A"
-                android:textSize="24sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/showRecipeDescription" />
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/showRecipeTagRV"
+                android:id="@+id/showRecipeTagsString"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="Tagi przepisu"
+                android:textAlignment="center"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_bias="0.1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/showRecipeDescTags"
-                app:layout_constraintWidth_max="200dp" />
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeTitle" />
+
+
 
             <TextView
                 android:id="@+id/showRecipeDescTitle"
@@ -68,10 +58,11 @@
                 android:text="Opis:"
                 android:textColor="#16B60A"
                 android:textSize="24sp"
+
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/showRecipeTitle" />
+                app:layout_constraintTop_toBottomOf="@id/showRecipeTagsString" />
             <TextView
                 android:id="@+id/showRecipeDescription"
                 android:layout_width="wrap_content"
@@ -92,7 +83,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/showRecipeTagRV" />
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeDescription" />
 
 
             <androidx.recyclerview.widget.RecyclerView

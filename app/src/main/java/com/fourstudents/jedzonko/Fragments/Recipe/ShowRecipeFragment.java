@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fourstudents.jedzonko.Adapters.Recipe.ShowIngredientItemAdapter;
 import com.fourstudents.jedzonko.Adapters.Recipe.TagAdapter;
 import com.fourstudents.jedzonko.Adapters.Shared.IngredientItemAdapter;
 import com.fourstudents.jedzonko.Adapters.Shared.ProductAdapter;
@@ -37,12 +38,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ShowRecipeFragment extends Fragment implements  TagAdapter.OnTagListener, IngredientItemAdapter.OnIngredientItemListener {
+public class ShowRecipeFragment extends Fragment{
     RoomDB database;
-    IngredientItemAdapter ingredientItemAdapter;
-    TagAdapter tagAdapter;
+    ShowIngredientItemAdapter showIngredientItemAdapter;
+
     List<IngredientItem> ingredientItemList = new ArrayList<>();
-    List<Tag> tagList= new ArrayList<>();
+
     Recipe recipe;
 
     public ShowRecipeFragment(){super(R.layout.fragment_show_recipe);}
@@ -103,15 +104,17 @@ public class ShowRecipeFragment extends Fragment implements  TagAdapter.OnTagLis
 
         initToolbar(view);
         database = RoomDB.getInstance(getActivity());
-        ingredientItemAdapter = new IngredientItemAdapter(getContext(), this);
-        tagAdapter = new TagAdapter(getContext(), tagList, this );
+        showIngredientItemAdapter = new ShowIngredientItemAdapter(getContext());
+
         RecyclerView ingredientRV = view.findViewById(R.id.showRecipeIngredientRV);
-        RecyclerView tagRV = view.findViewById(R.id.showRecipeTagRV);
+
 
         Bundle bundle = getArguments();
         recipe= (Recipe) bundle.getSerializable("recipe");
 
+
         TextView recipeTitle = view.findViewById(R.id.showRecipeTitle);
+
         TextView recipeDescription = view.findViewById(R.id.showRecipeDescription);
         ImageView recipeImage = view.findViewById(R.id.imageView);
         recipeTitle.setText(recipe.getTitle());
@@ -120,27 +123,30 @@ public class ShowRecipeFragment extends Fragment implements  TagAdapter.OnTagLis
         Bitmap recipePhoto = BitmapFactory.decodeByteArray(data,0,data.length);
         recipeImage.setImageBitmap(recipePhoto);
 
-        getRecipeData(recipe);
+        getRecipeData(recipe, view);
 
         ingredientRV.setLayoutManager(new LinearLayoutManager(getContext()));
-        ingredientRV.setAdapter(ingredientItemAdapter);
-        ingredientItemAdapter.submitList(ingredientItemList);
-        tagRV.setLayoutManager(new LinearLayoutManager(getContext()));
-        tagRV.setAdapter(tagAdapter);
+        ingredientRV.setAdapter(showIngredientItemAdapter);
+        showIngredientItemAdapter.submitList(ingredientItemList);
+
 
 
     }
 
-    public void getRecipeData(Recipe recipe){
+    public void getRecipeData(Recipe recipe, View view){
         List<RecipesWithTags> recipesWithTags = database.recipeDao().getRecipesWithTags();
         List<RecipeWithIngredientsAndProducts> recipesWithIngredientsAndProducts = database.recipeDao().getRecipesWithIngredientsAndProducts();
+        TextView recipeTags = view.findViewById(R.id.showRecipeTagsString);
+        String conctString ="";
         for(RecipesWithTags recipeWithTags : recipesWithTags){
             if(recipeWithTags.recipe.getRecipeId() == recipe.getRecipeId()){
                 for(Tag tag: recipeWithTags.tags){
-                    tagList.add(tag);
+                    conctString = conctString + "" + tag.getName();
+
                 }
             }
         }
+        recipeTags.setText(conctString);
 
         for(RecipeWithIngredientsAndProducts recipeWithIngredientsAndProducts : recipesWithIngredientsAndProducts){
             if(recipeWithIngredientsAndProducts.recipe.getRecipeId() == recipe.getRecipeId()){
@@ -161,22 +167,8 @@ public class ShowRecipeFragment extends Fragment implements  TagAdapter.OnTagLis
     @Override
     public void onPause() {
         super.onPause();
-        tagList.clear();
         ingredientItemList.clear();
     }
 
-    @Override
-    public void onIngredientItemDeleteClick(int position) {
 
-    }
-
-    @Override
-    public void onTextChange(int position, CharSequence s) {
-
-    }
-
-    @Override
-    public void onTagClick(int position) {
-
-    }
 }

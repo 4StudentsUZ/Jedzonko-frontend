@@ -12,7 +12,11 @@ import com.fourstudents.jedzonko.Fragments.Recipe.RecipeFragment;
 import com.fourstudents.jedzonko.Fragments.Search.SearchFragment;
 import com.fourstudents.jedzonko.Fragments.ShoppingList.ShoppingListFragment;
 import com.fourstudents.jedzonko.Fragments.Shop.ShopsFragment;
+import com.fourstudents.jedzonko.Network.JedzonkoService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,8 +24,20 @@ public class MainActivity extends AppCompatActivity {
     private MenuItem menuItem;
 
     // Fragment related variables
+    //// AddRecipe Photo Data
     public byte[] imageData = null;
     public Integer imageRotation = null;
+    //// Instance of JedzonkoService
+    public JedzonkoService api =
+            new Retrofit.Builder()
+            .baseUrl(JedzonkoService.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(JedzonkoService.class);
+    //// Login Auth
+    public String token = "";
+    public int userid = -1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         Fragment shoppingListFragment = new ShoppingListFragment();
         Fragment recipesFragment = new RecipeFragment();
         Fragment shopsFragment = new ShopsFragment();
-        Fragment accountFragment = new AccountFragment();
+//        Fragment accountFragment = new AccountFragment();
 
         ((BottomNavigationView) findViewById(R.id.bottomNavigationView)).setOnNavigationItemSelectedListener(item -> {
             if (menuItem != null) {
@@ -66,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                     setCurrentFragment(shopsFragment);
                     break;
                 case R.id.navAccount:
-                    setCurrentFragment(accountFragment);
+                    setCurrentFragment(new AccountFragment());
                     break;
             }
             menuItem = item;
@@ -84,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
             fragmentManager.popBackStack(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentManager
                     .beginTransaction()
-                    .replace(R.id.mainFrameLayout, fragment)
+                    .replace(R.id.mainFrameLayout, fragment, BACK_STACK_ROOT_TAG)
                     .addToBackStack(BACK_STACK_ROOT_TAG)
                     .commit();
         }

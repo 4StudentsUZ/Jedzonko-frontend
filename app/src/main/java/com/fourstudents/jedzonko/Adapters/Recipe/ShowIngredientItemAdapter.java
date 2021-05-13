@@ -52,9 +52,7 @@ public class ShowIngredientItemAdapter extends ListAdapter<IngredientItem, ShowI
         IngredientItem ingredientItem = getItem(position);
         holder.textView.setText(ingredientItem.product.getName());
         holder.countTextView.setVisibility(View.VISIBLE);
-        holder.countTextView.setText(ingredientItem.getQuantity()); // <--- TUTAJ
-
-
+        holder.countTextView.setText(ingredientItem.getQuantity());
     }
 
     public static class ViewHolderClass extends RecyclerView.ViewHolder{
@@ -62,19 +60,11 @@ public class ShowIngredientItemAdapter extends ListAdapter<IngredientItem, ShowI
         TextView textView;
         TextView countTextView;
 
-
-
         public ViewHolderClass(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.itemListImageView);
             textView = itemView.findViewById(R.id.itemListTextView);
             countTextView = itemView.findViewById(R.id.itemListCountText);
-
-
-
         }
-
-
     }
-
 }

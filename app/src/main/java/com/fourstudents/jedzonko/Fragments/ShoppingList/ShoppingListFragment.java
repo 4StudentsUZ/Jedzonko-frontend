@@ -10,26 +10,33 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fourstudents.jedzonko.Adapters.Recipe.RecipeAdapter;
 import com.fourstudents.jedzonko.Adapters.ShoppingList.ShoppingAdapter;
+import com.fourstudents.jedzonko.Database.Entities.Recipe;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
+import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.Fragments.Recipe.ShowRecipeFragment;
 import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.ShoppingList.ShoppingViewModel;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ShoppingListFragment extends Fragment {
+public class ShoppingListFragment extends Fragment implements ShoppingAdapter.OnShoppingListListener{
+
+    RoomDB database;
+    RecyclerView shoppingRV;
+    ShoppingAdapter shoppingAdapter;
 
     public ShoppingListFragment() {
         super(R.layout.fragment_shopping_list);
     }
-
-    RecyclerView shoppingRV;
-    ShoppingAdapter shoppingAdapter;
 
     private void initToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
@@ -63,7 +70,7 @@ public class ShoppingListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         shoppingRV = view.findViewById(R.id.shoppingRV);
         ShoppingViewModel shoppingViewModel = new ViewModelProvider(this).get(ShoppingViewModel.class);
-        shoppingAdapter = new ShoppingAdapter();
+        shoppingAdapter = new ShoppingAdapter(this);
         shoppingRV.setAdapter(shoppingAdapter);
         shoppingRV.setLayoutManager(new LinearLayoutManager(getContext()));
         shoppingViewModel.getAllLiveDataShoppingList().observe(getViewLifecycleOwner(), new Observer<List<Shopping>>() {
@@ -83,5 +90,29 @@ public class ShoppingListFragment extends Fragment {
                         .addToBackStack("AddShoppingListFragment")
                         .commit()
         );
+    }
+
+    @Override
+    public void onShoppingListDeleteClick(int position) {
+//        Shopping shoppingList = shoppingAdapter.getShoppingList(position);
+//        database.shoppingDao().delete(shoppingList);
+    }
+
+    @Override
+    public void onShoppingListClick(int position) {
+        FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ShowShoppingListFragment showShoppingListFragment = new ShowShoppingListFragment();
+
+        Bundle recipeBundle = new Bundle();
+        Shopping shoppingList = shoppingAdapter.getShoppingList(position);
+        recipeBundle.putSerializable("shoppingList", shoppingList);
+        showShoppingListFragment.setArguments(recipeBundle);
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.mainFrameLayout, showShoppingListFragment, "ShowShoppingListFragment")
+                .addToBackStack("ShowShoppingListFragment")
+                .commit();
     }
 }

@@ -232,7 +232,10 @@ public class AddShoppingListFragment extends Fragment implements ProductAdapter.
 
     @Override
     public void onTextChange(int position, CharSequence s) {
-        ingredientItemViewModel.getIngredientItem(position).quantity=s.toString();
+        IngredientItem ingredientItem = ingredientItemViewModel.getIngredientItem(position);
+        if (ingredientItem != null) {
+            ingredientItem.setQuantity(s.toString());
+        }
     }
 }
 

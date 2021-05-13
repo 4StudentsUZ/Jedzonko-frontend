@@ -16,8 +16,11 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fourstudents.jedzonko.Adapters.Recipe.ShowIngredientItemAdapter;
 import com.fourstudents.jedzonko.Adapters.Recipe.TagAdapter;
@@ -41,9 +44,9 @@ import java.util.List;
 public class ShowRecipeFragment extends Fragment{
     RoomDB database;
     ShowIngredientItemAdapter showIngredientItemAdapter;
-
     List<IngredientItem> ingredientItemList = new ArrayList<>();
-
+    RatingBar ratingBar;
+    Button rateButton;
     Recipe recipe;
 
     public ShowRecipeFragment(){super(R.layout.fragment_show_recipe);}
@@ -114,7 +117,8 @@ public class ShowRecipeFragment extends Fragment{
 
 
         TextView recipeTitle = view.findViewById(R.id.showRecipeTitle);
-
+        ratingBar = view.findViewById(R.id.ratingBar);
+        rateButton = view.findViewById(R.id.rateButton);
         TextView recipeDescription = view.findViewById(R.id.showRecipeDescription);
         ImageView recipeImage = view.findViewById(R.id.imageView);
         recipeTitle.setText(recipe.getTitle());
@@ -129,7 +133,18 @@ public class ShowRecipeFragment extends Fragment{
         ingredientRV.setAdapter(showIngredientItemAdapter);
         showIngredientItemAdapter.submitList(ingredientItemList);
 
+        rateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ratingBar.getRating()==0){
+                    Toast.makeText(getContext(),"Brak oceny", Toast.LENGTH_SHORT).show();
+                }else{
+                    String r= String.valueOf(ratingBar.getRating());
+                    Toast.makeText(getContext(),"Oceniłeś na: " +r, Toast.LENGTH_SHORT).show();
+                }
 
+            }
+        });
 
     }
 

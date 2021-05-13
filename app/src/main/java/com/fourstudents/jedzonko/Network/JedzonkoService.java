@@ -28,4 +28,5 @@ public interface JedzonkoService {
 
     @GET("users/{id}")
     Call<RegisterResponse> getUser(@Header("Authorization") String token, @Path("id") int id);
+
 }

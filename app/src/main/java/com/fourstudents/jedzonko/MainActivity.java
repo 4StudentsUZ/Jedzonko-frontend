@@ -15,6 +15,14 @@ import com.fourstudents.jedzonko.Fragments.Shop.ShopsFragment;
 import com.fourstudents.jedzonko.Network.JedzonkoService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+
+import okhttp3.Credentials;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -23,6 +31,23 @@ public class MainActivity extends AppCompatActivity {
     private static final String BACK_STACK_ROOT_TAG = "root_fragment";
     private MenuItem menuItem;
 
+    //Http interceptor
+    OkHttpClient okHttpClient = new OkHttpClient().newBuilder().addInterceptor(new Interceptor() {
+        @NotNull
+        @Override
+        public okhttp3.Response intercept(@NotNull Interceptor.Chain chain) throws IOException {
+            Request originalRequest = chain.request();
+            String currentToken = originalRequest.header("Authorization");
+
+            Request.Builder builder =
+                    originalRequest
+                        .newBuilder()
+                        .header("Authorization", "Bearer " + currentToken);
+
+            Request newRequest = builder.build();
+            return chain.proceed(newRequest);
+        }
+    }).build();
     // Fragment related variables
     //// AddRecipe Photo Data
     public byte[] imageData = null;
@@ -32,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
             new Retrofit.Builder()
             .baseUrl(JedzonkoService.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
             .build()
             .create(JedzonkoService.class);
     //// Login Auth

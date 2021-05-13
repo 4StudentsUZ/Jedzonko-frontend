@@ -283,7 +283,7 @@ public class AddRecipeFragment extends Fragment implements ProductAdapter.OnProd
             recipe.setTitle(title.getText().toString().trim());
             recipe.setDescription(description.getText().toString().trim());
             recipe.setData(data);
-            recipe.setAuthor("Me");
+            recipe.setRemoteId(-1);
             database.recipeDao().insert(recipe);
             int recipeId = database.recipeDao().getLastId();
 

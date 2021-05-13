@@ -8,13 +8,13 @@ import com.fourstudents.jedzonko.Database.Dao.RecipeDao;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
 import com.fourstudents.jedzonko.Database.Relations.RecipesWithTags;
 import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
 
 import java.util.List;
 
 public class RecipeRepository {
     private final RecipeDao recipeDao;
     private final LiveData<List<Recipe>> allLiveDataRecipeList;
-
     private final List<RecipesWithTags> recipesWithTagsRecipeList;
 
     public RecipeRepository(Application application) {

@@ -17,14 +17,14 @@ public class Recipe implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private long  recipeId;
 
+    @ColumnInfo(name = "remoteId")
+    private long remoteId;
+
     @ColumnInfo(name = "title")
     private String title;
 
     @ColumnInfo(name = "description")
     private String description;
-
-    @ColumnInfo(name = "author")
-    private String author;
 
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
     private byte[] data;
@@ -53,14 +53,6 @@ public class Recipe implements Serializable {
           this.description = description;
     }
 
-    public String getAuthor() {
-          return author;
-    }
-
-    public void setAuthor(String author) {
-          this.author = author;
-    }
-
     public byte[] getData() {
           return data;
     }
@@ -68,5 +60,13 @@ public class Recipe implements Serializable {
     public void setData(byte[] data) {
               this.data = data;
        }
+
+    public long getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(long remoteId) {
+        this.remoteId = remoteId;
+    }
 }
 

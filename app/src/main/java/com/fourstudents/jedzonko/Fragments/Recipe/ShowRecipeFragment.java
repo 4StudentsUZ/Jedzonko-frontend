@@ -23,10 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fourstudents.jedzonko.Adapters.Recipe.ShowIngredientItemAdapter;
-import com.fourstudents.jedzonko.Adapters.Recipe.TagAdapter;
-import com.fourstudents.jedzonko.Adapters.Shared.IngredientItemAdapter;
-import com.fourstudents.jedzonko.Adapters.Shared.ProductAdapter;
-import com.fourstudents.jedzonko.Database.Entities.Ingredient;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
@@ -34,20 +30,38 @@ import com.fourstudents.jedzonko.Database.Relations.IngredientsWithProducts;
 import com.fourstudents.jedzonko.Database.Relations.RecipeWithIngredientsAndProducts;
 import com.fourstudents.jedzonko.Database.Relations.RecipesWithTags;
 import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.MainActivity;
+import com.fourstudents.jedzonko.Network.JedzonkoService;
+import com.fourstudents.jedzonko.Network.Responses.ProductResponse;
+import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class ShowRecipeFragment extends Fragment{
+
+public class ShowRecipeFragment extends Fragment implements Callback<ProductResponse>{
     RoomDB database;
     ShowIngredientItemAdapter showIngredientItemAdapter;
     List<IngredientItem> ingredientItemList = new ArrayList<>();
-    RatingBar ratingBar;
-    Button rateButton;
     Recipe recipe;
+    MainActivity activity;
+    JedzonkoService api;
+    List<Long> productsId = new ArrayList<>();
 
     public ShowRecipeFragment(){super(R.layout.fragment_show_recipe);}
 
@@ -56,6 +70,8 @@ public class ShowRecipeFragment extends Fragment{
         toolbar.setTitle("Przepis");
         toolbar.inflateMenu(R.menu.show_recipe);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        activity = ((MainActivity) requireActivity());
+        if (activity.token.length() > 0 && recipe.getRemoteId()==-1) toolbar.getMenu().getItem(0).setVisible(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,6 +99,12 @@ public class ShowRecipeFragment extends Fragment{
                             .replace(R.id.mainFrameLayout, editRecipeFragment, "EditRecipeFragment")
                             .addToBackStack("EditRecipeFragment")
                             .commit();
+                }else if(item.getItemId()==R.id.action_share_recipe){
+                    try {
+                        shareRecipeMain();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
                 return false;
             }
@@ -104,21 +126,16 @@ public class ShowRecipeFragment extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        Bundle bundle = getArguments();
+        recipe= (Recipe) bundle.getSerializable("recipe");
         initToolbar(view);
         database = RoomDB.getInstance(getActivity());
         showIngredientItemAdapter = new ShowIngredientItemAdapter(getContext());
+        api = ((MainActivity) requireActivity()).api;
 
         RecyclerView ingredientRV = view.findViewById(R.id.showRecipeIngredientRV);
 
-
-        Bundle bundle = getArguments();
-        recipe= (Recipe) bundle.getSerializable("recipe");
-
-
         TextView recipeTitle = view.findViewById(R.id.showRecipeTitle);
-        ratingBar = view.findViewById(R.id.ratingBar);
-        rateButton = view.findViewById(R.id.rateButton);
         TextView recipeDescription = view.findViewById(R.id.showRecipeDescription);
         ImageView recipeImage = view.findViewById(R.id.imageView);
         recipeTitle.setText(recipe.getTitle());
@@ -132,20 +149,6 @@ public class ShowRecipeFragment extends Fragment{
         ingredientRV.setLayoutManager(new LinearLayoutManager(getContext()));
         ingredientRV.setAdapter(showIngredientItemAdapter);
         showIngredientItemAdapter.submitList(ingredientItemList);
-
-        rateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(ratingBar.getRating()==0){
-                    Toast.makeText(getContext(),"Brak oceny", Toast.LENGTH_SHORT).show();
-                }else{
-                    String r= String.valueOf(ratingBar.getRating());
-                    Toast.makeText(getContext(),"Oceniłeś na: " +r, Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-
     }
 
     public void getRecipeData(Recipe recipe, View view){
@@ -185,5 +188,77 @@ public class ShowRecipeFragment extends Fragment{
         ingredientItemList.clear();
     }
 
+    private void shareRecipeMain() throws InterruptedException {
+        for (IngredientItem ingredientItem: ingredientItemList) {
+            JsonObject object = new JsonObject();
+            object.addProperty("name", ingredientItem.getProduct().getName());
+            object.addProperty("barcode", ingredientItem.getProduct().getBarcode());
+            byte[] data = Base64.getEncoder().encode(ingredientItem.getProduct().getData());
+            object.addProperty("image", new String(data));
+            Call<ProductResponse> call = api.addProduct(object);
+            call.enqueue(this);
+        }
 
+    }
+
+    private void shareRecipe(){
+        JsonObject object = new JsonObject();
+
+            object.addProperty("title", recipe.getTitle());
+            object.addProperty("description", recipe.getDescription());
+            JsonArray array = new JsonArray();
+            for (Long id:productsId) {
+                array.add(id);
+            }
+            object.add("ingredients", array);
+            byte[] data = Base64.getEncoder().encode(recipe.getData());
+            object.addProperty("image", new String(data));
+
+        Call<RecipeResponse> call = api.addRecipe(object);
+        call.enqueue(new Callback<RecipeResponse>() {
+            @Override
+            public void onResponse(Call<RecipeResponse> call, Response<RecipeResponse> response) {
+                if (response.isSuccessful()) {
+                    recipe.setRemoteId(response.body().getId());
+                    database.recipeDao().update(recipe);
+                    Toast.makeText(requireContext(), "Udostępniono Przepis!", Toast.LENGTH_LONG).show();
+                    getParentFragmentManager().popBackStack();
+                } else if (response.errorBody() != null) {
+                    try {
+                        Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RecipeResponse> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+
+    }
+
+
+    @Override
+    public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
+        if (response.isSuccessful()) {
+            productsId.add(response.body().getId());
+            if(productsId.size()==ingredientItemList.size()){
+                shareRecipe();
+            }
+        } else if (response.errorBody() != null) {
+            try {
+                Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
+    public void onFailure(Call<ProductResponse> call, Throwable t) {
+
+    }
 }

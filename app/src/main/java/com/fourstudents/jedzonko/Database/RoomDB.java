@@ -25,7 +25,7 @@ import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-@Database(entities = {Recipe.class, Tag.class,Product.class, Shopping.class, Ingredient.class, IngredientProductCrossRef.class, Shopitem.class, ShopitemProductCrossRef.class, RecipeTagCrossRef.class}, version = 11, exportSchema = false)
+@Database(entities = {Recipe.class, Tag.class,Product.class, Shopping.class, Ingredient.class, IngredientProductCrossRef.class, Shopitem.class, ShopitemProductCrossRef.class, RecipeTagCrossRef.class}, version = 13, exportSchema = false)
 public abstract class RoomDB extends RoomDatabase {
     private static volatile RoomDB database;
     private final static String DATABASE_NAME = "database";

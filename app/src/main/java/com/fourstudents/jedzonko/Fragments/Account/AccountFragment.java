@@ -1,10 +1,10 @@
 package com.fourstudents.jedzonko.Fragments.Account;
 
 import android.os.Bundle;
-import android.os.Debug;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -16,14 +16,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import com.fourstudents.jedzonko.Fragments.Recipe.EditRecipeFragment;
 import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.Network.JedzonkoService;
 import com.fourstudents.jedzonko.Network.Responses.LoginResponse;
 import com.fourstudents.jedzonko.Network.Responses.RegisterResponse;
+import com.fourstudents.jedzonko.Network.Responses.UpdateUserResponse;
 import com.fourstudents.jedzonko.R;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.JsonObject;
 
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,7 @@ import retrofit2.Response;
 
 public class AccountFragment extends Fragment implements Callback<LoginResponse> {
 
+    //NoAuth
     EditText usernameText;
     EditText passwordText;
     Button loginButton;
@@ -44,11 +46,14 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
     TextView exampleText;
     TextView infoText;
 
-    TextView idusername;
-    TextView usertoken;
+    //WithAuth
+    EditText firstNameEdit;
+    EditText lastNameEdit;
 
+    //Helper
     JedzonkoService api;
     MainActivity activity;
+    boolean isLoggedIn;
 
 
     public AccountFragment() {}
@@ -57,9 +62,14 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+
         int layoutId = R.layout.fragment_account;
         activity = ((MainActivity) requireActivity());
-        if (activity.token.length() > 0) layoutId = R.layout.fragment_account_profile;
+        isLoggedIn = activity.token.length() > 0;
+
+        if (isLoggedIn)
+            layoutId = R.layout.fragment_account_profile;
+
         return inflater.inflate(layoutId, container, false);
     }
 
@@ -67,10 +77,12 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         api = activity.api;
-        initToolbar(view);
-        if (activity.token.length() > 0) {
+
+        if (isLoggedIn) {
+            initToolbarAuth(view);
             initViewsAuth(view);
         } else {
+            initToolbar(view);
             initViews(view);
             getParentFragmentManager().addOnBackStackChangedListener(() -> {
                 usernameText.setText("");
@@ -84,16 +96,56 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         toolbar.setTitle(R.string.title_account);
     }
 
+    private void initToolbarAuth(View view) {
+        initToolbar(view);
+        Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
+        toolbar.inflateMenu(R.menu.account_profile);
+        toolbar.setOnMenuItemClickListener(clickedMenuItem -> {
+
+            if (clickedMenuItem.getItemId() == R.id.action_edit_profile) {
+                JsonObject object = new JsonObject();
+                object.addProperty("firstName", firstNameEdit.getText().toString().trim());
+                object.addProperty("lastName", lastNameEdit.getText().toString().trim());
+                Call<UpdateUserResponse> call = api.updateUser(object);
+                call.enqueue(new Callback<UpdateUserResponse>() {
+                    @Override
+                    public void onResponse(@NotNull Call<UpdateUserResponse> call, @NotNull Response<UpdateUserResponse> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(requireContext(), "Edycja udana", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(requireContext(), "Nie działa", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull Call<UpdateUserResponse> call, @NotNull Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
+            } else if (clickedMenuItem.getItemId() == R.id.action_logout) {
+                activity.userid = -1;
+                activity.token = "";
+                Toast.makeText(requireContext(), "Wylogowano", Toast.LENGTH_SHORT).show();
+                Fragment frg = getParentFragmentManager().findFragmentByTag("root_fragment");
+                getParentFragmentManager().beginTransaction().detach(frg).commitNowAllowingStateLoss();
+                getParentFragmentManager().beginTransaction().attach(frg).commitAllowingStateLoss();
+            }
+            return false;
+        });
+    }
+
     private void initViewsAuth(View view) {
-        idusername = view.findViewById(R.id.idusername);
-        usertoken = view.findViewById(R.id.usertoken);
-        Call<RegisterResponse> call = api.getUser(activity.token, activity.userid);
+        firstNameEdit = view.findViewById(R.id.firstNameEdit);
+        lastNameEdit = view.findViewById(R.id.lastNameEdit);
+        Call<RegisterResponse> call = api.getUser(activity.userid);
         call.enqueue(new Callback<RegisterResponse>() {
             @Override
             public void onResponse(@NotNull Call<RegisterResponse> call, @NotNull Response<RegisterResponse> response) {
                 if (response.isSuccessful()) {
-                    idusername.setText("" + response.body().getId() + " " + response.body().getUsername());
-                    usertoken.setText(activity.token);
+                    if (response.body() != null) {
+                        firstNameEdit.setText(response.body().getFirstName());
+                        lastNameEdit.setText(response.body().getLastName());
+                    }
                 } else if (response.errorBody() != null) {
                     try {
                         Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
@@ -121,7 +173,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         infoText = view.findViewById(R.id.infoText);
 
         exampleText.setOnClickListener(v -> {
-            usernameText.setText("sikreto2020@protonmail.com");
+            usernameText.setText("sikreto2021@protonmail.com");
             passwordText.setText("12345678");
         });
 
@@ -134,13 +186,12 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
                 call.enqueue(this);
             }
         });
-        registerText.setOnClickListener(v -> {
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.mainFrameLayout, new RegisterAccountFragment(), "RegisterAccountFragment")
-                    .addToBackStack("RegisterAccountFragment")
-                    .commit();
-        });
+        registerText.setOnClickListener(v ->
+                getParentFragmentManager()
+                .beginTransaction()
+                .replace(R.id.mainFrameLayout, new RegisterAccountFragment(), "RegisterAccountFragment")
+                .addToBackStack("RegisterAccountFragment")
+                .commit());
     }
 
     private boolean isInputValid() {
@@ -176,6 +227,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         } else if (response.errorBody() != null) {
             try {
                 Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                Log.v("HarryAccountonResponse", call.request().body().toString());
             } catch (IOException e) {
                 Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             }

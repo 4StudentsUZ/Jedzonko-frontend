@@ -4,16 +4,14 @@ import com.fourstudents.jedzonko.Network.Responses.LoginResponse;
 import com.fourstudents.jedzonko.Network.Responses.ProductResponse;
 import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
 import com.fourstudents.jedzonko.Network.Responses.RegisterResponse;
+import com.fourstudents.jedzonko.Network.Responses.UpdateUserResponse;
 import com.google.gson.JsonObject;
-
-import org.json.JSONObject;
 
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -34,11 +32,14 @@ public interface JedzonkoService {
     @POST("recipes/create/")
     Call<RecipeResponse> addRecipe(@Body JsonObject object);
 
-    @GET("users/all/")
+    @GET("users/all")
     Call<List<RegisterResponse>> getAllUsers(@Body JsonObject object);
 
     @GET("users/{id}")
-    Call<RegisterResponse> getUser(@Header("Authorization") String token, @Path("id") int id);
+    Call<RegisterResponse> getUser(@Path("id") int id);
+
+    @PUT("users/update")
+    Call<UpdateUserResponse> updateUser(@Body JsonObject object);
 
     @GET("recipes/get/all")
     Call<List<RecipeResponse>> getRecipes();

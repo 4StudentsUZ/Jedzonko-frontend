@@ -58,6 +58,31 @@ public class ShowShoppingListFragment extends Fragment {
                 requireFragmentManager().popBackStack();
             }
         });
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                if(item.getItemId()==R.id.action_edit_recipe)
+                {
+                    FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    EditShoppingListFragment editShoppingListFragment = new EditShoppingListFragment();
+
+                    Bundle shoppingBundle = new Bundle();
+                    long shoppingId = shopping.getShoppingId();
+                    shoppingBundle.putLong("shoppingId", shoppingId);
+                    editShoppingListFragment.setArguments(shoppingBundle);
+                    requireActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.mainFrameLayout, editShoppingListFragment, "EditShoppingListFragment")
+                            .addToBackStack("EditShoppingListFragment")
+                            .commit();
+                }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -82,8 +107,8 @@ public class ShowShoppingListFragment extends Fragment {
         Bundle bundle = getArguments();
         shopping = (Shopping) bundle.getSerializable("shoppingList");
         getShoppingListData(shopping, view);
-        TextView recipeTitle = view.findViewById(R.id.showShoppingListTitle);
-        recipeTitle.setText(shopping.getName());
+        TextView shoppingListTitle = view.findViewById(R.id.showShoppingListTitle);
+        shoppingListTitle.setText(shopping.getName());
         ingredientRV.setLayoutManager(new LinearLayoutManager(getContext()));
         ingredientRV.setAdapter(showIngredientItemAdapter);
         showIngredientItemAdapter.submitList(ingredientItemList);

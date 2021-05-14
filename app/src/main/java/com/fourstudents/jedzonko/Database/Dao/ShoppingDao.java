@@ -41,4 +41,7 @@ public interface ShoppingDao {
     @Query("SELECT * FROM Shopping")
     List<ShoppingWithShopitemsAndProducts> getShoppingsWithShopitemsAndProducts();
 
+    @Query("DELETE FROM shopitem WHERE shoppingOwnerId = :shoppingOwnerId")
+    public void deleteShopitems(long shoppingOwnerId);
+
 }

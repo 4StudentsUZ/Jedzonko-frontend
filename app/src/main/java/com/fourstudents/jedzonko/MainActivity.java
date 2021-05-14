@@ -52,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
     //// AddRecipe Photo Data
     public byte[] imageData = null;
     public Integer imageRotation = null;
+    public byte[] productImageData = null;
+    public Integer productImageRotation = null;
+    public String scannedBarcode = null;
     //// Instance of JedzonkoService
     public JedzonkoService api =
             new Retrofit.Builder()

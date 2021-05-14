@@ -24,4 +24,10 @@ public class HarryHelperClass {
         matrix.postRotate(angle);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
+
+    public enum CameraModes {
+        Recipe,
+        Product,
+        Barcode
+    }
 }

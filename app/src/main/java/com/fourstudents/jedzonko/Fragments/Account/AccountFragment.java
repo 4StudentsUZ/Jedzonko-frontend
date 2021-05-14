@@ -24,6 +24,8 @@ import com.fourstudents.jedzonko.Network.Responses.LoginResponse;
 import com.fourstudents.jedzonko.Network.Responses.RegisterResponse;
 import com.fourstudents.jedzonko.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.jetbrains.annotations.NotNull;
@@ -49,6 +51,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
 
     JedzonkoService api;
     MainActivity activity;
+    boolean isLoggedIn;
 
 
     public AccountFragment() {}
@@ -57,9 +60,14 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+
         int layoutId = R.layout.fragment_account;
         activity = ((MainActivity) requireActivity());
-        if (activity.token.length() > 0) layoutId = R.layout.fragment_account_profile;
+        isLoggedIn = activity.token.length() > 0;
+
+        if (isLoggedIn)
+            layoutId = R.layout.fragment_account_profile;
+
         return inflater.inflate(layoutId, container, false);
     }
 
@@ -68,7 +76,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         super.onViewCreated(view, savedInstanceState);
         api = activity.api;
         initToolbar(view);
-        if (activity.token.length() > 0) {
+        if (isLoggedIn) {
             initViewsAuth(view);
         } else {
             initViews(view);
@@ -128,10 +136,15 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         loginButton.setOnClickListener(v -> {
             if (isInputValid()) {
                 JsonObject object = new JsonObject();
+                JsonArray array = new JsonArray();
+                array.add(1);
+                array.add(2);
                 object.addProperty("username", usernameText.getText().toString().trim());
                 object.addProperty("password", passwordText.getText().toString().trim());
-                Call<LoginResponse> call = api.login(object);
-                call.enqueue(this);
+                object.add("lista", array);
+//                Call<LoginResponse> call = api.login(object);
+//                call.enqueue(this);
+                Log.d("Harry", object.toString());
             }
         });
         registerText.setOnClickListener(v -> {

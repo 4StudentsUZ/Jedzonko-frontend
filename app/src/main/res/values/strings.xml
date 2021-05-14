@@ -29,4 +29,5 @@
     <string name="shopping_list_edit_products_button">Edytuj produkty</string>
     <string name="title_register_account">Zarejestruj się</string>
     <string name="edit_recipe">Edytuj przepis</string>
+    <string name="camera_barcode_scanned">Skanowanie udane</string>
 </resources>

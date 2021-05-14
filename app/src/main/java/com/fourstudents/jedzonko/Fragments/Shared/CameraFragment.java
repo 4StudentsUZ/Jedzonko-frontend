@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -188,6 +189,13 @@ public class CameraFragment extends Fragment {
                                 .build();
 
                 camera.getCameraControl().startFocusAndMetering(autoFocusAction);
+
+                previewView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return false;
+                    }
+                });
 
             } catch (ExecutionException | InterruptedException e) {
                 Log.e("Harry startCamera()", "read stack trace");

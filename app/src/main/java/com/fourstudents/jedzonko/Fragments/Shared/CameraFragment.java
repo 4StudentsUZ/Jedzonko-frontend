@@ -25,6 +25,7 @@ import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.MeteringPoint;
+import androidx.camera.core.MeteringPointFactory;
 import androidx.camera.core.Preview;
 import androidx.camera.core.SurfaceOrientedMeteringPointFactory;
 import androidx.camera.lifecycle.ProcessCameraProvider;
@@ -179,22 +180,40 @@ public class CameraFragment extends Fragment {
                 cameraProvider.unbindAll();
                 camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis, imageCapture);
 
-                MeteringPoint autoFocusPoint =
-                        new SurfaceOrientedMeteringPointFactory(1f, 1f)
-                                .createPoint(.5f, .5f);
-                FocusMeteringAction autoFocusAction =
-                        new FocusMeteringAction
-                                .Builder(autoFocusPoint, FocusMeteringAction.FLAG_AF)
-                                .setAutoCancelDuration(1, TimeUnit.SECONDS)
-                                .build();
+//                MeteringPoint autoFocusPoint =
+//                        new SurfaceOrientedMeteringPointFactory(1f, 1f)
+//                                .createPoint(.5f, .5f);
+//                FocusMeteringAction autoFocusAction =
+//                        new FocusMeteringAction
+//                                .Builder(autoFocusPoint, FocusMeteringAction.FLAG_AF)
+//                                .setAutoCancelDuration(1, TimeUnit.SECONDS)
+//                                .build();
+//
+//                camera.getCameraControl().startFocusAndMetering(autoFocusAction);
 
-                camera.getCameraControl().startFocusAndMetering(autoFocusAction);
-
-                previewView.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        return false;
+                previewView.setOnTouchListener((v, event) -> {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            return true;
+                        case MotionEvent.ACTION_UP:
+                            v.performClick();
+                            MeteringPointFactory factory =
+                                    new SurfaceOrientedMeteringPointFactory(
+                                            previewView.getMeasuredWidth(),
+                                            previewView.getMeasuredHeight()
+                                    );
+                            MeteringPoint touchFocusPoint = factory.createPoint(event.getX(), event.getY());
+                            FocusMeteringAction touchFocusAction =
+                                    new FocusMeteringAction
+                                            .Builder(touchFocusPoint, FocusMeteringAction.FLAG_AF)
+                                            .disableAutoCancel()
+                                            .build();
+                            camera.getCameraControl().startFocusAndMetering(touchFocusAction);
+                            return true;
+                        default:
+                            break;
                     }
+                    return false;
                 });
 
             } catch (ExecutionException | InterruptedException e) {

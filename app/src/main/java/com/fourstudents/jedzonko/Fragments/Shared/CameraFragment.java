@@ -16,12 +16,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.core.Camera;
+import androidx.camera.core.CameraInfoUnavailableException;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.FocusMeteringAction;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.ImageProxy;
+import androidx.camera.core.MeteringPoint;
 import androidx.camera.core.Preview;
+import androidx.camera.core.SurfaceOrientedMeteringPointFactory;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
@@ -40,6 +44,7 @@ import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CameraFragment extends Fragment {
@@ -123,6 +128,8 @@ public class CameraFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        previewView = view.findViewById(R.id.viewFinder);
+
         if (allPermissionsGranted()) {
             makeOutputDirectoryForImages();
             startCamera();
@@ -162,7 +169,6 @@ public class CameraFragment extends Fragment {
             imageCapture = new ImageCapture.Builder().build();
             imageCapture.setTargetRotation(Surface.ROTATION_0);
 
-            previewView = ((PreviewView)requireView().findViewById(R.id.viewFinder));
             preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
             CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
@@ -171,12 +177,26 @@ public class CameraFragment extends Fragment {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
                 cameraProvider.unbindAll();
                 camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis, imageCapture);
+
+                MeteringPoint autoFocusPoint =
+                        new SurfaceOrientedMeteringPointFactory(1f, 1f)
+                                .createPoint(.5f, .5f);
+                FocusMeteringAction autoFocusAction =
+                        new FocusMeteringAction
+                                .Builder(autoFocusPoint, FocusMeteringAction.FLAG_AF)
+                                .setAutoCancelDuration(1, TimeUnit.SECONDS)
+                                .build();
+
+                camera.getCameraControl().startFocusAndMetering(autoFocusAction);
+
             } catch (ExecutionException | InterruptedException e) {
                 Log.e("Harry startCamera()", "read stack trace");
                 e.printStackTrace();
             }
 
         }, ContextCompat.getMainExecutor(safeContext));
+
+
     }
 
     private void takePhoto() {

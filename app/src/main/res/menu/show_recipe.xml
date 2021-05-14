@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/action_share_recipe"
-        android:title="@string/edit_recipe"
+        android:title="@string/share_recipe"
         android:enabled="true"
         android:icon="@android:drawable/ic_menu_share"
         android:orderInCategory="0"

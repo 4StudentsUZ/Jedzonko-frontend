@@ -65,7 +65,7 @@ public class RegisterAccountFragment extends Fragment implements Callback<Regist
         exampleText = view.findViewById(R.id.exampleText);
 
         exampleText.setOnClickListener(v -> {
-            usernameText.setText("sikreto2020@protonmail.com");
+            usernameText.setText("sikreto2021@protonmail.com");
             passwordText.setText("12345678");
             passwordText2.setText("12345678");
         });

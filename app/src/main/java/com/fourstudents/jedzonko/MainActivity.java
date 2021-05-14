@@ -1,17 +1,18 @@
 package com.fourstudents.jedzonko;
 
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.os.Bundle;
-import android.view.MenuItem;
-
 import com.fourstudents.jedzonko.Fragments.Account.AccountFragment;
 import com.fourstudents.jedzonko.Fragments.Recipe.RecipeFragment;
 import com.fourstudents.jedzonko.Fragments.Search.SearchFragment;
-import com.fourstudents.jedzonko.Fragments.ShoppingList.ShoppingListFragment;
 import com.fourstudents.jedzonko.Fragments.Shop.ShopsFragment;
+import com.fourstudents.jedzonko.Fragments.ShoppingList.ShoppingListFragment;
 import com.fourstudents.jedzonko.Network.JedzonkoService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -19,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-import okhttp3.Credentials;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void setupBottomNavigationView() {
         Fragment searchFragment = new SearchFragment();
         Fragment shoppingListFragment = new ShoppingListFragment();

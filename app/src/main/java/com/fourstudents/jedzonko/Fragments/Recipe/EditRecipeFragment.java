@@ -274,10 +274,13 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
 
     private void actionEditRecipe() {
         if (checkData()) {
+            database.recipeDao().deleteIngredients(recipeId);
+            database.recipeDao().deleteTags(recipeId);
+            Recipe updatedRecipe = new Recipe();
             List<Recipe> recipes =database.recipeDao().getAll();
             for (Recipe recipe:recipes) {
                 if(recipe.getRecipeId()==recipeId){
-                    database.recipeDao().delete(recipe);
+                    updatedRecipe=recipe;
                     break;
                 }
             }
@@ -289,12 +292,11 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
             bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
             data = stream.toByteArray();
 
-            Recipe recipe = new Recipe();
-            recipe.setTitle(title.getText().toString().trim());
-            recipe.setDescription(description.getText().toString().trim());
-            recipe.setData(data);
-            recipe.setAuthor("Me");
-            database.recipeDao().insert(recipe);
+
+            updatedRecipe.setTitle(title.getText().toString().trim());
+            updatedRecipe.setDescription(description.getText().toString().trim());
+            updatedRecipe.setData(data);
+            database.recipeDao().update(updatedRecipe);
             int recipeId = database.recipeDao().getLastId();
 
             List<IngredientItem> ingredientItems= ingredientItemViewModel.getIngredientItemsList();

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fourstudents.jedzonko.Adapters.Recipe.RecipeAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.R;
@@ -21,11 +22,13 @@ import java.util.List;
 public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHolder> implements Filterable  {
     List<Shopping> listOfShoppingList;
     List<Shopping> listOfShoppingListFull;
+    private final OnShoppingListListener onShoppingListListener;
 
-    public ShoppingAdapter() {
+    public ShoppingAdapter(OnShoppingListListener onShoppingListListener) {
 
         listOfShoppingListFull = new ArrayList<>();
         listOfShoppingList = new ArrayList<>();
+        this.onShoppingListListener=onShoppingListListener;
     }
 
 
@@ -34,7 +37,7 @@ public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHo
     @Override
     public ShoppingAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_shopping, parent, false);
-        return new ShoppingAdapter.ViewHolder(view);
+        return new ShoppingAdapter.ViewHolder(view, onShoppingListListener);
     }
 
     @Override
@@ -67,15 +70,20 @@ public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHo
         return listOfShoppingList == null ? 0 : listOfShoppingList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener{
         private final TextView textView;
         private final ImageView deleteImageView;
+        OnShoppingListListener onShoppingListListener;
 
-        public ViewHolder(View view) {
+        public ViewHolder(View view, OnShoppingListListener onShoppingListListener) {
             super(view);
             // Define click listener for the ViewHolder's View
             deleteImageView = view.findViewById(R.id.itemListDeleteView);
             textView = view.findViewById(R.id.itemListTextView);
+            this.onShoppingListListener = onShoppingListListener;
+            itemView.setOnClickListener(this);
+
+            deleteImageView.setOnClickListener(this);
         }
 
         public TextView getTextView() {
@@ -84,6 +92,18 @@ public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHo
 
         public ImageView getImageView() {
             return deleteImageView;
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            if(v.getId() == R.id.itemListDeleteView)
+            {
+                onShoppingListListener.onShoppingListDeleteClick(getAbsoluteAdapterPosition());
+            }else{
+                onShoppingListListener.onShoppingListClick(getAbsoluteAdapterPosition());
+            }
+
         }
     }
 
@@ -127,6 +147,15 @@ public class ShoppingAdapter extends RecyclerView.Adapter<ShoppingAdapter.ViewHo
             notifyDataSetChanged();
         }
     };
+
+    public Shopping getShoppingList(int position){
+        return listOfShoppingList.get(position);
+    }
+
+    public interface OnShoppingListListener {
+        void onShoppingListDeleteClick(int position);
+        void onShoppingListClick(int position);
+    }
 
 
 }

@@ -37,12 +37,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public okhttp3.Response intercept(@NotNull Interceptor.Chain chain) throws IOException {
             Request originalRequest = chain.request();
-            String currentToken = originalRequest.header("Authorization");
-
-            Request.Builder builder =
-                    originalRequest
-                        .newBuilder()
-                        .header("Authorization", "Bearer " + currentToken);
+            Request.Builder builder = originalRequest.newBuilder();
+            if (token.length() > 0) {
+                builder.header("Authorization", "Bearer " + token);
+            }
 
             Request newRequest = builder.build();
             return chain.proceed(newRequest);

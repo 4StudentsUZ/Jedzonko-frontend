@@ -50,4 +50,13 @@ public interface RecipeDao {
 
     @Query("SELECT * FROM Recipe")
     LiveData<List<Recipe>> getAllLiveData();
+
+    @Query("DELETE FROM ingredient WHERE recipeOwnerId = :recipeOwnerId")
+    public void deleteIngredients(long recipeOwnerId);
+
+    @Query("DELETE FROM RecipeTagCrossRef WHERE recipeId = :recipeId")
+    public void deleteTags(long recipeId);
+
+
+
 }

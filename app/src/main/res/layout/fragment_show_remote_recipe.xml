@@ -49,7 +49,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/showRecipeTitle" />
 
-
+            <RatingBar
+                android:id="@+id/averageRatingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeTagsString"
+                app:layout_constraintVertical_bias="0.0"
+                android:isIndicator="true"/>
 
             <TextView
                 android:id="@+id/showRecipeDescTitle"
@@ -58,11 +67,10 @@
                 android:text="Opis:"
                 android:textColor="#16B60A"
                 android:textSize="24sp"
-
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/showRecipeTagsString" />
+                app:layout_constraintTop_toBottomOf="@id/averageRatingBar" />
             <TextView
                 android:id="@+id/showRecipeDescription"
                 android:layout_width="wrap_content"
@@ -119,7 +127,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/showRecipeDescImage"
                 app:layout_constraintVertical_bias="0.0" />
-
+            <TextView
+                android:id="@+id/showRecipeRateTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ocena:"
+                android:textColor="#16B60A"
+                android:textSize="24sp"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView"/>
             <RatingBar
                 android:id="@+id/ratingBar"
                 android:layout_width="wrap_content"
@@ -128,7 +147,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView"/>
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeRateTitle"
+                android:visibility="invisible"/>
 
             <Button
                 android:id="@+id/rateButton"
@@ -138,7 +158,49 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ratingBar"
-                app:layout_constraintTop_toBottomOf="@+id/imageView" />
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeRateTitle"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/showRecipeCommentsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Komentarze:"
+                android:textColor="#16B60A"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ratingBar"/>
+            <EditText
+                android:id="@+id/showRecipeCommentEdiText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Wpisz komentarz"
+                android:maxWidth="200dp"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeCommentsTitle"/>
+            <Button
+                android:id="@+id/commentButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Skomentuj"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/showRecipeCommentEdiText"
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeCommentsTitle" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/showRecipeCommentsRV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeCommentEdiText" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

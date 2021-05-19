@@ -79,6 +79,7 @@ public class ShowRemoteRecipeFragment extends Fragment {
         initToolbar(view);
         ratingBar = view.findViewById(R.id.ratingBar);
         TextView recipeTitle = view.findViewById(R.id.showRecipeTitle);
+        TextView recipeTags = view.findViewById(R.id.showRecipeTagsString);
         TextView recipeDescription = view.findViewById(R.id.showRecipeDescription);
         ImageView recipeImage = view.findViewById(R.id.imageView);
         recipeTitle.setText(remoteRecipe.getTitle());
@@ -87,13 +88,23 @@ public class ShowRemoteRecipeFragment extends Fragment {
         RecyclerView ingredientRV = view.findViewById(R.id.showRecipeIngredientRV);
         showIngredientItemAdapter = new ShowIngredientItemAdapter(getContext());
 
+        List<String> quantites = remoteRecipe.getQuantities();
+        int pos=0;
         for (Ingredient ingredient:remoteRecipe.getIngredients()) {
             IngredientItem ingredientItem = new IngredientItem();
             Product product = new Product();
             product.setName(ingredient.getName());
             ingredientItem.setProduct(product);
+            ingredientItem.setQuantity(quantites.get(pos));
+            pos++;
             ingredientItemList.add(ingredientItem);
         }
+
+        String concatTags="";
+        for (String tag:remoteRecipe.getTags()) {
+            concatTags = concatTags + "" + tag;
+        }
+        recipeTags.setText(concatTags);
 
         ingredientRV.setLayoutManager(new LinearLayoutManager(getContext()));
         ingredientRV.setAdapter(showIngredientItemAdapter);

@@ -11,6 +11,8 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -105,9 +107,9 @@ public class ShopsFragment extends Fragment implements LocationListener {
     private void initLocationWithPermissionRequest() {
         if (locationManager != null) return;
 
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-                ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, locationRequestId);
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, locationRequestId);
             } else {
                 new AlertDialog.Builder(requireContext())
                         .setTitle("Brak uprawnień")
@@ -160,7 +162,7 @@ public class ShopsFragment extends Fragment implements LocationListener {
 
     private void initLocation() {
         if (locationManager != null) return;
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
@@ -182,8 +184,9 @@ public class ShopsFragment extends Fragment implements LocationListener {
             if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 onLocationPermissionDenied();
             } else {
-                requestPermissionsButton.setVisibility(View.VISIBLE);
+                requestPermissionsButton.setVisibility(View.INVISIBLE);
                 initLocation();
+//                new Handler(Looper.getMainLooper()).postDelayed(this::initLocation, 100);
             }
         }
 

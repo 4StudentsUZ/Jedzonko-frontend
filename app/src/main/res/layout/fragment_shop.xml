@@ -57,13 +57,13 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        android:text="TextView"
+        android:text="Status:\nNiezainicjalizowano"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/requestPermissions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/custom_toolbar"
-        tools:text="Status:\nBrak danych o lokalizacji" />
+        tools:text="Status:\nNiezainicjalizowano" />
 
     <Button
         android:id="@+id/requestPermissions"

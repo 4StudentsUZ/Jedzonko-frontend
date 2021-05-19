@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.Network.JedzonkoService;
 import com.fourstudents.jedzonko.Network.Responses.AverageRateResponse;
+import com.fourstudents.jedzonko.Network.Responses.CommentResponse;
 import com.fourstudents.jedzonko.Network.Responses.UserRateResponse;
 import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
 import com.fourstudents.jedzonko.Other.Ingredient;
@@ -93,6 +95,8 @@ public class ShowRemoteRecipeFragment extends Fragment {
         TextView recipeTags = view.findViewById(R.id.showRecipeTagsString);
         TextView recipeDescription = view.findViewById(R.id.showRecipeDescription);
         TextView rateTitle = view.findViewById(R.id.showRecipeRateTitle);
+        Button commentButton = view.findViewById(R.id.commentButton);
+        EditText commentText = view.findViewById(R.id.showRecipeCommentEdiText);
         ImageView recipeImage = view.findViewById(R.id.imageView);
         recipeTitle.setText(remoteRecipe.getTitle());
         recipeDescription.setText(remoteRecipe.getDescription());
@@ -134,6 +138,8 @@ public class ShowRemoteRecipeFragment extends Fragment {
             rateButton.setVisibility(View.VISIBLE);
             ratingBar.setVisibility(View.VISIBLE);
             rateTitle.setVisibility(View.VISIBLE);
+            commentButton.setVisibility(View.VISIBLE);
+            commentText.setVisibility(View.VISIBLE);
             Call<UserRateResponse> userRateCall = api.getUserRate(remoteRecipe.getId());
             userRateCall.enqueue(new Callback<UserRateResponse>() {
                 @Override
@@ -176,6 +182,32 @@ public class ShowRemoteRecipeFragment extends Fragment {
 
                 }
 
+            }
+        });
+
+        commentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String comment= commentText.getText().toString();
+                if(!comment.equals("")){
+                    JsonObject object = new JsonObject();
+                    object.addProperty("content", comment);
+                    object.addProperty("recipeId", remoteRecipe.getId());
+                    Call<CommentResponse> commentCall=api.addComment(object);
+                    commentCall.enqueue(new Callback<CommentResponse>() {
+                        @Override
+                        public void onResponse(Call<CommentResponse> call, Response<CommentResponse> response) {
+                            Toast.makeText(getContext(),"Dodano komentarz", Toast.LENGTH_SHORT).show();
+                            commentText.setText("");
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<CommentResponse> call, Throwable t) {
+                            Toast.makeText(getContext(),t.toString(),Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
         });
     }

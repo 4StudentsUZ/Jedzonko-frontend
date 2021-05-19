@@ -2,16 +2,17 @@ package com.fourstudents.jedzonko.Network.Responses;
 
 import com.fourstudents.jedzonko.Other.Author;
 
-import java.util.Date;
+import java.sql.Date;
+
 
 public class CommentResponse {
     private final int id;
     private final String content;
-    private final Date creationDate;
-    private final Date modificationDate;
+    private final String creationDate;
+    private final String modificationDate;
     private final Author author;
 
-    public CommentResponse(int id, String content, Date creationDate, Date modificationDate, Author author) {
+    public CommentResponse(int id, String content, String creationDate, String modificationDate, Author author) {
         this.id = id;
         this.content = content;
         this.creationDate = creationDate;
@@ -27,11 +28,11 @@ public class CommentResponse {
         return content;
     }
 
-    public Date getCreationDate() {
+    public String getCreationDate() {
         return creationDate;
     }
 
-    public Date getModificationDate() {
+    public String getModificationDate() {
         return modificationDate;
     }
 

@@ -9,7 +9,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -81,8 +83,10 @@ public class ShopsFragment extends Fragment implements LocationListener {
     }
 
     private void queryMaps(String query) {
-        if (!checkGoogleMapsAvailability()) return;
-        if (lastLocation == null) return;
+        if (lastLocation == null) {
+            Toast.makeText(requireContext(), "Nie odnaleziono lokalizacji!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Double latitude = lastLocation.getLatitude();
         Double longitude = lastLocation.getLongitude();
@@ -91,7 +95,11 @@ public class ShopsFragment extends Fragment implements LocationListener {
         Uri gmmIntentUri = Uri.parse(String.format("geo:%f,%f?q=%s", latitude, longitude, query));
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
-        startActivity(mapIntent);
+        try {
+            startActivity(mapIntent);
+        } catch (Exception e) {
+            checkGoogleMapsAvailability();
+        }
     }
 
     private void initLocationWithPermissionRequest() {
@@ -129,11 +137,10 @@ public class ShopsFragment extends Fragment implements LocationListener {
         }
     }
 
-
     public boolean isGoogleMapsInstalled() {
         try
         {
-            requireActivity().getPackageManager().getApplicationInfo("com.google.android.apps.maps", 0 );
+            requireActivity().getPackageManager().getApplicationInfo("com.google.android.apps.maps", 0);
             return true;
         }
         catch(PackageManager.NameNotFoundException e)

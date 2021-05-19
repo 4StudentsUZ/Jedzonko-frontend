@@ -3,7 +3,6 @@ package com.fourstudents.jedzonko.Fragments.Shop;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -82,10 +81,8 @@ public class ShopsFragment extends Fragment implements LocationListener {
     }
 
     private void queryMaps(String query) {
-        if (lastLocation == null) {
-            Toast.makeText(requireActivity(), "Trwa ładowanie lokalizacji...", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (!checkGoogleMapsAvailability()) return;
+        if (lastLocation == null) return;
 
         Double latitude = lastLocation.getLatitude();
         Double longitude = lastLocation.getLongitude();
@@ -107,13 +104,50 @@ public class ShopsFragment extends Fragment implements LocationListener {
                 new AlertDialog.Builder(requireContext())
                         .setTitle("Brak uprawnień")
                         .setMessage("Brak pozwolenia na użycie lokalizacji, upewnij się, że aplikacja ma nadane odpowiednie uprawnienia w ustawieniach systemowych.")
-                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {})
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        })
                         .show();
 
                 onLocationPermissionDenied();
             }
         } else {
             initLocation();
+        }
+    }
+
+    private boolean checkGoogleMapsAvailability() {
+        if (isGoogleMapsInstalled()) {
+            return true;
+        } else {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Brak apllikacji Google Maps")
+                    .setMessage("Do korzystania z funkcji szukania sklepów i restauracji, konieczna jest instalacja aplikacji Google Maps.")
+                    .setPositiveButton("Zainstaluj", (dialog, which) -> openGoogleMapsInstaller())
+                    .setNegativeButton("Anuluj", null)
+                    .show();
+            return false;
+        }
+    }
+
+
+    public boolean isGoogleMapsInstalled() {
+        try
+        {
+            requireActivity().getPackageManager().getApplicationInfo("com.google.android.apps.maps", 0 );
+            return true;
+        }
+        catch(PackageManager.NameNotFoundException e)
+        {
+            return false;
+        }
+    }
+
+    private void openGoogleMapsInstaller() {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.apps.maps"));
+            startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), "Nie odnaleziono sklepu Google Play", Toast.LENGTH_LONG).show();
         }
     }
 

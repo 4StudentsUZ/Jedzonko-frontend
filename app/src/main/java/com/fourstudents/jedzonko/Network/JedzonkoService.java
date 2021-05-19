@@ -59,4 +59,5 @@ public interface JedzonkoService {
     @POST("comments/create")
     Call<CommentResponse> addComment(@Body JsonObject object);
 
+
 }

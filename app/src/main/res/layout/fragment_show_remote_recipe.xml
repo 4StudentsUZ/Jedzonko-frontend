@@ -139,27 +139,31 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView"/>
+
             <RatingBar
                 android:id="@+id/ratingBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/showRecipeRateTitle"
-                android:visibility="invisible"/>
+                app:layout_constraintVertical_bias="0.0" />
 
             <Button
                 android:id="@+id/rateButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Oceń"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.53"
                 app:layout_constraintStart_toEndOf="@+id/ratingBar"
                 app:layout_constraintTop_toBottomOf="@+id/showRecipeRateTitle"
-                android:visibility="invisible"/>
+                app:layout_constraintVertical_bias="0.017" />
 
             <TextView
                 android:id="@+id/showRecipeCommentsTitle"
@@ -182,7 +186,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/showRecipeCommentsTitle"/>
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeCommentsTitle"
+                android:visibility="invisible"/>
             <Button
                 android:id="@+id/commentButton"
                 android:layout_width="wrap_content"
@@ -191,7 +196,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/showRecipeCommentEdiText"
-                app:layout_constraintTop_toBottomOf="@+id/showRecipeCommentsTitle" />
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeCommentsTitle"
+                android:visibility="invisible"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/showRecipeCommentsRV"
@@ -200,7 +206,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/showRecipeCommentEdiText" />
+                app:layout_constraintTop_toBottomOf="@+id/commentButton" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

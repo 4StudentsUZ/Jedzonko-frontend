@@ -1,7 +1,10 @@
 package com.fourstudents.jedzonko.Network;
 
+import com.fourstudents.jedzonko.Network.Responses.AverageRateResponse;
+import com.fourstudents.jedzonko.Network.Responses.CommentResponse;
 import com.fourstudents.jedzonko.Network.Responses.LoginResponse;
 import com.fourstudents.jedzonko.Network.Responses.ProductResponse;
+import com.fourstudents.jedzonko.Network.Responses.UserRateResponse;
 import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
 import com.fourstudents.jedzonko.Network.Responses.RegisterResponse;
 import com.fourstudents.jedzonko.Network.Responses.UpdateUserResponse;
@@ -44,5 +47,16 @@ public interface JedzonkoService {
     @GET("recipes/get/all")
     Call<List<RecipeResponse>> getRecipes();
 
+    @POST("ratings/rate")
+    Call<UserRateResponse> addRate(@Body JsonObject object);
+
+    @GET("ratings/get/myRatingForRecipe/{recipeId}")
+    Call<UserRateResponse> getUserRate(@Path("recipeId") int value);
+
+    @GET("ratings/get/forRecipe/{recipeId}")
+    Call<AverageRateResponse> getAverageRate(@Path("recipeId") int value);
+
+    @POST("comments/create")
+    Call<CommentResponse> addComment(@Body JsonObject object);
 
 }

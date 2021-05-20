@@ -50,7 +50,7 @@ public class AddProductFragment extends Fragment {
         }
         if (activity.scannedBarcode != null) {
             barcode.setText(activity.scannedBarcode);
-
+            Toast.makeText(requireContext(), R.string.camera_barcode_scanned, Toast.LENGTH_LONG).show();
         }
     }
 

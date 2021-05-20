@@ -37,4 +37,6 @@
     <string name="shopping_bluetooth">Odbierz przez Bluetooth</string>
     <string name="title_bluetooth_slist">Odbierz listę zakupów</string>
     <string name="save_slist">Zapisz listę</string>
+    <string name="send_bluetooth">Wyślij przez Bluetooth</string>
+    <string name="edit_slist">Edytuj listę</string>
 </resources>

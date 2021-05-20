@@ -1,10 +1,13 @@
 package com.fourstudents.jedzonko.Fragments.Shared;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -14,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,6 +37,7 @@ import com.fourstudents.jedzonko.ViewModels.Shared.IngredientItemViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class BluetoothShoppingListFragment extends Fragment implements ProductAdapter.OnProductListener, IngredientItemAdapter.OnIngredientItemListener {
@@ -50,6 +55,9 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     List<Product> productList = new ArrayList<>();
 
     BluetoothAdapter bluetoothAdapter;
+
+    final int REQUEST_CODE_PERMISSIONS = 10;
+    final String[] REQUIRED_PERMISSIONS = {Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_FINE_LOCATION};
     final int REQUEST_ENABLE_BT = 11;
     final int REQUEST_DISCOVER_BT = 12;
 
@@ -71,7 +79,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
         initRV();
 //        initVM();
         initVM();
-        enableBT();
+        initBT();
     }
 
     private void initToolbar(View view) {
@@ -122,6 +130,36 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
         });
     }
 
+    private void initBT() {
+        if (allPermissionsGranted()) {
+            enableBT();
+        } else {
+            requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
+                enableBT();
+            } else {
+                Toast.makeText(requireContext(), R.string.permission_not_granted, Toast.LENGTH_LONG).show();
+                getParentFragmentManager().popBackStack();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private boolean allPermissionsGranted() {
+        for (String permission: REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void enableBT() {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
@@ -141,27 +179,30 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
         startActivityForResult(enableBtDiscoverIntent, REQUEST_DISCOVER_BT);
     }
 
-    private void initBT() {
+    private void waitForData() {
 
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
-            enableDiscoverBT();
-        } else if (resultCode == RESULT_OK) {
-            Toast.makeText(requireContext(), "Bluetooth wyłączony", Toast.LENGTH_LONG).show();
-            getParentFragmentManager().popBackStack();
+        if (requestCode == REQUEST_ENABLE_BT) {
+            if (resultCode != RESULT_CANCELED) {
+                enableDiscoverBT();
+            } else {
+                Toast.makeText(requireContext(), "Bluetooth wyłączony", Toast.LENGTH_LONG).show();
+                getParentFragmentManager().popBackStack();
+            }
         }
-        if (requestCode == REQUEST_DISCOVER_BT && resultCode == RESULT_OK) {
-            initBT();
-        } else if (resultCode == RESULT_OK) {
-            Toast.makeText(requireContext(), "Urządzenie musi być widoczne", Toast.LENGTH_LONG).show();
-            getParentFragmentManager().popBackStack();
+        if (requestCode == REQUEST_DISCOVER_BT) {
+            if (resultCode != RESULT_CANCELED) {
+                waitForData();
+            } else {
+                Toast.makeText(requireContext(), "Urządzenie musi być widoczne", Toast.LENGTH_LONG).show();
+                getParentFragmentManager().popBackStack();
+            }
         }
-
-
     }
 
     private void initDialog() {

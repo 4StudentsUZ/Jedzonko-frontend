@@ -62,6 +62,7 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
     MainActivity activity;
     JedzonkoService api;
     List<Long> productsId = new ArrayList<>();
+    JsonArray tagsJsonArray;
 
     public ShowRecipeFragment(){super(R.layout.fragment_show_recipe);}
 
@@ -156,11 +157,12 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
         List<RecipeWithIngredientsAndProducts> recipesWithIngredientsAndProducts = database.recipeDao().getRecipesWithIngredientsAndProducts();
         TextView recipeTags = view.findViewById(R.id.showRecipeTagsString);
         String conctString ="";
+        tagsJsonArray = new JsonArray();
         for(RecipesWithTags recipeWithTags : recipesWithTags){
             if(recipeWithTags.recipe.getRecipeId() == recipe.getRecipeId()){
                 for(Tag tag: recipeWithTags.tags){
                     conctString = conctString + "" + tag.getName();
-
+                    tagsJsonArray.add(tag.getName());
                 }
             }
         }
@@ -206,11 +208,19 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
 
             object.addProperty("title", recipe.getTitle());
             object.addProperty("description", recipe.getDescription());
-            JsonArray array = new JsonArray();
+            JsonArray ingredientArray = new JsonArray();
             for (Long id:productsId) {
-                array.add(id);
+                ingredientArray.add(id);
             }
-            object.add("ingredients", array);
+            object.add("ingredients", ingredientArray);
+
+            JsonArray quantityArray = new JsonArray();
+            for (IngredientItem ingredientItem: ingredientItemList) {
+                quantityArray.add(ingredientItem.getQuantity());
+            }
+            object.add("quantities", quantityArray);
+            object.add("tags", tagsJsonArray);
+
             byte[] data = Base64.getEncoder().encode(recipe.getData());
             object.addProperty("image", new String(data));
 

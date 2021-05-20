@@ -16,20 +16,20 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fourstudents.jedzonko.Adapters.Recipe.ShowIngredientItemAdapter;
+import com.fourstudents.jedzonko.Adapters.Shared.ShowIngredientItemAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
+import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
 import com.fourstudents.jedzonko.Database.Relations.IngredientsWithProducts;
 import com.fourstudents.jedzonko.Database.Relations.RecipeWithIngredientsAndProducts;
 import com.fourstudents.jedzonko.Database.Relations.RecipesWithTags;
 import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.Fragments.ShoppingList.ShowShoppingListFragment;
 import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.Network.JedzonkoService;
 import com.fourstudents.jedzonko.Network.Responses.ProductResponse;
@@ -37,12 +37,7 @@ import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,7 +49,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class ShowRecipeFragment extends Fragment implements Callback<ProductResponse>{
+public class ShowRecipeFragment extends Fragment implements Callback<ProductResponse>, ShowIngredientItemAdapter.OnIngredientItemListener{
     RoomDB database;
     ShowIngredientItemAdapter showIngredientItemAdapter;
     List<IngredientItem> ingredientItemList = new ArrayList<>();
@@ -131,7 +126,7 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
         recipe= (Recipe) bundle.getSerializable("recipe");
         initToolbar(view);
         database = RoomDB.getInstance(getActivity());
-        showIngredientItemAdapter = new ShowIngredientItemAdapter(getContext());
+        showIngredientItemAdapter = new ShowIngredientItemAdapter(getContext(), this);
         api = ((MainActivity) requireActivity()).api;
 
         RecyclerView ingredientRV = view.findViewById(R.id.showRecipeIngredientRV);
@@ -269,6 +264,11 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
 
     @Override
     public void onFailure(Call<ProductResponse> call, Throwable t) {
+
+    }
+
+    @Override
+    public void onIngredientItemClick(int position) {
 
     }
 }

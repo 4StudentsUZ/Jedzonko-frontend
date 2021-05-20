@@ -11,7 +11,7 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_bluetooth"
+        android:id="@+id/action_get_bluetooth"
         android:title="@string/shopping_bluetooth"
         android:icon="@drawable/ic_bluetooth"
         app:showAsAction="ifRoom" />

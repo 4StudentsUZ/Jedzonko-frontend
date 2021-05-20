@@ -50,6 +50,7 @@ public class AddProductFragment extends Fragment {
         }
         if (activity.scannedBarcode != null) {
             barcode.setText(activity.scannedBarcode);
+
         }
     }
 

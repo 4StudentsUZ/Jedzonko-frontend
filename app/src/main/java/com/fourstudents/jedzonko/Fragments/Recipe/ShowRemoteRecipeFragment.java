@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.fourstudents.jedzonko.Adapters.Recipe.RecipeCommentsAdapter;
 import com.fourstudents.jedzonko.Adapters.Recipe.ShowIngredientItemAdapter;
+import com.fourstudents.jedzonko.Adapters.Shared.ShowIngredientItemAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.Network.JedzonkoService;
@@ -48,7 +49,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ShowRemoteRecipeFragment extends Fragment {
+public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredientItemAdapter.OnIngredientItemListener{
     RatingBar ratingBar;
     RatingBar averageRatingBar;
     Button rateButton;
@@ -113,7 +114,7 @@ public class ShowRemoteRecipeFragment extends Fragment {
         api = ((MainActivity) requireActivity()).api;
 
         RecyclerView ingredientRV = view.findViewById(R.id.showRecipeIngredientRV);
-        showIngredientItemAdapter = new ShowIngredientItemAdapter(getContext());
+        showIngredientItemAdapter = new ShowIngredientItemAdapter(getContext(), this);
 
         commentsRV = view.findViewById(R.id.showRecipeCommentsRV);
         recipeCommentsAdapter = new RecipeCommentsAdapter(getContext());
@@ -267,6 +268,7 @@ public class ShowRemoteRecipeFragment extends Fragment {
         });
     }
 
+
     private void setCommentsList(List<CommentResponse> commentResponseList){
         for (CommentResponse commentResponse: commentResponseList) {
             CommentItem commentItem= new CommentItem();
@@ -279,5 +281,8 @@ public class ShowRemoteRecipeFragment extends Fragment {
                 commentItem.setDate(dateString);
             commentsList.add(commentItem);
         }
+
+      @Override
+    public void onIngredientItemClick(int position) {
     }
 }

@@ -188,16 +188,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/showRecipeCommentsTitle"
                 android:visibility="invisible"/>
+
             <Button
                 android:id="@+id/commentButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Skomentuj"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/showRecipeCommentEdiText"
                 app:layout_constraintTop_toBottomOf="@+id/showRecipeCommentsTitle"
-                android:visibility="invisible"/>
+                app:layout_constraintBottom_toTopOf="@id/showRecipeCommentsRV"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/showRecipeCommentsRV"
@@ -206,10 +208,15 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/commentButton" />
+                app:layout_constraintTop_toBottomOf="@+id/showRecipeCommentEdiText"
+                />
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+
+
 
 </LinearLayout>

@@ -21,15 +21,19 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.fourstudents.jedzonko.Adapters.Recipe.ShowIngredientItemAdapter;
+import com.fourstudents.jedzonko.Adapters.Shared.ShowIngredientItemAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.Relations.ShopitemsWithProducts;
 import com.fourstudents.jedzonko.Database.Relations.ShoppingWithShopitemsAndProducts;
 import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.Fragments.Shared.CameraFragment;
+import com.fourstudents.jedzonko.Fragments.Shared.ShowProductFragment;
+import com.fourstudents.jedzonko.Other.HarryHelperClass;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
 
@@ -39,7 +43,7 @@ import java.util.Set;
 
 import static android.app.Activity.RESULT_CANCELED;
 
-public class ShowShoppingListFragment extends Fragment {
+public class ShowShoppingListFragment extends Fragment implements ShowIngredientItemAdapter.OnIngredientItemListener{
     RoomDB database;
     ShowIngredientItemAdapter showIngredientItemAdapter;
     List<IngredientItem> ingredientItemList = new ArrayList<>();
@@ -211,7 +215,7 @@ public class ShowShoppingListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         initToolbar(view);
         database = RoomDB.getInstance(getActivity());
-        showIngredientItemAdapter = new ShowIngredientItemAdapter(getContext());
+        showIngredientItemAdapter = new ShowIngredientItemAdapter(getContext(), this);
         RecyclerView ingredientRV = view.findViewById(R.id.showShoppingListProductsRV);
         Bundle bundle = getArguments();
         shopping = (Shopping) bundle.getSerializable("shoppingList");
@@ -245,6 +249,23 @@ public class ShowShoppingListFragment extends Fragment {
         super.onPause();
         ingredientItemList.clear();
         safeContext.unregisterReceiver(receiver);
+    }
+
+    @Override
+    public void onIngredientItemClick(int position) {
+        //Toast.makeText(requireContext(),"a", Toast.LENGTH_LONG).show();
+        FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ShowProductFragment showProductFragment = new ShowProductFragment();
+        Bundle bundle = new Bundle();
+        Product product = ingredientItemList.get(position).product;
+        bundle.putSerializable("product", product);
+        showProductFragment.setArguments(bundle);
+        getParentFragmentManager()
+                .beginTransaction()
+                .replace(R.id.mainFrameLayout, showProductFragment, "ShowProductFragment")
+                .addToBackStack("ShowSProductFragment")
+                .commit();
     }
 
 

@@ -21,7 +21,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fourstudents.jedzonko.Adapters.Recipe.ShowIngredientItemAdapter;
+import com.fourstudents.jedzonko.Adapters.Shared.ShowIngredientItemAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.Network.JedzonkoService;
@@ -42,7 +42,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ShowRemoteRecipeFragment extends Fragment {
+public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredientItemAdapter.OnIngredientItemListener{
     RatingBar ratingBar;
     RatingBar averageRatingBar;
     Button rateButton;
@@ -104,7 +104,7 @@ public class ShowRemoteRecipeFragment extends Fragment {
         api = ((MainActivity) requireActivity()).api;
 
         RecyclerView ingredientRV = view.findViewById(R.id.showRecipeIngredientRV);
-        showIngredientItemAdapter = new ShowIngredientItemAdapter(getContext());
+        showIngredientItemAdapter = new ShowIngredientItemAdapter(getContext(), this);
 
         List<String> quantites = remoteRecipe.getQuantities();
         int pos=0;
@@ -227,5 +227,10 @@ public class ShowRemoteRecipeFragment extends Fragment {
 
             }
         });
+    }
+
+    @Override
+    public void onIngredientItemClick(int position) {
+
     }
 }

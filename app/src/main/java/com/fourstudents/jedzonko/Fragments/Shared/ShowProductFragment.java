@@ -40,10 +40,10 @@ public class ShowProductFragment extends Fragment implements ShowIngredientItemA
 
         if (activity.scannedBarcode != null) {
             if(barcode.equals(activity.scannedBarcode)){
-                Toast.makeText(requireContext(),"tak", Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(),"Kod jest identyczny", Toast.LENGTH_LONG).show();
             }else
             {
-                Toast.makeText(requireContext(),"nie", Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(),"Kod jest inny", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -105,7 +105,7 @@ public class ShowProductFragment extends Fragment implements ShowIngredientItemA
         product = (Product) bundle.getSerializable("product");
         initToolbar(view);
         initViews(view);
-
+        barcode = product.getBarcode();
         database = RoomDB.getInstance(getActivity());
         TextView productTitle = view.findViewById(R.id.showProductTitle);
         ImageView productImage = view.findViewById(R.id.imageView);

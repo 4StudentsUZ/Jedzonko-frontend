@@ -45,6 +45,7 @@ public class ShowProductFragment extends Fragment implements ShowIngredientItemA
             {
                 Toast.makeText(requireContext(),"Kod jest inny", Toast.LENGTH_LONG).show();
             }
+            activity.scannedBarcode = null;
         }
     }
     private void initToolbar(View view) {
@@ -54,7 +55,7 @@ public class ShowProductFragment extends Fragment implements ShowIngredientItemA
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requireFragmentManager().popBackStack();
+                getParentFragmentManager().popBackStack();
             }
         });
         activity = ((MainActivity) requireActivity());

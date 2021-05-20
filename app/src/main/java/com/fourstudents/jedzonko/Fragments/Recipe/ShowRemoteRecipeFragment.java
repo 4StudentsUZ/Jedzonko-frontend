@@ -21,6 +21,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fourstudents.jedzonko.Adapters.Recipe.RecipeCommentsAdapter;
 import com.fourstudents.jedzonko.Adapters.Recipe.ShowIngredientItemAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.MainActivity;
@@ -29,11 +30,16 @@ import com.fourstudents.jedzonko.Network.Responses.AverageRateResponse;
 import com.fourstudents.jedzonko.Network.Responses.CommentResponse;
 import com.fourstudents.jedzonko.Network.Responses.UserRateResponse;
 import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
+import com.fourstudents.jedzonko.Other.CommentItem;
 import com.fourstudents.jedzonko.Other.Ingredient;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
 import com.google.gson.JsonObject;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -48,10 +54,13 @@ public class ShowRemoteRecipeFragment extends Fragment {
     Button rateButton;
     RecipeResponse remoteRecipe;
     ShowIngredientItemAdapter showIngredientItemAdapter;
+    RecipeCommentsAdapter recipeCommentsAdapter;
     List<IngredientItem> ingredientItemList = new ArrayList<>();
     JedzonkoService api;
     MainActivity activity;
     double userRate;
+    RecyclerView commentsRV;
+    List<CommentItem> commentsList = new ArrayList<>();
     public ShowRemoteRecipeFragment() {super(R.layout.fragment_show_remote_recipe);}
 
     private void initToolbar(View view) {
@@ -106,6 +115,11 @@ public class ShowRemoteRecipeFragment extends Fragment {
         RecyclerView ingredientRV = view.findViewById(R.id.showRecipeIngredientRV);
         showIngredientItemAdapter = new ShowIngredientItemAdapter(getContext());
 
+        commentsRV = view.findViewById(R.id.showRecipeCommentsRV);
+        recipeCommentsAdapter = new RecipeCommentsAdapter(getContext());
+        commentsRV.setLayoutManager(new LinearLayoutManager(getContext()));
+        commentsRV.setAdapter(recipeCommentsAdapter);
+
         List<String> quantites = remoteRecipe.getQuantities();
         int pos=0;
         for (Ingredient ingredient:remoteRecipe.getIngredients()) {
@@ -146,7 +160,7 @@ public class ShowRemoteRecipeFragment extends Fragment {
                 public void onResponse(Call<UserRateResponse> call, Response<UserRateResponse> response) {
                     userRate=response.body().getRating();
                     ratingBar.setRating((float)userRate);
-                    rateButton.setText("ZMIEŃ");
+                    if(userRate>0) rateButton.setText("ZMIEŃ");
                 }
 
                 @Override
@@ -171,6 +185,7 @@ public class ShowRemoteRecipeFragment extends Fragment {
                             if(response.isSuccessful()){
                                 Toast.makeText(getContext(), "Oceniono na: "+r, Toast.LENGTH_SHORT).show();
                                 setAverageRatingBar();
+                                rateButton.setText("ZMIEŃ");
                             }
                         }
 
@@ -199,7 +214,16 @@ public class ShowRemoteRecipeFragment extends Fragment {
                         public void onResponse(Call<CommentResponse> call, Response<CommentResponse> response) {
                             Toast.makeText(getContext(),"Dodano komentarz", Toast.LENGTH_SHORT).show();
                             commentText.setText("");
-
+                            CommentItem commentItem = new CommentItem();
+                            if(response.body().getAuthor().getFirstName().isEmpty() ||response.body().getAuthor().getLastName().isEmpty()){
+                                commentItem.setAuthor("Anonimowy");
+                            }else commentItem.setAuthor(response.body().getAuthor().getFirstName() +" "+ response.body().getAuthor().getLastName());
+                            commentItem.setComment(response.body().getContent().trim());
+                            LocalDateTime data = LocalDateTime.parse(response.body().getCreationDate());
+                            String dateString= data.getDayOfMonth() +"-"+ data.getMonthValue() + "-" + data.getYear() + " " + data.getHour() + ":" + data.getMinute() + ":" + data.getSecond();
+                            commentItem.setDate(dateString);
+                            commentsList.add(commentItem);
+                            recipeCommentsAdapter.notifyDataSetChanged();
                         }
 
                         @Override
@@ -208,6 +232,20 @@ public class ShowRemoteRecipeFragment extends Fragment {
                         }
                     });
                 }
+            }
+        });
+
+        Call<List<CommentResponse>> commentsCall = api.getCommentsForRecipe(remoteRecipe.getId());
+        commentsCall.enqueue(new Callback<List<CommentResponse>>() {
+            @Override
+            public void onResponse(Call<List<CommentResponse>> call, Response<List<CommentResponse>> response) {
+                setCommentsList(response.body());
+                recipeCommentsAdapter.submitList(commentsList);
+            }
+
+            @Override
+            public void onFailure(Call<List<CommentResponse>> call, Throwable t) {
+
             }
         });
     }
@@ -227,5 +265,19 @@ public class ShowRemoteRecipeFragment extends Fragment {
 
             }
         });
+    }
+
+    private void setCommentsList(List<CommentResponse> commentResponseList){
+        for (CommentResponse commentResponse: commentResponseList) {
+            CommentItem commentItem= new CommentItem();
+            if(commentResponse.getAuthor().getFirstName().isEmpty() ||commentResponse.getAuthor().getLastName().isEmpty()){
+                commentItem.setAuthor("Anonimowy");
+            }else commentItem.setAuthor(commentResponse.getAuthor().getFirstName() +" "+ commentResponse.getAuthor().getLastName());
+            commentItem.setComment(commentResponse.getContent().trim());
+                LocalDateTime data = LocalDateTime.parse(commentResponse.getCreationDate());
+                String dateString= data.getDayOfMonth() +"-"+ data.getMonthValue() + "-" + data.getYear() + " " + data.getHour() + ":" + data.getMinute() + ":" + data.getSecond();
+                commentItem.setDate(dateString);
+            commentsList.add(commentItem);
+        }
     }
 }

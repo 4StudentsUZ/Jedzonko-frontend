@@ -2,6 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
     <item
         android:id="@+id/action_search"
         android:title="@string/search_recipe"
@@ -9,5 +10,10 @@
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/action_bluetooth"
+        android:title="@string/shopping_bluetooth"
+        android:icon="@drawable/ic_bluetooth"
+        app:showAsAction="ifRoom" />
 
 </menu>

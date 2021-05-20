@@ -34,4 +34,5 @@
     <string name="share_recipe">Udostępnij przepis</string>
     <string name="edit_account">Edytuj konto</string>
     <string name="account_logout">Wyloguj</string>
+    <string name="shopping_bluetooth">Odbierz przez Bluetooth</string>
 </resources>

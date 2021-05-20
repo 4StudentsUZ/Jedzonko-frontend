@@ -59,5 +59,6 @@ public interface JedzonkoService {
     @POST("comments/create")
     Call<CommentResponse> addComment(@Body JsonObject object);
 
-
+    @GET("comments/get/forRecipe/{recipeId}")
+    Call<List<CommentResponse>> getCommentsForRecipe(@Path("recipeId") int value);
 }

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.MeteringPoint;
+import androidx.camera.core.MeteringPointFactory;
 import androidx.camera.core.Preview;
 import androidx.camera.core.SurfaceOrientedMeteringPointFactory;
 import androidx.camera.lifecycle.ProcessCameraProvider;
@@ -158,13 +160,18 @@ public class CameraFragment extends Fragment {
         cameraProviderFuture.addListener(() -> {
 
             preview = new Preview.Builder().build();
-            imageAnalysis = new ImageAnalysis.Builder().setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build();
-            imageAnalysis.setAnalyzer(cameraExecutor, new BarcodeAnalyzer(barcode -> {
-                if (processingBarcode.compareAndSet(false, true)) {
-                    activity.scannedBarcode = barcode;
-                    getParentFragmentManager().popBackStack();
-                }
-            }));
+
+            if (mode == HarryHelperClass.CameraModes.Barcode) {
+                imageAnalysis = new ImageAnalysis.Builder().setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build();
+                imageAnalysis.setAnalyzer(cameraExecutor, new BarcodeAnalyzer(barcode -> {
+                    if (processingBarcode.compareAndSet(false, true)) {
+                        activity.scannedBarcode = barcode;
+                        Toast.makeText(safeContext, R.string.camera_barcode_scanned, Toast.LENGTH_LONG).show();
+                        getParentFragmentManager().popBackStack();
+                    }
+                }));
+            }
+
             imageCapture = new ImageCapture.Builder().build();
             imageCapture.setTargetRotation(Surface.ROTATION_0);
 
@@ -175,18 +182,48 @@ public class CameraFragment extends Fragment {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
                 cameraProvider.unbindAll();
-                camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis, imageCapture);
+                if (mode == HarryHelperClass.CameraModes.Barcode) {
+                    camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis, imageCapture);
+                    MeteringPoint autoFocusPoint =
+                            new SurfaceOrientedMeteringPointFactory(1f, 1f)
+                                    .createPoint(.5f, .5f);
+                    FocusMeteringAction autoFocusAction =
+                            new FocusMeteringAction
+                                    .Builder(autoFocusPoint, FocusMeteringAction.FLAG_AF)
+                                    .setAutoCancelDuration(1000, TimeUnit.MILLISECONDS)
+                                    .build();
 
-                MeteringPoint autoFocusPoint =
-                        new SurfaceOrientedMeteringPointFactory(1f, 1f)
-                                .createPoint(.5f, .5f);
-                FocusMeteringAction autoFocusAction =
-                        new FocusMeteringAction
-                                .Builder(autoFocusPoint, FocusMeteringAction.FLAG_AF)
-                                .setAutoCancelDuration(1, TimeUnit.SECONDS)
-                                .build();
+                    camera.getCameraControl().startFocusAndMetering(autoFocusAction);
+                }
+                else
+                    camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
 
-                camera.getCameraControl().startFocusAndMetering(autoFocusAction);
+
+
+//                previewView.setOnTouchListener((v, event) -> {
+//                    switch (event.getAction()) {
+//                        case MotionEvent.ACTION_DOWN:
+//                            return true;
+//                        case MotionEvent.ACTION_UP:
+//                            v.performClick();
+//                            MeteringPointFactory factory =
+//                                    new SurfaceOrientedMeteringPointFactory(
+//                                            previewView.getMeasuredWidth(),
+//                                            previewView.getMeasuredHeight()
+//                                    );
+//                            MeteringPoint touchFocusPoint = factory.createPoint(event.getX(), event.getY());
+//                            FocusMeteringAction touchFocusAction =
+//                                    new FocusMeteringAction
+//                                            .Builder(touchFocusPoint, FocusMeteringAction.FLAG_AF)
+//                                            .disableAutoCancel()
+//                                            .build();
+//                            camera.getCameraControl().startFocusAndMetering(touchFocusAction);
+//                            return true;
+//                        default:
+//                            break;
+//                    }
+//                    return false;
+//                });
 
             } catch (ExecutionException | InterruptedException e) {
                 Log.e("Harry startCamera()", "read stack trace");

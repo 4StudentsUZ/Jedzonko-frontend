@@ -220,6 +220,7 @@ public class AddRecipeFragment extends Fragment implements ProductAdapter.OnProd
                     @Override
                     public void onClick(View v) {
                         productList.clear();
+                        tagList.clear();
                         ingredientDialog.dismiss();
                         requireActivity()
                                 .getSupportFragmentManager()
@@ -248,6 +249,7 @@ public class AddRecipeFragment extends Fragment implements ProductAdapter.OnProd
                     @Override
                     public void onClick(View v) {
                     tagList.clear();
+                    productList.clear();
                     tagDialog.dismiss();
                         requireActivity()
                                 .getSupportFragmentManager()

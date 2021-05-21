@@ -54,7 +54,7 @@ public class SearchFragment extends Fragment implements RecipeAdapter.OnRecipeLi
     private void initToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
         toolbar.setTitle("Przepisy");
-        toolbar.inflateMenu(R.menu.recipes);
+        toolbar.inflateMenu(R.menu.recipes_remote);
         toolbar.getMenu();
 
         MenuItem search = toolbar.getMenu().findItem(R.id.action_search);

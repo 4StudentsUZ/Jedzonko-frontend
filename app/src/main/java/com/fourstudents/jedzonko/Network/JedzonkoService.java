@@ -10,6 +10,8 @@ import com.fourstudents.jedzonko.Network.Responses.RegisterResponse;
 import com.fourstudents.jedzonko.Network.Responses.UpdateUserResponse;
 import com.google.gson.JsonObject;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -18,6 +20,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface JedzonkoService {
 
@@ -46,6 +49,13 @@ public interface JedzonkoService {
 
     @GET("recipes/get/all")
     Call<List<RecipeResponse>> getRecipes();
+
+    @GET("recipes/get")
+    Call<List<RecipeResponse>> queryRecipes(
+            @NotNull @Query(value="query", encoded=true) String query,
+            @NotNull @Query(value="sort", encoded=true) String sort,
+            @NotNull @Query(value="direction", encoded=true) String direction
+    );
 
     @POST("ratings/rate")
     Call<UserRateResponse> addRate(@Body JsonObject object);

@@ -7,8 +7,14 @@
         android:title="@string/search_recipe"
         android:icon="@android:drawable/ic_menu_search"
         app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
 
+    <item
+        android:id="@+id/action_sort"
+        android:title="@string/sort_recipes"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:enabled="true"
+        app:showAsAction="ifRoom" />
 
 </menu>

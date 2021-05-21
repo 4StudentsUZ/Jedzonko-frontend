@@ -6,6 +6,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -30,9 +33,15 @@ import com.fourstudents.jedzonko.Database.Entities.Shopitem;
 import com.fourstudents.jedzonko.Database.Entities.ShopitemProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.Other.BluetoothAcceptThread;
+import com.fourstudents.jedzonko.Other.BluetoothConnectedThread;
+import com.fourstudents.jedzonko.Other.BluetoothServiceClass;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.Shared.IngredientItemViewModel;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +100,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
         toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         toolbar.setOnMenuItemClickListener(clickedItem -> {
-            if (clickedItem.getItemId() == R.id.action_get_bluetooth)
+            if (clickedItem.getItemId() == R.id.action_save_slist)
                 menuSaveButtonPressed();
             return true;
         });
@@ -180,9 +189,38 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     }
 
     private void waitForData() {
-
+        Handler handler = new Handler(Looper.myLooper()) {
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                switch (msg.what) {
+                    case BluetoothServiceClass.MESSAGE_WRITE:
+                        Log.i("Harry", "WRITE");
+                        byte[] writeBuf = (byte[]) msg.obj;
+                        String writeMessage = new String(writeBuf, 0, msg.arg1);
+                        Log.i("Harry", writeMessage);
+                        break;
+                    case BluetoothServiceClass.MESSAGE_READ:
+                        Log.i("Harry", "READ");
+                        byte[] readBuf = (byte[]) msg.obj;
+                        String readMessage = new String(readBuf, 0, msg.arg1);
+                        try {
+                            JSONObject jsonObject = new JSONObject(readMessage);
+                            name.setText(jsonObject.getString("list_name"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.i("Harry", readMessage);
+                        break;
+                    case 99:
+                        Toast.makeText(requireContext(), "Połączenie nawiązane", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                super.handleMessage(msg);
+            }
+        };
+        BluetoothAcceptThread thread = new BluetoothAcceptThread(bluetoothAdapter, handler);
+        thread.start();
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

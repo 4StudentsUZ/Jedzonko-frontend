@@ -44,8 +44,10 @@ import com.fourstudents.jedzonko.Other.BluetoothSendThread;
 import com.fourstudents.jedzonko.Other.BluetoothServiceClass;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -356,14 +358,50 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
 
     private void sendData(Object object) {
         BluetoothConnectedThread thread = (BluetoothConnectedThread) object;
+        JsonObject jsonObject = new JsonObject();
+        JsonArray jsonArray = new JsonArray();
+        for (IngredientItem item : ingredientItemList) {
+            JsonObject itemObject = new JsonObject();
+            itemObject.addProperty("item_name", item.product.getName());
+            itemObject.addProperty("item_barcode", item.product.getBarcode());
+            itemObject.addProperty("item_quantity", item.quantity);
+//            byte[] data = item.product.getData();
+//            String dataString = android.util.Base64.encodeToString(data, 0);
+//            itemObject.addProperty("item_data", dataString);
+            jsonArray.add(itemObject);
+        }
+        jsonObject.addProperty("list_name", shoppingListTitle.getText().toString().trim());
+        jsonObject.add("items", jsonArray);
+        String str = jsonObject.toString();
+        Log.i("HarryTest", str);
+        thread.write(str.getBytes());
+    }
+
+    private void sendData2(Object object) {
+        BluetoothConnectedThread thread = (BluetoothConnectedThread) object;
         JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        for (IngredientItem item : ingredientItemList) {
+            JSONObject itemObject = new JSONObject();
+            try {
+                itemObject.put("item_name", item.product.getName());
+                itemObject.put("item_barcode", item.product.getBarcode());
+                itemObject.put("item_quantity", item.quantity);
+                byte[] data = item.product.getData();
+                String dataString = android.util.Base64.encodeToString(data, 0);
+                itemObject.put("item_data", dataString);
+                jsonArray.put(itemObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         try {
             jsonObject.put("list_name", shoppingListTitle.getText().toString().trim());
-            jsonObject.put("items", ingredientItemList);
+            jsonObject.put("items", jsonArray);
+            thread.write(jsonObject.toString().getBytes());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        thread.write(jsonObject.toString().getBytes());
     }
 
     @Override

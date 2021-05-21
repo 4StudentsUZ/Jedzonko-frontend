@@ -39,7 +39,11 @@ import com.fourstudents.jedzonko.Other.BluetoothServiceClass;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.Shared.IngredientItemViewModel;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -62,6 +66,8 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     RecyclerView productRV;
     ProductAdapter productAdapter;
     List<Product> productList = new ArrayList<>();
+    List<Product> addedProducts = new ArrayList<>();
+    boolean wasSaved = false;
 
     BluetoothAdapter bluetoothAdapter;
 
@@ -201,15 +207,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
                         break;
                     case BluetoothServiceClass.MESSAGE_READ:
                         Log.i("Harry", "READ");
-                        byte[] readBuf = (byte[]) msg.obj;
-                        String readMessage = new String(readBuf, 0, msg.arg1);
-                        try {
-                            JSONObject jsonObject = new JSONObject(readMessage);
-                            name.setText(jsonObject.getString("list_name"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        Log.i("Harry", readMessage);
+                        readData(msg);
                         break;
                     case 99:
                         Toast.makeText(requireContext(), "Połączenie nawiązane", Toast.LENGTH_SHORT).show();
@@ -220,6 +218,61 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
         };
         BluetoothAcceptThread thread = new BluetoothAcceptThread(bluetoothAdapter, handler);
         thread.start();
+    }
+
+    private void readData(Message msg) {
+        byte[] readBuf = (byte[]) msg.obj;
+        String readMessage = new String(readBuf, 0, msg.arg1);
+        Log.i("HarryTest", readMessage);
+        JsonObject jsonObject = new Gson().fromJson(readMessage, JsonObject.class);
+        name.setText(jsonObject.get("list_name").getAsString());
+        JsonArray jsonArray = jsonObject.getAsJsonArray("items");
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject object = jsonArray.get(i).getAsJsonObject();
+            Product product = new Product();
+            product.setName(object.get("item_name").getAsString());
+            product.setBarcode(object.get("item_barcode").getAsString());
+//            product.setData(android.util.Base64.decode(object.get("item_data").getAsString(), 0));
+            product.setData(new byte[] {1,1});
+            database.productDao().insert(product);
+            int lastProductId = database.productDao().getLastId();
+            product.setProductId(lastProductId);
+            addedProducts.add(product);
+            IngredientItem item = new IngredientItem();
+            item.setProduct(product);
+            item.setQuantity(object.get("item_quantity").getAsString());
+            ingredientItemViewModel.addIngredientItem(item);
+        }
+        Log.i("Harry", readMessage);
+    }
+
+    private void readData2(Message msg) {
+        byte[] readBuf = (byte[]) msg.obj;
+        String readMessage = new String(readBuf, 0, msg.arg1);
+        try {
+            JSONObject jsonObject = new JSONObject(readMessage);
+            name.setText(jsonObject.getString("list_name"));
+            JSONArray jsonArray = jsonObject.getJSONArray("items");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject object = jsonArray.getJSONObject(i);
+                Product product = new Product();
+                product.setName(object.getString("item_name"));
+                product.setBarcode(object.getString("item_barcode"));
+//                product.setData(android.util.Base64.decode(object.getString("item_data"), 0));
+                product.setData(new byte[] {1,1});
+                database.productDao().insert(product);
+                int lastProductId = database.productDao().getLastId();
+                product.setProductId(lastProductId);
+                addedProducts.add(product);
+                IngredientItem item = new IngredientItem();
+                item.setProduct(product);
+                item.setQuantity(object.getString("item_quantity"));
+                ingredientItemViewModel.addIngredientItem(item);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i("Harry", readMessage);
     }
 
     @Override
@@ -309,9 +362,20 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
             name.setText("");
             ingredientItemViewModel.clearIngredientItemList();
             Toast.makeText(getContext(), "Dodano listę", Toast.LENGTH_SHORT).show();
+            wasSaved = true;
             getParentFragmentManager().popBackStack();
         }
         productRV.setAdapter(productAdapter);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if (!wasSaved) {
+            for (Product product : addedProducts) {
+                database.productDao().delete(product);
+            }
+        }
     }
 
     @Override

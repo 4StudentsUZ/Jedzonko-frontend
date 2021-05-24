@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fourstudents.jedzonko.Adapters.ShoppingList.ShoppingAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.RoomDB;
-import com.fourstudents.jedzonko.Fragments.Shared.BluetoothShoppingListFragment;
 import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.ShoppingList.ShoppingViewModel;
 

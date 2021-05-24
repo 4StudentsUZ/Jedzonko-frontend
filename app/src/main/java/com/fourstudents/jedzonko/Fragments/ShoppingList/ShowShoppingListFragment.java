@@ -44,6 +44,7 @@ import com.fourstudents.jedzonko.Other.BluetoothSendThread;
 import com.fourstudents.jedzonko.Other.BluetoothServiceClass;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -338,12 +339,12 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
                         String writeMessage = new String(writeBuf, 0, msg.arg1);
                         Log.i("Harry", writeMessage);
                         break;
-                    case BluetoothServiceClass.MESSAGE_READ:
-                        Log.i("Harry", "READ");
-                        byte[] readBuf = (byte[]) msg.obj;
-                        String readMessage = new String(readBuf, 0, msg.arg1);
-                        Log.i("Harry", readMessage);
-                        break;
+//                    case BluetoothServiceClass.MESSAGE_READ:
+//                        Log.i("Harry", "READ");
+//                        byte[] readBuf = (byte[]) msg.obj;
+//                        String readMessage = new String(readBuf, 0, msg.arg1);
+//                        Log.i("Harry", readMessage);
+//                        break;
                     case 99:
                         Toast.makeText(requireContext(), "Połączenie nawiązane", Toast.LENGTH_SHORT).show();
                         break;
@@ -365,16 +366,21 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
             itemObject.addProperty("item_name", item.product.getName());
             itemObject.addProperty("item_barcode", item.product.getBarcode());
             itemObject.addProperty("item_quantity", item.quantity);
-//            byte[] data = item.product.getData();
-//            String dataString = android.util.Base64.encodeToString(data, 0);
-//            itemObject.addProperty("item_data", dataString);
+            byte[] data = item.product.getData();
+            String dataString = android.util.Base64.encodeToString(data, 0);
+            itemObject.addProperty("item_data", dataString);
             jsonArray.add(itemObject);
         }
         jsonObject.addProperty("list_name", shoppingListTitle.getText().toString().trim());
         jsonObject.add("items", jsonArray);
         String str = jsonObject.toString();
-        Log.i("HarryTest", str);
-        thread.write(str.getBytes());
+        Log.i("HarrySendData", str);
+        byte[] testBytes = str.getBytes();
+        String readMessage = new String(testBytes, 0, testBytes.length);
+
+        JsonObject jsonObjectTest = new Gson().fromJson(readMessage, JsonObject.class);
+        Log.i("HarrySendData2", jsonObjectTest.toString());
+        thread.write(testBytes);
     }
 
     private void sendData2(Object object) {

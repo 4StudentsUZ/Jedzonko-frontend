@@ -1,14 +1,20 @@
-package com.fourstudents.jedzonko.Fragments.Shared;
+package com.fourstudents.jedzonko.Fragments.ShoppingList;
 
 import android.Manifest;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.SyncStateContract;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +39,7 @@ import com.fourstudents.jedzonko.Database.Entities.Shopitem;
 import com.fourstudents.jedzonko.Database.Entities.ShopitemProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.Fragments.Shared.AddProductFragment;
 import com.fourstudents.jedzonko.Other.BluetoothAcceptThread;
 import com.fourstudents.jedzonko.Other.BluetoothConnectedThread;
 import com.fourstudents.jedzonko.Other.BluetoothServiceClass;
@@ -42,6 +49,7 @@ import com.fourstudents.jedzonko.ViewModels.Shared.IngredientItemViewModel;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.stream.MalformedJsonException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,6 +78,8 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     boolean wasSaved = false;
 
     BluetoothAdapter bluetoothAdapter;
+    Context safeContext;
+    String resultReadData;
 
     final int REQUEST_CODE_PERMISSIONS = 10;
     final String[] REQUIRED_PERMISSIONS = {Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_FINE_LOCATION};
@@ -81,6 +91,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        resultReadData = "";
         ingredientItemViewModel = new ViewModelProvider(requireActivity()).get(IngredientItemViewModel.class);
     }
 
@@ -194,17 +205,51 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
         startActivityForResult(enableBtDiscoverIntent, REQUEST_DISCOVER_BT);
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        safeContext = context;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(android.bluetooth.);
+        safeContext.registerReceiver(receiver, filter);
+    }
+
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        safeContext.unregisterReceiver(receiver);
+    }
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            Log.i("Harry9", action);
+            if (BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Log.i("Harry9", device.getName());
+            }
+        }
+    };
+
     private void waitForData() {
         Handler handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(@NonNull Message msg) {
                 switch (msg.what) {
-                    case BluetoothServiceClass.MESSAGE_WRITE:
-                        Log.i("Harry", "WRITE");
-                        byte[] writeBuf = (byte[]) msg.obj;
-                        String writeMessage = new String(writeBuf, 0, msg.arg1);
-                        Log.i("Harry", writeMessage);
-                        break;
+//                    case BluetoothServiceClass.MESSAGE_WRITE:
+//                        Log.i("Harry", "WRITE");
+//                        byte[] writeBuf = (byte[]) msg.obj;
+//                        String writeMessage = new String(writeBuf, 0, msg.arg1);
+//                        Log.i("Harry", writeMessage);
+//                        break;
                     case BluetoothServiceClass.MESSAGE_READ:
                         Log.i("Harry", "READ");
                         readData(msg);
@@ -224,7 +269,14 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
         byte[] readBuf = (byte[]) msg.obj;
         String readMessage = new String(readBuf, 0, msg.arg1);
         Log.i("HarryTest", readMessage);
-        JsonObject jsonObject = new Gson().fromJson(readMessage, JsonObject.class);
+        resultReadData += readMessage;
+        JsonObject jsonObject;
+        try {
+            jsonObject = new Gson().fromJson(resultReadData, JsonObject.class);
+        } catch (Exception e) {
+            return;
+        }
+
         name.setText(jsonObject.get("list_name").getAsString());
         JsonArray jsonArray = jsonObject.getAsJsonArray("items");
         for (int i = 0; i < jsonArray.size(); i++) {
@@ -232,8 +284,8 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
             Product product = new Product();
             product.setName(object.get("item_name").getAsString());
             product.setBarcode(object.get("item_barcode").getAsString());
-//            product.setData(android.util.Base64.decode(object.get("item_data").getAsString(), 0));
-            product.setData(new byte[] {1,1});
+            product.setData(android.util.Base64.decode(object.get("item_data").getAsString(), 0));
+//            product.setData(new byte[] {1,1});
             database.productDao().insert(product);
             int lastProductId = database.productDao().getLastId();
             product.setProductId(lastProductId);
@@ -243,7 +295,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
             item.setQuantity(object.get("item_quantity").getAsString());
             ingredientItemViewModel.addIngredientItem(item);
         }
-        Log.i("Harry", readMessage);
+        Log.i("HarryReadData", readMessage);
     }
 
     private void readData2(Message msg) {
@@ -258,8 +310,8 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
                 Product product = new Product();
                 product.setName(object.getString("item_name"));
                 product.setBarcode(object.getString("item_barcode"));
-//                product.setData(android.util.Base64.decode(object.getString("item_data"), 0));
-                product.setData(new byte[] {1,1});
+                product.setData(android.util.Base64.decode(object.getString("item_data"), 0));
+//                product.setData(new byte[] {1,1});
                 database.productDao().insert(product);
                 int lastProductId = database.productDao().getLastId();
                 product.setProductId(lastProductId);

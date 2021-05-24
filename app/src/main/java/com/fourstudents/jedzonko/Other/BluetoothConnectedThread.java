@@ -45,8 +45,6 @@ public class BluetoothConnectedThread extends Thread {
     public void run() {
         Log.i("HarryConnected", "connectedRun");
         handler.sendEmptyMessage(99);
-        mmBuffer = new byte[1024*10];
-        int bytesLength; // bytes returned from read()
 
         // Keep listening to the InputStream until an exception occurs.
         while (true) {
@@ -55,6 +53,8 @@ public class BluetoothConnectedThread extends Thread {
                 msg.what = BluetoothServiceClass.MESSAGE_READY;
                 msg.obj = this;
                 handler.sendMessage(msg);
+                mmBuffer = new byte[1024];
+                int bytesLength; // bytes returned from read()
                 // Read from the InputStream.
                 bytesLength = mmInStream.read(mmBuffer);
                 // Send the obtained bytes to the UI activity.

@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.SyncStateContract;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -215,11 +213,9 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     public void onResume() {
         super.onResume();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(android.bluetooth.);
+        filter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
         safeContext.registerReceiver(receiver, filter);
     }
-
-
 
     @Override
     public void onPause() {

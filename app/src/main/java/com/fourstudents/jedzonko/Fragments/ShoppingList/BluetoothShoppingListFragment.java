@@ -39,7 +39,6 @@ import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.RoomDB;
 import com.fourstudents.jedzonko.Fragments.Shared.AddProductFragment;
 import com.fourstudents.jedzonko.Other.BluetoothAcceptThread;
-import com.fourstudents.jedzonko.Other.BluetoothConnectedThread;
 import com.fourstudents.jedzonko.Other.BluetoothServiceClass;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
@@ -47,7 +46,7 @@ import com.fourstudents.jedzonko.ViewModels.Shared.IngredientItemViewModel;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.stream.MalformedJsonException;
+import com.google.gson.JsonSyntaxException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,10 +56,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
-import static android.app.Activity.RESULT_OK;
 
 public class BluetoothShoppingListFragment extends Fragment implements ProductAdapter.OnProductListener, IngredientItemAdapter.OnIngredientItemListener {
-    EditText name;
+    EditText nameTV;
     Button addIngredientButton;
     Dialog ingredientDialog;
     RoomDB database;
@@ -78,6 +76,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     BluetoothAdapter bluetoothAdapter;
     Context safeContext;
     String resultReadData;
+    BluetoothAcceptThread bluetoothAcceptThread;
 
     final int REQUEST_CODE_PERMISSIONS = 10;
     final String[] REQUIRED_PERMISSIONS = {Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_FINE_LOCATION};
@@ -122,7 +121,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     }
 
     private void initLayout(View view) {
-        name = view.findViewById(R.id.editTextName);
+        nameTV = view.findViewById(R.id.editTextName);
         ingredientRV = view.findViewById(R.id.ingredientRV);
         addIngredientButton = view.findViewById(R.id.editShoppingProductsBtn);
         addIngredientButton.setOnClickListener(new View.OnClickListener() {
@@ -210,10 +209,19 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ingredientItemViewModel.clearIngredientItemList();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         safeContext.registerReceiver(receiver, filter);
     }
 
@@ -231,6 +239,13 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
             if (BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.i("Harry9", device.getName());
+            }
+            else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
+                Toast.makeText(safeContext, "Połączenie nawiązane", Toast.LENGTH_SHORT).show();
+            }
+            else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)) {Log.i("Harry9", "");}
+            else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+                Toast.makeText(safeContext, "Połączenie utracone", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -251,29 +266,27 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
                         readData(msg);
                         break;
                     case 99:
-                        Toast.makeText(requireContext(), "Połączenie nawiązane", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(safeContext, "Odrzucono nowe połączenie", Toast.LENGTH_LONG).show();
                         break;
                 }
                 super.handleMessage(msg);
             }
         };
-        BluetoothAcceptThread thread = new BluetoothAcceptThread(bluetoothAdapter, handler);
-        thread.start();
+        bluetoothAcceptThread = new BluetoothAcceptThread(bluetoothAdapter, handler);
+        bluetoothAcceptThread.start();
     }
 
     private void readData(Message msg) {
         byte[] readBuf = (byte[]) msg.obj;
         String readMessage = new String(readBuf, 0, msg.arg1);
-        Log.i("HarryTest", readMessage);
         resultReadData += readMessage;
         JsonObject jsonObject;
         try {
             jsonObject = new Gson().fromJson(resultReadData, JsonObject.class);
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
             return;
         }
-
-        name.setText(jsonObject.get("list_name").getAsString());
+        nameTV.setText(jsonObject.get("list_name").getAsString());
         JsonArray jsonArray = jsonObject.getAsJsonArray("items");
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject object = jsonArray.get(i).getAsJsonObject();
@@ -291,7 +304,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
             item.setQuantity(object.get("item_quantity").getAsString());
             ingredientItemViewModel.addIngredientItem(item);
         }
-        Log.i("HarryReadData", readMessage);
+        bluetoothAcceptThread.cancel();
     }
 
     private void readData2(Message msg) {
@@ -299,7 +312,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
         String readMessage = new String(readBuf, 0, msg.arg1);
         try {
             JSONObject jsonObject = new JSONObject(readMessage);
-            name.setText(jsonObject.getString("list_name"));
+            nameTV.setText(jsonObject.getString("list_name"));
             JSONArray jsonArray = jsonObject.getJSONArray("items");
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject object = jsonArray.getJSONObject(i);
@@ -375,7 +388,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     }
 
     boolean checkData(){
-        if (TextUtils.isEmpty(name.getText().toString()) ||
+        if (TextUtils.isEmpty(nameTV.getText().toString()) ||
             ingredientItemViewModel.getIngredientItemsListSize() == 0 ||
             !ingredientItemViewModel.isQuantityFilled()
         ) {
@@ -389,7 +402,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     private void menuSaveButtonPressed() {
         if (checkData()) {
             Shopping shopping = new Shopping();
-            shopping.setName(name.getText().toString().trim());
+            shopping.setName(nameTV.getText().toString().trim());
             database.shoppingDao().insert(shopping);
             int shoppingId = database.shoppingDao().getLastId();
 
@@ -407,7 +420,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
                 database.shopitemDao().insertShopitemWithProduct(shopitemProductCrossRef);
             }
 
-            name.setText("");
+            nameTV.setText("");
             ingredientItemViewModel.clearIngredientItemList();
             Toast.makeText(getContext(), "Dodano listę", Toast.LENGTH_SHORT).show();
             wasSaved = true;
@@ -424,6 +437,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
                 database.productDao().delete(product);
             }
         }
+        resultReadData = "";
     }
 
     @Override

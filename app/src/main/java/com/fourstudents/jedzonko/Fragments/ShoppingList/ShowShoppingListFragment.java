@@ -73,6 +73,8 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
     List<BluetoothDevice> deviceList = new ArrayList<>();
 
     TextView shoppingListTitle;
+    BluetoothSendThread bluetoothSendThread;
+    BluetoothConnectedThread bluetoothConnectedThread;
 
     Context safeContext;
     final int REQUEST_CODE_PERMISSIONS = 10;
@@ -106,6 +108,10 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
                         .addToBackStack("EditShoppingListFragment")
                         .commit();
             } else if (clickedItem.getItemId() == R.id.action_send_bluetooth) {
+                if (bluetoothSendThread != null)
+                    bluetoothSendThread.cancel();
+                if (bluetoothConnectedThread != null)
+                    bluetoothConnectedThread.cancel();
                 initBT();
             }
             return false;
@@ -181,29 +187,38 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         safeContext.registerReceiver(receiver, filter);
-        Log.i("Harry2", "hallo1");
     }
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Log.i("Harry2", action);
+            Log.i("HarryBroadcastReceiver", action);
 
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress();
-                Log.i("Harry2", deviceName + " " + deviceHardwareAddress);
+                Log.i("HarryACTION_FOUND", deviceName + " " + deviceHardwareAddress);
                 deviceList.add(device);
                 allDevicesAdapter.notifyDataSetChanged();
             }
-            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+            else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 bluetoothDialog.findViewById(R.id.bluetoothProgressBar).setVisibility(View.VISIBLE);
             }
-            if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 bluetoothDialog.findViewById(R.id.bluetoothProgressBar).setVisibility(View.INVISIBLE);
+            }
+            else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
+                Toast.makeText(safeContext, "Połączenie nawiązane", Toast.LENGTH_SHORT).show();
+            }
+            else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)) {Log.i("Harry9", "");}
+            else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+                Toast.makeText(safeContext, "Połączenie utracone", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -331,6 +346,7 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
             public void handleMessage(@NonNull Message msg) {
                 switch (msg.what) {
                     case BluetoothServiceClass.MESSAGE_READY:
+                        Log.i("Harry", "READY");
                         sendData(msg.obj);
                         break;
                     case BluetoothServiceClass.MESSAGE_WRITE:
@@ -345,20 +361,20 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
 //                        String readMessage = new String(readBuf, 0, msg.arg1);
 //                        Log.i("Harry", readMessage);
 //                        break;
-                    case 99:
-                        Toast.makeText(requireContext(), "Połączenie nawiązane", Toast.LENGTH_SHORT).show();
+                    case 98:
+                        Toast.makeText(safeContext, "Odbiorca nie jest już widzialny", Toast.LENGTH_LONG).show();
                         break;
                 }
                 super.handleMessage(msg);
             }
         };
 
-        BluetoothSendThread thread = new BluetoothSendThread(device, handler);
-        thread.start();
+        bluetoothSendThread = new BluetoothSendThread(device, handler);
+        bluetoothSendThread.start();
     }
 
     private void sendData(Object object) {
-        BluetoothConnectedThread thread = (BluetoothConnectedThread) object;
+        bluetoothConnectedThread = (BluetoothConnectedThread) object;
         JsonObject jsonObject = new JsonObject();
         JsonArray jsonArray = new JsonArray();
         for (IngredientItem item : ingredientItemList) {
@@ -375,12 +391,7 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
         jsonObject.add("items", jsonArray);
         String str = jsonObject.toString();
         Log.i("HarrySendData", str);
-        byte[] testBytes = str.getBytes();
-        String readMessage = new String(testBytes, 0, testBytes.length);
-
-        JsonObject jsonObjectTest = new Gson().fromJson(readMessage, JsonObject.class);
-        Log.i("HarrySendData2", jsonObjectTest.toString());
-        thread.write(testBytes);
+        bluetoothConnectedThread.write(str.getBytes());
     }
 
     private void sendData2(Object object) {

@@ -2,6 +2,7 @@ package com.fourstudents.jedzonko.Other;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
@@ -48,7 +49,8 @@ public class BluetoothSendThread extends Thread {
 
         // The connection attempt succeeded. Perform work associated with
         // the connection in a separate thread.
-        BluetoothConnectedThread thread = new BluetoothConnectedThread(mmSocket, handler);
+        BluetoothConnectedThread thread;
+        thread = new BluetoothConnectedThread(mmSocket, handler);
         thread.start();
     }
 

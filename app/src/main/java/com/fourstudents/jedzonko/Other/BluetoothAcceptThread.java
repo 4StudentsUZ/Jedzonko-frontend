@@ -3,6 +3,7 @@ package com.fourstudents.jedzonko.Other;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
@@ -43,7 +44,8 @@ public class BluetoothAcceptThread extends Thread {
             if (socket != null) {
                 // A connection was accepted. Perform work associated with
                 // the connection in a separate thread.
-                BluetoothConnectedThread thread = new BluetoothConnectedThread(socket, handler);
+                BluetoothConnectedThread thread;
+                thread = new BluetoothConnectedThread(socket, handler);
                 thread.start();
                 try {
                     mmServerSocket.close();

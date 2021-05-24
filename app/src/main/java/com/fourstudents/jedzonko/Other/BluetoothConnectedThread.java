@@ -2,6 +2,7 @@ package com.fourstudents.jedzonko.Other;
 
 import android.app.Application;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -44,7 +45,6 @@ public class BluetoothConnectedThread extends Thread {
 
     public void run() {
         Log.i("HarryConnected", "connectedRun");
-        handler.sendEmptyMessage(99);
 
         // Keep listening to the InputStream until an exception occurs.
         while (true) {
@@ -62,6 +62,9 @@ public class BluetoothConnectedThread extends Thread {
                         .sendToTarget();
             } catch (IOException e) {
                 Log.i("HarryConnected", "Input stream was disconnected", e);
+                handler.sendEmptyMessage(99);
+//                if (fragmentContext != null)
+//                    Toast.makeText(fragmentContext, "Odbiorca nie jest już widzialny", Toast.LENGTH_LONG).show();
                 break;
             }
         }

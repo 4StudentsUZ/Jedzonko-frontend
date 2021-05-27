@@ -28,6 +28,9 @@ public interface ProductDao {
     @Query("SELECT * FROM product")
     List<Product> getAll();
 
+    @Query("SELECT productId FROM product ORDER BY productId DESC LIMIT 1")
+    int getLastId();
+
     @Query("SELECT * FROM product")
     LiveData<List<Product>> getAllLiveData();
 }

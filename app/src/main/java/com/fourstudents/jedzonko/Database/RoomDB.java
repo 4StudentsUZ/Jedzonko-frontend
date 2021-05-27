@@ -62,7 +62,7 @@ public abstract class RoomDB extends RoomDatabase {
     private static void shoppingTemplate() {
         ShoppingDao shoppingDao = database.shoppingDao();
         Shopping list = new Shopping();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 1; i++) {
             list.setName("Lista zakupów - #" + (i+1));
             shoppingDao.insert(list);
         }

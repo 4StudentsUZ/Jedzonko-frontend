@@ -1,7 +1,6 @@
 package com.fourstudents.jedzonko.Fragments.ShoppingList;
 
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
@@ -16,16 +15,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.fourstudents.jedzonko.Adapters.Recipe.RecipeAdapter;
 import com.fourstudents.jedzonko.Adapters.ShoppingList.ShoppingAdapter;
-import com.fourstudents.jedzonko.Database.Entities.Recipe;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.RoomDB;
-import com.fourstudents.jedzonko.Fragments.Recipe.ShowRecipeFragment;
 import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.ShoppingList.ShoppingViewModel;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class ShoppingListFragment extends Fragment implements ShoppingAdapter.OnShoppingListListener{
@@ -44,6 +39,16 @@ public class ShoppingListFragment extends Fragment implements ShoppingAdapter.On
         toolbar.inflateMenu(R.menu.slist);
         toolbar.getMenu();
         MenuItem search = toolbar.getMenu().findItem(R.id.action_search);
+        toolbar.setOnMenuItemClickListener(clickedMenuItem -> {
+            if (clickedMenuItem.getItemId() == R.id.action_get_bluetooth) {
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainFrameLayout, new BluetoothShoppingListFragment(), "BluetoothShoppingListFragment")
+                        .addToBackStack("BluetoothShoppingListFragment")
+                        .commit();
+            }
+            return true;
+        });
         SearchView searchView = (SearchView) search.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

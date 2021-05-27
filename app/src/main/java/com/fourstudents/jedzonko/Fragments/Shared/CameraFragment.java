@@ -166,7 +166,6 @@ public class CameraFragment extends Fragment {
                 imageAnalysis.setAnalyzer(cameraExecutor, new BarcodeAnalyzer(barcode -> {
                     if (processingBarcode.compareAndSet(false, true)) {
                         activity.scannedBarcode = barcode;
-                        Toast.makeText(safeContext, R.string.camera_barcode_scanned, Toast.LENGTH_LONG).show();
                         getParentFragmentManager().popBackStack();
                     }
                 }));

@@ -34,6 +34,11 @@
     <string name="share_recipe">Udostępnij przepis</string>
     <string name="edit_account">Edytuj konto</string>
     <string name="account_logout">Wyloguj</string>
+    <string name="shopping_bluetooth">Odbierz przez Bluetooth</string>
+    <string name="title_bluetooth_slist">Odbierz listę zakupów</string>
+    <string name="save_slist">Zapisz listę</string>
+    <string name="send_bluetooth">Wyślij przez Bluetooth</string>
+    <string name="edit_slist">Edytuj listę</string>
     <string name="sort_recipes">Sort</string>
     <string name="dialog_sort_title">Sortowanie</string>
     <string name="sort_creation_date">Data Utworzenia</string>

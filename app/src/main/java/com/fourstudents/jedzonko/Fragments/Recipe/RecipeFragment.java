@@ -22,7 +22,12 @@ import com.fourstudents.jedzonko.Adapters.ShoppingList.ShoppingAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
 
 import com.fourstudents.jedzonko.Database.RoomDB;
+import com.fourstudents.jedzonko.Fragments.Search.SearchFragment;
 import com.fourstudents.jedzonko.Fragments.Shared.AddProductFragment;
+import com.fourstudents.jedzonko.Other.Sorting.SortDialogFactory;
+import com.fourstudents.jedzonko.Other.Sorting.SortListener;
+import com.fourstudents.jedzonko.Other.Sorting.SortOrder;
+import com.fourstudents.jedzonko.Other.Sorting.SortProperty;
 import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.Recipe.RecipeViewModel;
 import com.fourstudents.jedzonko.ViewModels.ShoppingList.ShoppingViewModel;
@@ -31,7 +36,7 @@ import com.fourstudents.jedzonko.ViewModels.ShoppingList.ShoppingViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecipeFragment extends Fragment implements RecipeAdapter.OnRecipeListener {
+public class RecipeFragment extends Fragment implements RecipeAdapter.OnRecipeListener, SortListener {
 
     public RecipeFragment() {
         super(R.layout.fragment_recipe);
@@ -40,6 +45,10 @@ public class RecipeFragment extends Fragment implements RecipeAdapter.OnRecipeLi
     RecyclerView recipeRV;
     RecipeAdapter recipeAdapter;
     RecipeViewModel recipeViewModel;
+
+    private String queryText = "";
+    private SortProperty sortProperty = SortProperty.Nothing;
+    private SortOrder sortOrder = SortOrder.Ascending;
 
     private void initToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
@@ -57,23 +66,21 @@ public class RecipeFragment extends Fragment implements RecipeAdapter.OnRecipeLi
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                recipeAdapter.getFilter().filter(newText);
+                queryText = newText;
+                updateSearch();
                 return false;
             }
         });
 
-//        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//
-//                if(item.getItemId()==R.id.action_search)
-//                {
-//
-//                }
-//
-//                return false;
-//            }
-//        });
+        toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.action_sort:
+                    SortDialogFactory.getLocalSortDialog(requireContext(), getLayoutInflater(), sortProperty, sortOrder, RecipeFragment.this);
+                    return true;
+                default:
+                    return super.onOptionsItemSelected(item);
+            }
+        });
     }
 
 
@@ -126,6 +133,18 @@ public class RecipeFragment extends Fragment implements RecipeAdapter.OnRecipeLi
                 .replace(R.id.mainFrameLayout, showRecipeFragment, "ShowRecipeFragment")
                 .addToBackStack("ShowRecipeFragment")
                 .commit();
+    }
+
+    @Override
+    public void onSortingChanged(SortProperty sortProperty, SortOrder sortOrder) {
+        this.sortProperty = sortProperty;
+        this.sortOrder = sortOrder;
+        updateSearch();
+    }
+
+    private void updateSearch() {
+        System.out.println(String.format("%s;%s;%s", queryText, sortProperty, sortOrder));
+        recipeAdapter.getFilter().filter(String.format("%s;%s;%s", queryText, sortProperty, sortOrder));
     }
 }
 

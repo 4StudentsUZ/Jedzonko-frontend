@@ -16,9 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fourstudents.jedzonko.Adapters.ShoppingList.ShoppingAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
+import com.fourstudents.jedzonko.Other.Sorting.SortOrder;
+import com.fourstudents.jedzonko.Other.Sorting.SortProperty;
 import com.fourstudents.jedzonko.R;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder> implements Filterable {
@@ -119,16 +122,36 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
             if(constraint == null || constraint.length() == 0)
             {
                 filteredList.addAll(recipeListFull);
-            }else
-            {
-                String filterPattern = constraint.toString().toLowerCase().trim();
+            }
+            else {
+                String[] arguments = constraint.toString().split(";");
+                String query;
+                if (arguments.length == 3) query = arguments[0].toLowerCase().trim();
+                else query = "";
+
+                SortProperty sortProperty = SortProperty.valueOf(arguments[1]);
+                SortOrder sortOrder = SortOrder.valueOf(arguments[2]);
 
                 for(Recipe item : recipeListFull)
                 {
-                    if(item.getTitle().toLowerCase().contains(filterPattern))
+                    if(item.getTitle().toLowerCase().contains(query))
                     {
                         filteredList.add(item);
                     }
+                }
+
+                Comparator<Recipe> comparator = (Comparator<Recipe>) (r1, r2) -> {
+                    switch (sortProperty) {
+                        case Title:
+                            return r1.getTitle().compareTo(r2.getTitle());
+                        default:
+                            return (int) (r1.getRecipeId() - r2.getRecipeId());
+                    }
+                };
+
+                if (sortProperty != SortProperty.Nothing) {
+                    if (sortOrder == SortOrder.Ascending) filteredList.sort(comparator);
+                    else filteredList.sort(comparator.reversed());
                 }
             }
 

@@ -39,4 +39,16 @@
     <string name="save_slist">Zapisz listę</string>
     <string name="send_bluetooth">Wyślij przez Bluetooth</string>
     <string name="edit_slist">Edytuj listę</string>
+    <string name="sort_recipes">Sort</string>
+    <string name="dialog_sort_title">Sortowanie</string>
+    <string name="sort_creation_date">Data Utworzenia</string>
+    <string name="sort_rating">Ocena</string>
+    <string name="sort_ascending">Rosnąco</string>
+    <string name="sort_descending">Malejąco</string>
+    <string name="sort_order">Kolejność</string>
+    <string name="sort_property">Właściwość</string>
+    <string name="confirm">Zatwierdź</string>
+    <string name="clear">Wyczyść</string>
+    <string name="sort_nothing">Nic</string>
+    <string name="sort_title">Tytuł</string>
 </resources>

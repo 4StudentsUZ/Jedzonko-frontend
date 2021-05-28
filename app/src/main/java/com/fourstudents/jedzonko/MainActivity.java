@@ -93,10 +93,10 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("NonConstantResourceId")
     private void setupBottomNavigationView() {
-        Fragment searchFragment = new SearchFragment();
-        Fragment shoppingListFragment = new ShoppingListFragment();
-        Fragment recipesFragment = new RecipeFragment();
-        Fragment shopsFragment = new ShopsFragment();
+//        Fragment searchFragment = new SearchFragment();
+//        Fragment shoppingListFragment = new ShoppingListFragment();
+//        Fragment recipesFragment = new RecipeFragment();
+//        Fragment shopsFragment = new ShopsFragment();
 //        Fragment accountFragment = new AccountFragment();
 
         ((BottomNavigationView) findViewById(R.id.bottomNavigationView)).setOnNavigationItemSelectedListener(item -> {
@@ -105,16 +105,16 @@ public class MainActivity extends AppCompatActivity {
             }
             switch (item.getItemId()) {
                 case R.id.navSearch:
-                    setCurrentFragment(searchFragment);
+                    setCurrentFragment(new SearchFragment());
                     break;
                 case R.id.navShoppingList:
-                    setCurrentFragment(shoppingListFragment);
+                    setCurrentFragment(new ShoppingListFragment());
                     break;
                 case R.id.navRecipes:
-                    setCurrentFragment(recipesFragment);
+                    setCurrentFragment(new RecipeFragment());
                     break;
                 case R.id.navShops:
-                    setCurrentFragment(shopsFragment);
+                    setCurrentFragment(new ShopsFragment());
                     break;
                 case R.id.navAccount:
                     setCurrentFragment(new AccountFragment());

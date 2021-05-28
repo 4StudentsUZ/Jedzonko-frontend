@@ -40,7 +40,7 @@ public class RegisterAccountFragment extends Fragment implements Callback<Regist
     JedzonkoService api;
 
     public RegisterAccountFragment() {
-        super(R.layout.fragment_register_account);
+        super(R.layout.fragment_account_register);
     }
 
     @Override

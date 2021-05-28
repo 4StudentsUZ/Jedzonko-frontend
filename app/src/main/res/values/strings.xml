@@ -51,4 +51,7 @@
     <string name="clear">Wyczyść</string>
     <string name="sort_nothing">Nic</string>
     <string name="sort_title">Tytuł</string>
+    <string name="dialog_add_tag">Dodaj tag</string>
+    <string name="dialog_add_product">Dodaj produkt</string>
+    <string name="add_ingredients_button">Dodaj składniki</string>
 </resources>

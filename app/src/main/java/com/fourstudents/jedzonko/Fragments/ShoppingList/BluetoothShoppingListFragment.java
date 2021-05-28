@@ -38,8 +38,8 @@ import com.fourstudents.jedzonko.Database.Entities.ShopitemProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.RoomDB;
 import com.fourstudents.jedzonko.Fragments.Shared.AddProductFragment;
-import com.fourstudents.jedzonko.Other.BluetoothAcceptThread;
-import com.fourstudents.jedzonko.Other.BluetoothServiceClass;
+import com.fourstudents.jedzonko.Other.Bluetooth.BluetoothAcceptThread;
+import com.fourstudents.jedzonko.Other.Bluetooth.BluetoothServiceClass;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.Shared.IngredientItemViewModel;
@@ -47,10 +47,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,32 +120,20 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
         nameTV = view.findViewById(R.id.editTextName);
         ingredientRV = view.findViewById(R.id.ingredientRV);
         addIngredientButton = view.findViewById(R.id.editShoppingProductsBtn);
-        addIngredientButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ingredientDialog.show();
-                Button addProductButton = ingredientDialog.findViewById(R.id.addProductButton);
-                Button addIngredientsButton = ingredientDialog.findViewById(R.id.addIngredientsButton);
-                addIngredientsButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ingredientDialog.dismiss();
-                    }
-                });
-                addProductButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        productList.clear();
-                        ingredientDialog.dismiss();
-                        requireActivity()
-                                .getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.mainFrameLayout, new AddProductFragment(), "AddProductFragment")
-                                .addToBackStack("AddProductFragment")
-                                .commit();
-                    }
-                });
-            }
+        addIngredientButton.setOnClickListener(v -> {
+            ingredientDialog.show();
+            Button addProductButton = ingredientDialog.findViewById(R.id.addProductButton);
+            Button addIngredientsButton = ingredientDialog.findViewById(R.id.addIngredientsButton);
+            addIngredientsButton.setOnClickListener(v1 -> ingredientDialog.dismiss());
+            addProductButton.setOnClickListener(v12 -> {
+                productList.clear();
+                ingredientDialog.dismiss();
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainFrameLayout, new AddProductFragment(), "AddProductFragment")
+                        .addToBackStack("AddProductFragment")
+                        .commit();
+            });
         });
     }
 
@@ -212,6 +196,8 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     public void onDestroy() {
         super.onDestroy();
         ingredientItemViewModel.clearIngredientItemList();
+        if (bluetoothAcceptThread != null)
+            bluetoothAcceptThread.cancel();
     }
 
     @Override
@@ -241,11 +227,11 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
                 Log.i("Harry9", device.getName());
             }
             else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
-                Toast.makeText(safeContext, "Połączenie nawiązane", Toast.LENGTH_SHORT).show();
+                Toast.makeText(safeContext, "Odbieranie danych...", Toast.LENGTH_SHORT).show();
             }
             else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)) {Log.i("Harry9", "");}
             else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
-                Toast.makeText(safeContext, "Połączenie utracone", Toast.LENGTH_SHORT).show();
+                Toast.makeText(safeContext, "Rozłączono", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -255,18 +241,12 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
             @Override
             public void handleMessage(@NonNull Message msg) {
                 switch (msg.what) {
-//                    case BluetoothServiceClass.MESSAGE_WRITE:
-//                        Log.i("Harry", "WRITE");
-//                        byte[] writeBuf = (byte[]) msg.obj;
-//                        String writeMessage = new String(writeBuf, 0, msg.arg1);
-//                        Log.i("Harry", writeMessage);
-//                        break;
                     case BluetoothServiceClass.MESSAGE_READ:
                         Log.i("Harry", "READ");
                         readData(msg);
                         break;
-                    case 99:
-                        Toast.makeText(safeContext, "Odrzucono nowe połączenie", Toast.LENGTH_LONG).show();
+                    case BluetoothServiceClass.MESSAGE_CLOSE_CONNECTION:
+                        Toast.makeText(safeContext, "Zamykanie połączenia...", Toast.LENGTH_LONG).show();
                         break;
                 }
                 super.handleMessage(msg);
@@ -305,35 +285,6 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
             ingredientItemViewModel.addIngredientItem(item);
         }
         bluetoothAcceptThread.cancel();
-    }
-
-    private void readData2(Message msg) {
-        byte[] readBuf = (byte[]) msg.obj;
-        String readMessage = new String(readBuf, 0, msg.arg1);
-        try {
-            JSONObject jsonObject = new JSONObject(readMessage);
-            nameTV.setText(jsonObject.getString("list_name"));
-            JSONArray jsonArray = jsonObject.getJSONArray("items");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject object = jsonArray.getJSONObject(i);
-                Product product = new Product();
-                product.setName(object.getString("item_name"));
-                product.setBarcode(object.getString("item_barcode"));
-                product.setData(android.util.Base64.decode(object.getString("item_data"), 0));
-//                product.setData(new byte[] {1,1});
-                database.productDao().insert(product);
-                int lastProductId = database.productDao().getLastId();
-                product.setProductId(lastProductId);
-                addedProducts.add(product);
-                IngredientItem item = new IngredientItem();
-                item.setProduct(product);
-                item.setQuantity(object.getString("item_quantity"));
-                ingredientItemViewModel.addIngredientItem(item);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Log.i("Harry", readMessage);
     }
 
     @Override

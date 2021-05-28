@@ -38,19 +38,13 @@ import com.fourstudents.jedzonko.Database.Relations.ShopitemsWithProducts;
 import com.fourstudents.jedzonko.Database.Relations.ShoppingWithShopitemsAndProducts;
 import com.fourstudents.jedzonko.Database.RoomDB;
 import com.fourstudents.jedzonko.Fragments.Shared.ShowProductFragment;
-import com.fourstudents.jedzonko.Other.BluetoothAcceptThread;
-import com.fourstudents.jedzonko.Other.BluetoothConnectedThread;
-import com.fourstudents.jedzonko.Other.BluetoothSendThread;
-import com.fourstudents.jedzonko.Other.BluetoothServiceClass;
+import com.fourstudents.jedzonko.Other.Bluetooth.BluetoothConnectedThread;
+import com.fourstudents.jedzonko.Other.Bluetooth.BluetoothSendThread;
+import com.fourstudents.jedzonko.Other.Bluetooth.BluetoothServiceClass;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -110,8 +104,6 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
             } else if (clickedItem.getItemId() == R.id.action_send_bluetooth) {
                 if (bluetoothSendThread != null)
                     bluetoothSendThread.cancel();
-                if (bluetoothConnectedThread != null)
-                    bluetoothConnectedThread.cancel();
                 initBT();
             }
             return false;
@@ -214,11 +206,11 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
                 bluetoothDialog.findViewById(R.id.bluetoothProgressBar).setVisibility(View.INVISIBLE);
             }
             else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
-                Toast.makeText(safeContext, "Połączenie nawiązane", Toast.LENGTH_SHORT).show();
+                Toast.makeText(safeContext, "Nadawanie danych...", Toast.LENGTH_SHORT).show();
             }
             else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)) {Log.i("Harry9", "");}
             else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
-                Toast.makeText(safeContext, "Połączenie utracone", Toast.LENGTH_SHORT).show();
+                Toast.makeText(safeContext, "Rozłączono", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -355,15 +347,6 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
                         String writeMessage = new String(writeBuf, 0, msg.arg1);
                         Log.i("Harry", writeMessage);
                         break;
-//                    case BluetoothServiceClass.MESSAGE_READ:
-//                        Log.i("Harry", "READ");
-//                        byte[] readBuf = (byte[]) msg.obj;
-//                        String readMessage = new String(readBuf, 0, msg.arg1);
-//                        Log.i("Harry", readMessage);
-//                        break;
-                    case 98:
-                        Toast.makeText(safeContext, "Odbiorca nie jest już widzialny", Toast.LENGTH_LONG).show();
-                        break;
                 }
                 super.handleMessage(msg);
             }
@@ -392,33 +375,6 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
         String str = jsonObject.toString();
         Log.i("HarrySendData", str);
         bluetoothConnectedThread.write(str.getBytes());
-    }
-
-    private void sendData2(Object object) {
-        BluetoothConnectedThread thread = (BluetoothConnectedThread) object;
-        JSONObject jsonObject = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
-        for (IngredientItem item : ingredientItemList) {
-            JSONObject itemObject = new JSONObject();
-            try {
-                itemObject.put("item_name", item.product.getName());
-                itemObject.put("item_barcode", item.product.getBarcode());
-                itemObject.put("item_quantity", item.quantity);
-                byte[] data = item.product.getData();
-                String dataString = android.util.Base64.encodeToString(data, 0);
-                itemObject.put("item_data", dataString);
-                jsonArray.put(itemObject);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            jsonObject.put("list_name", shoppingListTitle.getText().toString().trim());
-            jsonObject.put("items", jsonArray);
-            thread.write(jsonObject.toString().getBytes());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

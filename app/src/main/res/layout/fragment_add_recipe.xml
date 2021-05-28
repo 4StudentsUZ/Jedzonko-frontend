@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/fragment_recipe_add_parent">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/custom_toolbar"
@@ -90,7 +91,7 @@
                 android:id="@+id/showRecipeDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dodaj składniki"
+                android:text="@string/add_ingredients_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"

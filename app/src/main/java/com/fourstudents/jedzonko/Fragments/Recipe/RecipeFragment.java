@@ -52,7 +52,7 @@ public class RecipeFragment extends Fragment implements RecipeAdapter.OnRecipeLi
 
     private void initToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.custom_toolbar);
-        toolbar.setTitle("Przepisy");
+        toolbar.setTitle("Twoje przepisy");
         toolbar.inflateMenu(R.menu.recipes);
         toolbar.getMenu();
 

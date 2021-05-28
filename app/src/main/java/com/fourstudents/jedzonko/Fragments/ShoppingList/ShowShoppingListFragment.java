@@ -231,7 +231,7 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
         );
 
         bluetoothTrasferDialog = new Dialog(requireContext());
-        bluetoothTrasferDialog.setContentView(R.layout.dialog_bluetooth_transfer);
+        bluetoothTrasferDialog.setContentView(R.layout.dialog_data_transfer);
         bluetoothTrasferDialog.setCanceledOnTouchOutside(true);
         bluetoothTrasferDialog.getWindow().setLayout(
                 WindowManager.LayoutParams.MATCH_PARENT,

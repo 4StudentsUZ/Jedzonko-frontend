@@ -327,7 +327,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
                         WindowManager.LayoutParams.WRAP_CONTENT
                 );
         bluetoothTrasferDialog = new Dialog(requireContext());
-        bluetoothTrasferDialog.setContentView(R.layout.dialog_bluetooth_transfer);
+        bluetoothTrasferDialog.setContentView(R.layout.dialog_data_transfer);
         bluetoothTrasferDialog.setCanceledOnTouchOutside(true);
         bluetoothTrasferDialog.getWindow()
                 .setLayout(

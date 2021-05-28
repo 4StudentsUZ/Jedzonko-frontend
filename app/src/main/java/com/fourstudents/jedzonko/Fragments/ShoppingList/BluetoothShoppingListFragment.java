@@ -38,8 +38,8 @@ import com.fourstudents.jedzonko.Database.Entities.ShopitemProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.RoomDB;
 import com.fourstudents.jedzonko.Fragments.Shared.AddProductFragment;
-import com.fourstudents.jedzonko.Other.BluetoothAcceptThread;
-import com.fourstudents.jedzonko.Other.BluetoothServiceClass;
+import com.fourstudents.jedzonko.Other.Bluetooth.BluetoothAcceptThread;
+import com.fourstudents.jedzonko.Other.Bluetooth.BluetoothServiceClass;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.Shared.IngredientItemViewModel;
@@ -245,7 +245,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
             }
             else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)) {Log.i("Harry9", "");}
             else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
-                Toast.makeText(safeContext, "Połączenie utracone", Toast.LENGTH_SHORT).show();
+                Toast.makeText(safeContext, "Rozłączono", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -265,8 +265,8 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
                         Log.i("Harry", "READ");
                         readData(msg);
                         break;
-                    case 99:
-                        Toast.makeText(safeContext, "Odrzucono nowe połączenie", Toast.LENGTH_LONG).show();
+                    case BluetoothServiceClass.MESSAGE_CLOSE_CONNECTION:
+                        Toast.makeText(safeContext, "Zamykanie połączenia...", Toast.LENGTH_LONG).show();
                         break;
                 }
                 super.handleMessage(msg);

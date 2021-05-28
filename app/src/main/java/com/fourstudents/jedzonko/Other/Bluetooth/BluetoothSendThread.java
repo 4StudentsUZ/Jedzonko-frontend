@@ -1,8 +1,7 @@
-package com.fourstudents.jedzonko.Other;
+package com.fourstudents.jedzonko.Other.Bluetooth;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
@@ -12,6 +11,7 @@ public class BluetoothSendThread extends Thread {
     private final BluetoothSocket mmSocket;
     private final BluetoothDevice mmDevice;
     private final Handler handler;
+    BluetoothConnectedThread bluetoothConnectedThread;
 
     public BluetoothSendThread(BluetoothDevice device, Handler handler) {
         // Use a temporary object that is later assigned to mmSocket
@@ -49,15 +49,18 @@ public class BluetoothSendThread extends Thread {
 
         // The connection attempt succeeded. Perform work associated with
         // the connection in a separate thread.
-        BluetoothConnectedThread thread;
-        thread = new BluetoothConnectedThread(mmSocket, handler);
-        thread.start();
+
+        bluetoothConnectedThread = new BluetoothConnectedThread(mmSocket, handler);
+        bluetoothConnectedThread.start();
     }
 
     // Closes the client socket and causes the thread to finish.
     public void cancel() {
+        Log.i("HarrySendCancel", "Cancel");
         try {
             mmSocket.close();
+            if (bluetoothConnectedThread != null)
+                bluetoothConnectedThread.cancel();
         } catch (IOException e) {
             Log.e("HarrySend", "Could not close the client socket", e);
         }

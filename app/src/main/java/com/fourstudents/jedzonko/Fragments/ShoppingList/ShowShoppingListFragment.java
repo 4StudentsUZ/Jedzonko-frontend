@@ -38,13 +38,11 @@ import com.fourstudents.jedzonko.Database.Relations.ShopitemsWithProducts;
 import com.fourstudents.jedzonko.Database.Relations.ShoppingWithShopitemsAndProducts;
 import com.fourstudents.jedzonko.Database.RoomDB;
 import com.fourstudents.jedzonko.Fragments.Shared.ShowProductFragment;
-import com.fourstudents.jedzonko.Other.BluetoothAcceptThread;
-import com.fourstudents.jedzonko.Other.BluetoothConnectedThread;
-import com.fourstudents.jedzonko.Other.BluetoothSendThread;
-import com.fourstudents.jedzonko.Other.BluetoothServiceClass;
+import com.fourstudents.jedzonko.Other.Bluetooth.BluetoothConnectedThread;
+import com.fourstudents.jedzonko.Other.Bluetooth.BluetoothSendThread;
+import com.fourstudents.jedzonko.Other.Bluetooth.BluetoothServiceClass;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -110,8 +108,6 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
             } else if (clickedItem.getItemId() == R.id.action_send_bluetooth) {
                 if (bluetoothSendThread != null)
                     bluetoothSendThread.cancel();
-                if (bluetoothConnectedThread != null)
-                    bluetoothConnectedThread.cancel();
                 initBT();
             }
             return false;
@@ -218,7 +214,7 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
             }
             else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)) {Log.i("Harry9", "");}
             else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
-                Toast.makeText(safeContext, "Połączenie utracone", Toast.LENGTH_SHORT).show();
+                Toast.makeText(safeContext, "Rozłączono", Toast.LENGTH_SHORT).show();
             }
         }
     };

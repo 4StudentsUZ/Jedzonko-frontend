@@ -5,7 +5,6 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
-import java.util.Set;
 
 @Entity(tableName = "product")
 public class Product implements Serializable {

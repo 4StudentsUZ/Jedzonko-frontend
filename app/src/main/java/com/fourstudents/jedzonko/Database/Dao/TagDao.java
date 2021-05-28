@@ -6,12 +6,9 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.fourstudents.jedzonko.Database.Entities.IngredientProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
 
 import java.util.List;
-
-import static androidx.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface TagDao {

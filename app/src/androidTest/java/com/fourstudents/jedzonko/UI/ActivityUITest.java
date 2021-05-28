@@ -1,20 +1,14 @@
 package com.fourstudents.jedzonko.UI;
 
 import android.Manifest;
-import android.content.Intent;
 
-import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.contrib.NavigationViewActions;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.R;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

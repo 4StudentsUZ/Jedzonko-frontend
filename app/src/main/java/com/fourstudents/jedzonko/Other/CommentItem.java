@@ -1,8 +1,6 @@
 package com.fourstudents.jedzonko.Other;
 
 
-import java.time.LocalDateTime;
-
 public class CommentItem {
     private String author;
     private String date;

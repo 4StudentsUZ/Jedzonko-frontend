@@ -13,8 +13,6 @@ import com.fourstudents.jedzonko.Database.Relations.ShoppingWithShopitemsAndProd
 
 import java.util.List;
 
-import static androidx.room.OnConflictStrategy.REPLACE;
-
 @Dao
 public interface ShoppingDao {
     @Insert

@@ -6,14 +6,10 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.fourstudents.jedzonko.Database.Entities.Ingredient;
 import com.fourstudents.jedzonko.Database.Entities.Shopitem;
 import com.fourstudents.jedzonko.Database.Entities.ShopitemProductCrossRef;
 
 import java.util.List;
-
-import static androidx.room.OnConflictStrategy.ABORT;
-import static androidx.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface ShopitemDao {

@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment;
 
 import com.fourstudents.jedzonko.Adapters.Shared.ShowIngredientItemAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Product;
-import com.fourstudents.jedzonko.Database.Entities.Recipe;
 import com.fourstudents.jedzonko.Database.RoomDB;
 import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.Other.HarryHelperClass;

@@ -3,21 +3,19 @@ package com.fourstudents.jedzonko.Fragments.Shared;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.core.Camera;
-import androidx.camera.core.CameraInfoUnavailableException;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.FocusMeteringAction;
 import androidx.camera.core.ImageAnalysis;
@@ -41,8 +39,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -75,6 +71,7 @@ public class CameraFragment extends Fragment {
     MainActivity activity;
     Bundle args;
     int triesToClose = 0;
+    int requiredTries = 0;
     AtomicBoolean processingBarcode = new AtomicBoolean(false);
 
     HarryHelperClass.CameraModes mode;
@@ -132,6 +129,40 @@ public class CameraFragment extends Fragment {
 
         previewView = view.findViewById(R.id.viewFinder);
 
+        previewView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (previewView.getMeasuredWidth() > 0 && previewView.getMeasuredHeight() > 0) {
+                    previewView.setOnTouchListener((v, event) -> {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                return true;
+                            case MotionEvent.ACTION_UP:
+                                v.performClick();
+                                MeteringPointFactory factory =
+                                        new SurfaceOrientedMeteringPointFactory(
+                                                previewView.getMeasuredWidth(),
+                                                previewView.getMeasuredHeight()
+                                        );
+                                MeteringPoint touchFocusPoint = factory.createPoint(event.getX(), event.getY());
+                                FocusMeteringAction touchFocusAction =
+                                        new FocusMeteringAction
+                                                .Builder(touchFocusPoint, FocusMeteringAction.FLAG_AF)
+                                                .disableAutoCancel()
+                                                .build();
+                                Log.i(TAG, "AutofocusSetOnTouchListener");
+                                camera.getCameraControl().startFocusAndMetering(touchFocusAction);
+                                return true;
+                            default:
+                                break;
+                        }
+                        return false;
+                    });
+                    previewView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            }
+        });
+
         if (allPermissionsGranted()) {
             makeOutputDirectoryForImages();
             startCamera();
@@ -183,46 +214,19 @@ public class CameraFragment extends Fragment {
                 cameraProvider.unbindAll();
                 if (mode == HarryHelperClass.CameraModes.Barcode) {
                     camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis, imageCapture);
-                    MeteringPoint autoFocusPoint =
-                            new SurfaceOrientedMeteringPointFactory(1f, 1f)
-                                    .createPoint(.5f, .5f);
-                    FocusMeteringAction autoFocusAction =
-                            new FocusMeteringAction
-                                    .Builder(autoFocusPoint, FocusMeteringAction.FLAG_AF)
-                                    .setAutoCancelDuration(1000, TimeUnit.MILLISECONDS)
-                                    .build();
-
-                    camera.getCameraControl().startFocusAndMetering(autoFocusAction);
+//                    MeteringPoint autoFocusPoint =
+//                            new SurfaceOrientedMeteringPointFactory(1f, 1f)
+//                                    .createPoint(.5f, .5f);
+//                    FocusMeteringAction autoFocusAction =
+//                            new FocusMeteringAction
+//                                    .Builder(autoFocusPoint, FocusMeteringAction.FLAG_AF)
+//                                    .setAutoCancelDuration(1000, TimeUnit.MILLISECONDS)
+//                                    .build();
+//
+//                    camera.getCameraControl().startFocusAndMetering(autoFocusAction);
                 }
                 else
                     camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
-
-
-
-//                previewView.setOnTouchListener((v, event) -> {
-//                    switch (event.getAction()) {
-//                        case MotionEvent.ACTION_DOWN:
-//                            return true;
-//                        case MotionEvent.ACTION_UP:
-//                            v.performClick();
-//                            MeteringPointFactory factory =
-//                                    new SurfaceOrientedMeteringPointFactory(
-//                                            previewView.getMeasuredWidth(),
-//                                            previewView.getMeasuredHeight()
-//                                    );
-//                            MeteringPoint touchFocusPoint = factory.createPoint(event.getX(), event.getY());
-//                            FocusMeteringAction touchFocusAction =
-//                                    new FocusMeteringAction
-//                                            .Builder(touchFocusPoint, FocusMeteringAction.FLAG_AF)
-//                                            .disableAutoCancel()
-//                                            .build();
-//                            camera.getCameraControl().startFocusAndMetering(touchFocusAction);
-//                            return true;
-//                        default:
-//                            break;
-//                    }
-//                    return false;
-//                });
 
             } catch (ExecutionException | InterruptedException e) {
                 Log.e("Harry startCamera()", "read stack trace");
@@ -235,6 +239,7 @@ public class CameraFragment extends Fragment {
     }
 
     private void takePhoto() {
+        requiredTries++;
         imageCapture.takePicture(
             ContextCompat.getMainExecutor(safeContext),
             new ImageCapture.OnImageCapturedCallback() {
@@ -265,39 +270,39 @@ public class CameraFragment extends Fragment {
             }
         );
 
-
-        File photoFile;
-
-        if (mode == HarryHelperClass.CameraModes.Recipe)
-            photoFile = new File(outputDirectoryForRecipe, new SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".jpg");
-        else
-            photoFile = new File(outputDirectoryForProduct, new SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".jpg");
-
-        ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(photoFile).build();
-        imageCapture.takePicture(
-            outputFileOptions,
-            ContextCompat.getMainExecutor(safeContext),
-            new ImageCapture.OnImageSavedCallback() {
-
-                @Override
-                public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                    Uri savedUri = Uri.fromFile(photoFile);
-                    String msg = "Photo capture success: " + savedUri;
-                    Toast.makeText(safeContext, msg, Toast.LENGTH_LONG).show();
-                    tryToClose();
-                }
-
-                @Override
-                public void onError(@NonNull ImageCaptureException exception) {
-                    Log.e("Harry takePhoto().onError()", "read stack trace");
-                    exception.printStackTrace();
-                }
-            }
-        );
+//        requiredTries++;
+//        File photoFile;
+//
+//        if (mode == HarryHelperClass.CameraModes.Recipe)
+//            photoFile = new File(outputDirectoryForRecipe, new SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".jpg");
+//        else
+//            photoFile = new File(outputDirectoryForProduct, new SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".jpg");
+//
+//        ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(photoFile).build();
+//        imageCapture.takePicture(
+//            outputFileOptions,
+//            ContextCompat.getMainExecutor(safeContext),
+//            new ImageCapture.OnImageSavedCallback() {
+//
+//                @Override
+//                public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+//                    Uri savedUri = Uri.fromFile(photoFile);
+//                    String msg = "Photo capture success: " + savedUri;
+//                    Toast.makeText(safeContext, msg, Toast.LENGTH_LONG).show();
+//                    tryToClose();
+//                }
+//
+//                @Override
+//                public void onError(@NonNull ImageCaptureException exception) {
+//                    Log.e("Harry takePhoto().onError()", "read stack trace");
+//                    exception.printStackTrace();
+//                }
+//            }
+//        );
     }
 
     private void tryToClose() {
-        if (++triesToClose == 2)
+        if (++triesToClose == requiredTries)
             getParentFragmentManager().popBackStack();
     }
 

@@ -1,6 +1,7 @@
 package com.fourstudents.jedzonko.Adapters.Shared;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,8 @@ public class ShowIngredientItemAdapter extends ListAdapter<IngredientItem, ShowI
                 return oldItem == newItem;
             }
         });
+
+        Log.i("HarryBluetoothDebug", "IngredientItemAdapterConstructor");
 
         this.context = context;
         this.onIngredientItemListener = onIngredientItemListener;

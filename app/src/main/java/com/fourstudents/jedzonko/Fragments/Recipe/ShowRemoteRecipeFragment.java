@@ -3,14 +3,6 @@ package com.fourstudents.jedzonko.Fragments.Recipe;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +13,13 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.fourstudents.jedzonko.Adapters.Recipe.RecipeCommentsAdapter;
 import com.fourstudents.jedzonko.Adapters.Shared.ShowIngredientItemAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Product;
@@ -28,18 +27,17 @@ import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.Network.JedzonkoService;
 import com.fourstudents.jedzonko.Network.Responses.AverageRateResponse;
 import com.fourstudents.jedzonko.Network.Responses.CommentResponse;
-import com.fourstudents.jedzonko.Network.Responses.UserRateResponse;
 import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
+import com.fourstudents.jedzonko.Network.Responses.UserRateResponse;
 import com.fourstudents.jedzonko.Other.CommentItem;
 import com.fourstudents.jedzonko.Other.Ingredient;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
 import com.google.gson.JsonObject;
 
-import java.text.SimpleDateFormat;
+import org.jetbrains.annotations.NotNull;
+
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -72,20 +70,7 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
         toolbar.inflateMenu(R.menu.show_recipe);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         toolbar.getMenu().getItem(1).setVisible(false);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requireFragmentManager().popBackStack();
-            }
-        });
-    }
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
+        toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
     }
 
     @Override
@@ -98,6 +83,7 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = getArguments();
+        assert bundle != null;
         remoteRecipe = (RecipeResponse) bundle.getSerializable("remoteRecipe");
         initToolbar(view);
         userRate = 0;
@@ -135,18 +121,25 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
             ingredientItemList.add(ingredientItem);
         }
 
-        String concatTags = "";
+        StringBuilder concatTags = new StringBuilder();
         for (String tag : remoteRecipe.getTags()) {
-            concatTags = concatTags + "" + tag;
+            concatTags.append(" ").append(tag);
         }
-        recipeTags.setText(concatTags);
+        recipeTags.setText(concatTags.toString());
         setAverageRatingBar();
 
         ingredientRV.setLayoutManager(new LinearLayoutManager(getContext()));
         ingredientRV.setAdapter(showIngredientItemAdapter);
         showIngredientItemAdapter.submitList(ingredientItemList);
 
-        byte[] decoded = Base64.getDecoder().decode(remoteRecipe.getImage());
+
+        byte[] decoded;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            decoded = Base64.getDecoder().decode(remoteRecipe.getImage());
+        } else {
+            decoded = android.util.Base64.decode(remoteRecipe.getImage(), 0);
+        }
+
         Bitmap recipePhoto = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
         recipeImage.setImageBitmap(recipePhoto);
 
@@ -160,95 +153,92 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
             Call<UserRateResponse> userRateCall = api.getUserRate(remoteRecipe.getId());
             userRateCall.enqueue(new Callback<UserRateResponse>() {
                 @Override
-                public void onResponse(Call<UserRateResponse> call, Response<UserRateResponse> response) {
+                public void onResponse(@NotNull Call<UserRateResponse> call, @NotNull Response<UserRateResponse> response) {
+                    assert response.body() != null;
                     userRate = response.body().getRating();
                     ratingBar.setRating((float) userRate);
                     if (userRate > 0) rateButton.setText("ZMIEŃ");
                 }
 
                 @Override
-                public void onFailure(Call<UserRateResponse> call, Throwable t) {
+                public void onFailure(@NotNull Call<UserRateResponse> call, @NotNull Throwable t) {
                 }
             });
         }
-        rateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ratingBar.getRating() == 0) {
-                    Toast.makeText(getContext(), "Brak oceny", Toast.LENGTH_SHORT).show();
-                } else {
-                    String r = String.valueOf(ratingBar.getRating());
-                    JsonObject object = new JsonObject();
-                    object.addProperty("recipeId", remoteRecipe.getId());
-                    object.addProperty("rating", r);
-                    Call<UserRateResponse> callRate = api.addRate(object);
-                    callRate.enqueue(new Callback<UserRateResponse>() {
-                        @Override
-                        public void onResponse(Call<UserRateResponse> call, Response<UserRateResponse> response) {
-                            if (response.isSuccessful()) {
-                                Toast.makeText(getContext(), "Oceniono na: " + r, Toast.LENGTH_SHORT).show();
-                                setAverageRatingBar();
-                                rateButton.setText("ZMIEŃ");
-                            }
+        rateButton.setOnClickListener(v -> {
+            if (ratingBar.getRating() == 0) {
+                Toast.makeText(getContext(), "Brak oceny", Toast.LENGTH_SHORT).show();
+            } else {
+                String r = String.valueOf(ratingBar.getRating());
+                JsonObject object = new JsonObject();
+                object.addProperty("recipeId", remoteRecipe.getId());
+                object.addProperty("rating", r);
+                Call<UserRateResponse> callRate = api.addRate(object);
+                callRate.enqueue(new Callback<UserRateResponse>() {
+                    @Override
+                    public void onResponse(@NotNull Call<UserRateResponse> call, @NotNull Response<UserRateResponse> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(getContext(), "Oceniono na: " + r, Toast.LENGTH_SHORT).show();
+                            setAverageRatingBar();
+                            rateButton.setText("ZMIEŃ");
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<UserRateResponse> call, Throwable t) {
+                    @Override
+                    public void onFailure(@NotNull Call<UserRateResponse> call, @NotNull Throwable t) {
 
-                        }
-                    });
-
-                }
+                    }
+                });
 
             }
+
         });
 
-        commentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String comment = commentText.getText().toString();
-                if (!comment.equals("")) {
-                    JsonObject object = new JsonObject();
-                    object.addProperty("content", comment);
-                    object.addProperty("recipeId", remoteRecipe.getId());
-                    Call<CommentResponse> commentCall = api.addComment(object);
-                    commentCall.enqueue(new Callback<CommentResponse>() {
-                        @Override
-                        public void onResponse(Call<CommentResponse> call, Response<CommentResponse> response) {
-                            Toast.makeText(getContext(), "Dodano komentarz", Toast.LENGTH_SHORT).show();
-                            commentText.setText("");
-                            CommentItem commentItem = new CommentItem();
-                            if (response.body().getAuthor().getFirstName().isEmpty() || response.body().getAuthor().getLastName().isEmpty()) {
-                                commentItem.setAuthor("Anonimowy");
-                            } else
-                                commentItem.setAuthor(response.body().getAuthor().getFirstName() + " " + response.body().getAuthor().getLastName());
-                            commentItem.setComment(response.body().getContent().trim());
-                            LocalDateTime data = LocalDateTime.parse(response.body().getCreationDate());
-                            String dateString = data.getDayOfMonth() + "-" + data.getMonthValue() + "-" + data.getYear() + " " + data.getHour() + ":" + data.getMinute() + ":" + data.getSecond();
-                            commentItem.setDate(dateString);
-                            commentsList.add(commentItem);
-                            recipeCommentsAdapter.notifyDataSetChanged();
-                        }
+        commentButton.setOnClickListener(v -> {
+            String comment = commentText.getText().toString();
+            if (!comment.equals("")) {
+                JsonObject object = new JsonObject();
+                object.addProperty("content", comment);
+                object.addProperty("recipeId", remoteRecipe.getId());
+                Call<CommentResponse> commentCall = api.addComment(object);
+                commentCall.enqueue(new Callback<CommentResponse>() {
+                    @Override
+                    public void onResponse(@NotNull Call<CommentResponse> call, @NotNull Response<CommentResponse> response) {
+                        Toast.makeText(getContext(), "Dodano komentarz", Toast.LENGTH_SHORT).show();
+                        commentText.setText("");
+                        CommentItem commentItem = new CommentItem();
+                        assert response.body() != null;
+                        if (response.body().getAuthor().getFirstName().isEmpty() || response.body().getAuthor().getLastName().isEmpty()) {
+                            commentItem.setAuthor("Anonimowy");
+                        } else
+                            commentItem.setAuthor(response.body().getAuthor().getFirstName() + " " + response.body().getAuthor().getLastName());
+                        commentItem.setComment(response.body().getContent().trim());
+                        LocalDateTime data = LocalDateTime.parse(response.body().getCreationDate());
+                        String dateString = data.getDayOfMonth() + "-" + data.getMonthValue() + "-" + data.getYear() + " " + data.getHour() + ":" + data.getMinute() + ":" + data.getSecond();
+                        commentItem.setDate(dateString);
+                        commentsList.add(commentItem);
+                        recipeCommentsAdapter.notifyDataSetChanged();
+                    }
 
-                        @Override
-                        public void onFailure(Call<CommentResponse> call, Throwable t) {
-                            Toast.makeText(getContext(), t.toString(), Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
+                    @Override
+                    public void onFailure(@NotNull Call<CommentResponse> call, @NotNull Throwable t) {
+                        Toast.makeText(getContext(), t.toString(), Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
 
         Call<List<CommentResponse>> commentsCall = api.getCommentsForRecipe(remoteRecipe.getId());
         commentsCall.enqueue(new Callback<List<CommentResponse>>() {
             @Override
-            public void onResponse(Call<List<CommentResponse>> call, Response<List<CommentResponse>> response) {
+            public void onResponse(@NotNull Call<List<CommentResponse>> call, @NotNull Response<List<CommentResponse>> response) {
+                assert response.body() != null;
                 setCommentsList(response.body());
                 recipeCommentsAdapter.submitList(commentsList);
             }
 
             @Override
-            public void onFailure(Call<List<CommentResponse>> call, Throwable t) {
+            public void onFailure(@NotNull Call<List<CommentResponse>> call, @NotNull Throwable t) {
 
             }
         });
@@ -258,14 +248,15 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
         Call<AverageRateResponse> averageRateResponse = api.getAverageRate(remoteRecipe.getId());
         averageRateResponse.enqueue(new Callback<AverageRateResponse>() {
             @Override
-            public void onResponse(Call<AverageRateResponse> call, Response<AverageRateResponse> response) {
+            public void onResponse(@NotNull Call<AverageRateResponse> call, @NotNull Response<AverageRateResponse> response) {
                 if (response.isSuccessful()) {
+                    assert response.body() != null;
                     averageRatingBar.setRating((float) response.body().getAverage());
                 }
             }
 
             @Override
-            public void onFailure(Call<AverageRateResponse> call, Throwable t) {
+            public void onFailure(@NotNull Call<AverageRateResponse> call, @NotNull Throwable t) {
 
             }
         });

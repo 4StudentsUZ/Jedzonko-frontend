@@ -3,6 +3,12 @@ package com.fourstudents.jedzonko.Fragments.Recipe;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,24 +18,14 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.fourstudents.jedzonko.Adapters.Shared.ShowIngredientItemAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
-import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
 import com.fourstudents.jedzonko.Database.Relations.IngredientsWithProducts;
 import com.fourstudents.jedzonko.Database.Relations.RecipeWithIngredientsAndProducts;
 import com.fourstudents.jedzonko.Database.Relations.RecipesWithTags;
 import com.fourstudents.jedzonko.Database.RoomDB;
-import com.fourstudents.jedzonko.Fragments.ShoppingList.ShowShoppingListFragment;
 import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.Network.JedzonkoService;
 import com.fourstudents.jedzonko.Network.Responses.ProductResponse;
@@ -38,6 +34,8 @@ import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,42 +66,32 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         activity = ((MainActivity) requireActivity());
         if (activity.token.length() > 0 && recipe.getRemoteId()==-1) toolbar.getMenu().getItem(0).setVisible(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requireFragmentManager().popBackStack();
-            }
-        });
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+        toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
+        toolbar.setOnMenuItemClickListener(clickedItem -> {
 
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
+            if(clickedItem.getItemId()==R.id.action_edit_recipe)
+            {
+                FragmentTransaction ft =  getParentFragmentManager().beginTransaction();
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                EditRecipeFragment editRecipeFragment = new EditRecipeFragment();
 
-                if(item.getItemId()==R.id.action_edit_recipe)
-                {
-                    FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
-                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    EditRecipeFragment editRecipeFragment = new EditRecipeFragment();
-
-                    Bundle recipeBundle = new Bundle();
-                    long recipeId = recipe.getRecipeId();
-                    recipeBundle.putLong("recipeId", recipeId);
-                    editRecipeFragment.setArguments(recipeBundle);
-                    requireActivity()
-                            .getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.mainFrameLayout, editRecipeFragment, "EditRecipeFragment")
-                            .addToBackStack("EditRecipeFragment")
-                            .commit();
-                }else if(item.getItemId()==R.id.action_share_recipe){
-                    try {
-                        shareRecipeMain();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                Bundle recipeBundle = new Bundle();
+                long recipeId = recipe.getRecipeId();
+                recipeBundle.putLong("recipeId", recipeId);
+                editRecipeFragment.setArguments(recipeBundle);
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainFrameLayout, editRecipeFragment, "EditRecipeFragment")
+                        .addToBackStack("EditRecipeFragment")
+                        .commit();
+            }else if(clickedItem.getItemId()==R.id.action_share_recipe){
+                try {
+                    shareRecipeMain();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                return false;
             }
+            return false;
         });
     }
 
@@ -123,6 +111,7 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = getArguments();
+        assert bundle != null;
         recipe= (Recipe) bundle.getSerializable("recipe");
         initToolbar(view);
         database = RoomDB.getInstance(getActivity());
@@ -151,17 +140,17 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
         List<RecipesWithTags> recipesWithTags = database.recipeDao().getRecipesWithTags();
         List<RecipeWithIngredientsAndProducts> recipesWithIngredientsAndProducts = database.recipeDao().getRecipesWithIngredientsAndProducts();
         TextView recipeTags = view.findViewById(R.id.showRecipeTagsString);
-        String conctString ="";
+        StringBuilder conctString = new StringBuilder();
         tagsJsonArray = new JsonArray();
         for(RecipesWithTags recipeWithTags : recipesWithTags){
             if(recipeWithTags.recipe.getRecipeId() == recipe.getRecipeId()){
                 for(Tag tag: recipeWithTags.tags){
-                    conctString = conctString + "" + tag.getName();
+                    conctString.append(" ").append(tag.getName());
                     tagsJsonArray.add(tag.getName());
                 }
             }
         }
-        recipeTags.setText(conctString);
+        recipeTags.setText(conctString.toString());
 
         for(RecipeWithIngredientsAndProducts recipeWithIngredientsAndProducts : recipesWithIngredientsAndProducts){
             if(recipeWithIngredientsAndProducts.recipe.getRecipeId() == recipe.getRecipeId()){
@@ -190,7 +179,12 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
             JsonObject object = new JsonObject();
             object.addProperty("name", ingredientItem.getProduct().getName());
             object.addProperty("barcode", ingredientItem.getProduct().getBarcode());
-            byte[] data = Base64.getEncoder().encode(ingredientItem.getProduct().getData());
+            byte[] data;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                data = Base64.getEncoder().encode(ingredientItem.getProduct().getData());
+            } else {
+                data = android.util.Base64.encode(ingredientItem.getProduct().getData(), 0);
+            }
             object.addProperty("image", new String(data));
             Call<ProductResponse> call = api.addProduct(object);
             call.enqueue(this);
@@ -216,14 +210,20 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
             object.add("quantities", quantityArray);
             object.add("tags", tagsJsonArray);
 
-            byte[] data = Base64.getEncoder().encode(recipe.getData());
-            object.addProperty("image", new String(data));
+        byte[] data;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            data = Base64.getEncoder().encode(recipe.getData());
+        } else {
+            data = android.util.Base64.encode(recipe.getData(), 0);
+        }
+        object.addProperty("image", new String(data));
 
         Call<RecipeResponse> call = api.addRecipe(object);
         call.enqueue(new Callback<RecipeResponse>() {
             @Override
-            public void onResponse(Call<RecipeResponse> call, Response<RecipeResponse> response) {
+            public void onResponse(@NotNull Call<RecipeResponse> call, @NotNull Response<RecipeResponse> response) {
                 if (response.isSuccessful()) {
+                    assert response.body() != null;
                     recipe.setRemoteId(response.body().getId());
                     database.recipeDao().update(recipe);
                     Toast.makeText(requireContext(), "Udostępniono Przepis!", Toast.LENGTH_LONG).show();
@@ -238,7 +238,7 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
             }
 
             @Override
-            public void onFailure(Call<RecipeResponse> call, Throwable t) {
+            public void onFailure(@NotNull Call<RecipeResponse> call, @NotNull Throwable t) {
                 t.printStackTrace();
             }
         });
@@ -247,8 +247,9 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
 
 
     @Override
-    public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
+    public void onResponse(@NotNull Call<ProductResponse> call, Response<ProductResponse> response) {
         if (response.isSuccessful()) {
+            assert response.body() != null;
             productsId.add(response.body().getId());
             if(productsId.size()==ingredientItemList.size()){
                 shareRecipe();
@@ -263,7 +264,7 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
     }
 
     @Override
-    public void onFailure(Call<ProductResponse> call, Throwable t) {
+    public void onFailure(@NotNull Call<ProductResponse> call, @NotNull Throwable t) {
 
     }
 

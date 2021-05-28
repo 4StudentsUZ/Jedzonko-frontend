@@ -11,8 +11,6 @@ import com.fourstudents.jedzonko.Database.Entities.IngredientProductCrossRef;
 
 import java.util.List;
 
-import static androidx.room.OnConflictStrategy.REPLACE;
-
 @Dao
 public interface IngredientDao {
     @Insert

@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
 import com.fourstudents.jedzonko.Database.RoomDB;
 import com.fourstudents.jedzonko.R;

@@ -1,6 +1,5 @@
 package com.fourstudents.jedzonko.Adapters.Recipe;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,14 +7,11 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.fourstudents.jedzonko.Adapters.ShoppingList.ShoppingAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
-import com.fourstudents.jedzonko.Database.Entities.Shopping;
 import com.fourstudents.jedzonko.Other.Sorting.SortOrder;
 import com.fourstudents.jedzonko.Other.Sorting.SortProperty;
 import com.fourstudents.jedzonko.R;

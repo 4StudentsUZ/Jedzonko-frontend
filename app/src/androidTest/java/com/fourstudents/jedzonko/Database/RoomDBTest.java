@@ -24,14 +24,12 @@ import com.fourstudents.jedzonko.Database.Entities.Tag;
 import com.fourstudents.jedzonko.Database.Relations.RecipeWithIngredientsAndProducts;
 import com.fourstudents.jedzonko.Database.Relations.RecipesWithTags;
 import com.fourstudents.jedzonko.Database.Relations.ShoppingWithShopitemsAndProducts;
-import com.fourstudents.jedzonko.R;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;

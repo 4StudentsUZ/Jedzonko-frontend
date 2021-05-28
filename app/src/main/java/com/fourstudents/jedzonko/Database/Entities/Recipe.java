@@ -1,16 +1,9 @@
 package com.fourstudents.jedzonko.Database.Entities;
 
-import android.media.Image;
-
-import androidx.room.Entity;
-
 
 import androidx.room.*;
 
 import java.io.Serializable;
-import java.util.Set;
-
-import static androidx.room.ForeignKey.CASCADE;
 
 @Entity(tableName = "recipe")
 public class Recipe implements Serializable {

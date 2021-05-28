@@ -2,8 +2,6 @@ package com.fourstudents.jedzonko.Network.Responses;
 
 import com.fourstudents.jedzonko.Other.Author;
 
-import java.sql.Date;
-
 
 public class CommentResponse {
     private final int id;

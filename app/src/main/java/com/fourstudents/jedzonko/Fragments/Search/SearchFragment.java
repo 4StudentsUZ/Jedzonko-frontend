@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Adapters.Recipe.RecipeAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
-import com.fourstudents.jedzonko.Fragments.Recipe.AddRecipeFragment;
 import com.fourstudents.jedzonko.Fragments.Recipe.ShowRemoteRecipeFragment;
 import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.Network.JedzonkoService;

@@ -8,11 +8,8 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.fourstudents.jedzonko.Database.Entities.Product;
-import com.fourstudents.jedzonko.Database.Entities.Shopping;
 
 import java.util.List;
-
-import static androidx.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface ProductDao {

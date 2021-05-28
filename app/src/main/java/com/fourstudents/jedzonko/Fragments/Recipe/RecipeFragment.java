@@ -18,22 +18,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Adapters.Recipe.RecipeAdapter;
 
-import com.fourstudents.jedzonko.Adapters.ShoppingList.ShoppingAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
 
-import com.fourstudents.jedzonko.Database.RoomDB;
-import com.fourstudents.jedzonko.Fragments.Search.SearchFragment;
-import com.fourstudents.jedzonko.Fragments.Shared.AddProductFragment;
 import com.fourstudents.jedzonko.Other.Sorting.SortDialogFactory;
 import com.fourstudents.jedzonko.Other.Sorting.SortListener;
 import com.fourstudents.jedzonko.Other.Sorting.SortOrder;
 import com.fourstudents.jedzonko.Other.Sorting.SortProperty;
 import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.Recipe.RecipeViewModel;
-import com.fourstudents.jedzonko.ViewModels.ShoppingList.ShoppingViewModel;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeFragment extends Fragment implements RecipeAdapter.OnRecipeListener, SortListener {

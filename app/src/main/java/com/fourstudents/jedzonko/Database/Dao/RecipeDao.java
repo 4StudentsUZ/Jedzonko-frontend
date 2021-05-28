@@ -8,16 +8,12 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
-import com.fourstudents.jedzonko.Database.Entities.IngredientProductCrossRef;
-import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
 import com.fourstudents.jedzonko.Database.Entities.RecipeTagCrossRef;
 import com.fourstudents.jedzonko.Database.Relations.RecipeWithIngredientsAndProducts;
 import com.fourstudents.jedzonko.Database.Relations.RecipesWithTags;
 
 import java.util.List;
-
-import static androidx.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface RecipeDao {

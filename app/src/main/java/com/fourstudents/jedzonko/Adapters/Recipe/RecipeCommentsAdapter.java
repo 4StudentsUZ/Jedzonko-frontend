@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Other.CommentItem;
-import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
 
 public class RecipeCommentsAdapter extends ListAdapter<CommentItem, RecipeCommentsAdapter.ViewHolderClass> {

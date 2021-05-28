@@ -1,16 +1,12 @@
 package com.fourstudents.jedzonko.Fragments.ShoppingList;
 
 import android.app.Dialog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,29 +19,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Adapters.Shared.IngredientItemAdapter;
 import com.fourstudents.jedzonko.Adapters.Shared.ProductAdapter;
-import com.fourstudents.jedzonko.Database.Entities.Ingredient;
-import com.fourstudents.jedzonko.Database.Entities.IngredientProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Product;
-import com.fourstudents.jedzonko.Database.Entities.Recipe;
-import com.fourstudents.jedzonko.Database.Entities.RecipeTagCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Shopitem;
 import com.fourstudents.jedzonko.Database.Entities.ShopitemProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Shopping;
-import com.fourstudents.jedzonko.Database.Entities.Tag;
-import com.fourstudents.jedzonko.Database.Relations.IngredientsWithProducts;
-import com.fourstudents.jedzonko.Database.Relations.RecipeWithIngredientsAndProducts;
-import com.fourstudents.jedzonko.Database.Relations.RecipesWithTags;
 import com.fourstudents.jedzonko.Database.Relations.ShopitemsWithProducts;
 import com.fourstudents.jedzonko.Database.Relations.ShoppingWithShopitemsAndProducts;
 import com.fourstudents.jedzonko.Database.RoomDB;
-import com.fourstudents.jedzonko.Fragments.Recipe.RecipeFragment;
 import com.fourstudents.jedzonko.Fragments.Shared.AddProductFragment;
-import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.Shared.IngredientItemViewModel;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 

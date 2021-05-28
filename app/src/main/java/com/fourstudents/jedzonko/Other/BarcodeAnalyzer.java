@@ -10,12 +10,8 @@ import android.util.Log;
 import com.fourstudents.jedzonko.MainActivity;
 import com.google.mlkit.vision.barcode.Barcode;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
 import com.google.mlkit.vision.common.InputImage;
-
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
 
 public class BarcodeAnalyzer implements ImageAnalysis.Analyzer {
 

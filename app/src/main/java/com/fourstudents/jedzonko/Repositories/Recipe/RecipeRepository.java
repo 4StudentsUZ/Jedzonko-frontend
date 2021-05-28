@@ -8,7 +8,6 @@ import com.fourstudents.jedzonko.Database.Dao.RecipeDao;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
 import com.fourstudents.jedzonko.Database.Relations.RecipesWithTags;
 import com.fourstudents.jedzonko.Database.RoomDB;
-import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
 
 import java.util.List;
 

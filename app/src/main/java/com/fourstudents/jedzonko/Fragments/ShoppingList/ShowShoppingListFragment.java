@@ -63,6 +63,7 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
     Set<BluetoothDevice> pairedDevices;
     BluetoothDeviceAdapter allDevicesAdapter;
     Dialog bluetoothDialog;
+    Dialog bluetoothTrasferDialog;
     RecyclerView devicesRV;
     List<BluetoothDevice> deviceList = new ArrayList<>();
 
@@ -207,10 +208,12 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
             }
             else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
                 Toast.makeText(safeContext, "Nadawanie danych...", Toast.LENGTH_SHORT).show();
+                bluetoothTrasferDialog.show();
             }
             else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)) {Log.i("Harry9", "");}
             else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                 Toast.makeText(safeContext, "Rozłączono", Toast.LENGTH_SHORT).show();
+                bluetoothTrasferDialog.dismiss();
             }
         }
     };
@@ -226,6 +229,22 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
                         WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.WRAP_CONTENT
         );
+
+        bluetoothTrasferDialog = new Dialog(requireContext());
+        bluetoothTrasferDialog.setContentView(R.layout.dialog_bluetooth_transfer);
+        bluetoothTrasferDialog.setCanceledOnTouchOutside(true);
+        bluetoothTrasferDialog.getWindow().setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT
+        );
+        bluetoothTrasferDialog.setOnDismissListener(dialog -> {
+            if (bluetoothSendThread != null)
+                bluetoothSendThread.cancel();
+        });
+        bluetoothTrasferDialog.setOnCancelListener(dialog -> {
+            if (bluetoothSendThread != null)
+                bluetoothSendThread.cancel();
+        });
 
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
@@ -304,6 +323,13 @@ public class ShowShoppingListFragment extends Fragment implements ShowIngredient
         super.onPause();
         ingredientItemList.clear();
         safeContext.unregisterReceiver(receiver);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (bluetoothSendThread != null)
+            bluetoothSendThread.cancel();
     }
 
     @Override

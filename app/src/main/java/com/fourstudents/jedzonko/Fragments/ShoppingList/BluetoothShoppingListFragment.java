@@ -57,6 +57,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     EditText nameTV;
     Button addIngredientButton;
     Dialog ingredientDialog;
+    Dialog bluetoothTrasferDialog;
     RoomDB database;
 
     RecyclerView ingredientRV;
@@ -198,6 +199,12 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
         ingredientItemViewModel.clearIngredientItemList();
         if (bluetoothAcceptThread != null)
             bluetoothAcceptThread.cancel();
+        if (!wasSaved) {
+            for (Product product : addedProducts) {
+                database.productDao().delete(product);
+            }
+        }
+        resultReadData = "";
     }
 
     @Override
@@ -228,10 +235,12 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
             }
             else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
                 Toast.makeText(safeContext, "Odbieranie danych...", Toast.LENGTH_SHORT).show();
+                bluetoothTrasferDialog.show();
             }
             else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)) {Log.i("Harry9", "");}
             else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                 Toast.makeText(safeContext, "Rozłączono", Toast.LENGTH_SHORT).show();
+                bluetoothTrasferDialog.dismiss();
             }
         }
     };
@@ -309,7 +318,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     }
 
     private void initDialog() {
-        ingredientDialog = new Dialog(getContext());
+        ingredientDialog = new Dialog(requireContext());
         ingredientDialog.setContentView(R.layout.dialog_add_ingredient);
         ingredientDialog.setCanceledOnTouchOutside(true);
         ingredientDialog.getWindow()
@@ -317,6 +326,22 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
                         WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.WRAP_CONTENT
                 );
+        bluetoothTrasferDialog = new Dialog(requireContext());
+        bluetoothTrasferDialog.setContentView(R.layout.dialog_bluetooth_transfer);
+        bluetoothTrasferDialog.setCanceledOnTouchOutside(true);
+        bluetoothTrasferDialog.getWindow()
+                .setLayout(
+                        WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT
+                );
+        bluetoothTrasferDialog.setOnDismissListener(dialog -> {
+            if (bluetoothAcceptThread != null)
+                bluetoothAcceptThread.cancel();
+        });
+        bluetoothTrasferDialog.setOnCancelListener(dialog -> {
+            if (bluetoothAcceptThread != null)
+                bluetoothAcceptThread.cancel();
+        });
     }
 
     private void initRV() {
@@ -383,12 +408,7 @@ public class BluetoothShoppingListFragment extends Fragment implements ProductAd
     @Override
     public void onDetach() {
         super.onDetach();
-        if (!wasSaved) {
-            for (Product product : addedProducts) {
-                database.productDao().delete(product);
-            }
-        }
-        resultReadData = "";
+
     }
 
     @Override

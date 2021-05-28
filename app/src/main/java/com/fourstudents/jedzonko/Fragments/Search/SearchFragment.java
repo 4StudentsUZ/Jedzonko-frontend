@@ -113,14 +113,6 @@ public class SearchFragment extends Fragment implements RecipeAdapter.OnRecipeLi
         recipeRV.setLayoutManager(new LinearLayoutManager(getContext()));
         api = ((MainActivity) requireActivity()).api;
         sendQuery();
-
-        view.findViewById(R.id.floatingActionButton_add_recipe).setOnClickListener(v ->
-                getParentFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.mainFrameLayout, new AddRecipeFragment(), "AddRecipeFragment")
-                        .addToBackStack("AddRecipeFragment")
-                        .commit()
-        );
     }
 
     @Override

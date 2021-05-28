@@ -120,6 +120,6 @@ public class RecipeUITest {
         pressBack();
         onView(withId(R.id.fragment_recipe_parent))
                 .check(matches(isCompletelyDisplayed()));
-        
+
     }
 }

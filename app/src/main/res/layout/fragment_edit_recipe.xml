@@ -139,12 +139,13 @@
                 app:layout_constraintTop_toBottomOf="@+id/showRecipeIngredientRV" />
 
             <Button
-                android:id="@+id/addPhotoButton"
+                android:id="@+id/cameraPhotoButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dodaj zdjęcie"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="16dp"
+                android:text="Zrób zdjęcie"
+                app:layout_constraintEnd_toStartOf="@+id/galleryPhotoButton"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view_add_recipe_ingredients" />
 
@@ -158,7 +159,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addPhotoButton" />
+                app:layout_constraintTop_toBottomOf="@+id/cameraPhotoButton" />
+
+            <Button
+                android:id="@+id/galleryPhotoButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="24dp"
+                android:text="Zdjęcie z galerii"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cameraPhotoButton"
+                app:layout_constraintTop_toBottomOf="@+id/view_add_recipe_ingredients" />
 
             <!--    <Button-->
             <!--        android:id="@+id/button"-->

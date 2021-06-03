@@ -53,7 +53,7 @@ public class RecipeUITest {
                 .check(matches(isCompletelyDisplayed()));
 
         // Enter CameraFragment
-        onView(withId(R.id.addPhotoButton))
+        onView(withId(R.id.cameraPhotoButton))
                 .perform(click());
         onView(withId(R.id.fragment_camera_parent))
                 .check(matches(isCompletelyDisplayed()));

@@ -1,8 +1,10 @@
 package com.fourstudents.jedzonko.Fragments.Shared;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -22,12 +24,20 @@ import com.fourstudents.jedzonko.Other.HarryHelperClass;
 import com.fourstudents.jedzonko.R;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
+import static android.app.Activity.RESULT_OK;
+import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 
 
 public class AddProductFragment extends Fragment {
+    private static final int RESULT_SELECT_FROM_GALLERY = 1;
+
     EditText name;
     EditText barcode;
-    Button addImageButton;
+    Button makePhotoButton;
+    Button photoFromGalleryButton;
     Button scanBarcodeButton;
     RoomDB database;
     ImageView imageView;
@@ -88,11 +98,12 @@ public class AddProductFragment extends Fragment {
     private void initViews(View view) {
         name = view.findViewById(R.id.productNameEditText);
         barcode = view.findViewById(R.id.productBarcodeEditText);
-        addImageButton = view.findViewById(R.id.addImageButton);
+        makePhotoButton = view.findViewById(R.id.addImageCameraButton);
+        photoFromGalleryButton = view.findViewById(R.id.addImageGalleryButton);
         scanBarcodeButton = view.findViewById(R.id.scanBarcodeButton);
         imageView = view.findViewById(R.id.imageView);
 
-        addImageButton.setOnClickListener(v -> {
+        makePhotoButton.setOnClickListener(v -> {
             CameraFragment cameraFragment = new CameraFragment();
             Bundle bundle = new Bundle();
             bundle.putSerializable("mode", HarryHelperClass.CameraModes.Product);
@@ -103,6 +114,15 @@ public class AddProductFragment extends Fragment {
                     .replace(R.id.mainFrameLayout, cameraFragment, "ProductCameraView")
                     .addToBackStack("ProductCameraView")
                     .commit();
+        });
+
+        photoFromGalleryButton.setOnClickListener(v -> {
+            ((MainActivity) requireActivity()).productImageData = null;
+            ((MainActivity) requireActivity()).productImageRotation = null;
+
+            Intent photoPickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, RESULT_SELECT_FROM_GALLERY);
         });
 
         scanBarcodeButton.setOnClickListener(v -> {
@@ -149,5 +169,36 @@ public class AddProductFragment extends Fragment {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RESULT_SELECT_FROM_GALLERY) {
+            if (resultCode == RESULT_OK) {
+                try {
+                    assert data != null;
+                    final Uri imageUri = data.getData();
+                    assert imageUri != null;
+
+                    requireActivity().getContentResolver().takePersistableUriPermission(imageUri, FLAG_GRANT_READ_URI_PERMISSION);
+                    final InputStream imageStream = requireActivity().getContentResolver().openInputStream(imageUri);
+                    final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+                    updatePicture(bitmap);
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    Toast.makeText(requireActivity(), R.string.couldnt_load_image_from_gallery, Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(requireActivity(), R.string.couldnt_load_image_from_gallery,Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void updatePicture(Bitmap bmp) {
+        Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth()/10, bmp.getHeight()/10, true);
+        imageView.setImageBitmap(scaledBmp);
     }
 }

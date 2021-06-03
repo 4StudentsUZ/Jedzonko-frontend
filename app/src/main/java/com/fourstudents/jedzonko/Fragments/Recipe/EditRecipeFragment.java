@@ -1,9 +1,11 @@
 package com.fourstudents.jedzonko.Fragments.Recipe;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -46,11 +48,17 @@ import com.fourstudents.jedzonko.ViewModels.Shared.IngredientItemViewModel;
 import com.fourstudents.jedzonko.ViewModels.Shared.TagViewModel;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
+
 
 public class EditRecipeFragment extends Fragment implements ProductAdapter.OnProductListener, IngredientItemAdapter.OnIngredientItemListener, TagAdapter.OnTagListener, RecipeTagAdapter.OnRecipeTagListener {
+    private static final int RESULT_SELECT_FROM_GALLERY = 1;
     RoomDB database;
     List<Product> productList = new ArrayList<>();
     List<Tag> tagList= new ArrayList<>();
@@ -105,20 +113,27 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
     public void onResume() {
         super.onResume();
         if (((MainActivity) requireActivity()).imageData != null) {
-            byte[] bytes = ((MainActivity) requireActivity()).imageData;
-            Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth()/10, bmp.getHeight()/10, true);
+            updatePicture(((MainActivity) requireActivity()).imageData);
+        }
+    }
+
+    private void updatePicture(byte[] bytes) {
+        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth()/10, bmp.getHeight()/10, true);
 //            Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, imageViewWidth, imageViewHeight, true);
-            Bitmap rotatedBmp = HarryHelperClass.rotateBitmapByAngle(scaledBmp, ((MainActivity) requireActivity()).imageRotation);
+        Bitmap rotatedBmp = HarryHelperClass.rotateBitmapByAngle(scaledBmp, ((MainActivity) requireActivity()).imageRotation);
 
 //            Log.i("Harry onResume", "bmp width="+bmp.getWidth());
 //            Log.i("Harry onResume", "bmp height="+bmp.getHeight());
 //            Log.i("Harry onResume", "byte size="+bytes.length);
 //            Log.i("Harry onResume", "rotatedbmp width="+rotatedBmp.getWidth());
 //            Log.i("Harry onResume", "rotatedbmp height="+rotatedBmp.getHeight());
-            imageView.setImageBitmap(rotatedBmp);
+        imageView.setImageBitmap(rotatedBmp);
+    }
 
-        }
+    private void updatePicture(Bitmap bmp) {
+        Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth()/10, bmp.getHeight()/10, true);
+        imageView.setImageBitmap(scaledBmp);
     }
 
     @Override
@@ -174,7 +189,6 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
         recipeTagRV.setLayoutManager(new LinearLayoutManager(getContext()));
         recipeTagRV.setAdapter(recipeTagAdapter);
 
-
         productList.addAll(database.productDao().getAll());
         productAdapter = new ProductAdapter(getContext(), productList, this);
         productRV = ingredientDialog.findViewById(R.id.productRV);
@@ -197,8 +211,7 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
             recipeTagAdapter.notifyDataSetChanged();
         });
 
-
-        view.findViewById(R.id.addPhotoButton).setOnClickListener(v -> {
+        view.findViewById(R.id.cameraPhotoButton).setOnClickListener(v -> {
 //            dialog.dismiss();
                     productList.clear();
                     tagList.clear();
@@ -211,6 +224,15 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
                 }
 
         );
+
+        view.findViewById(R.id.galleryPhotoButton).setOnClickListener(v -> {
+            ((MainActivity) requireActivity()).imageData = null;
+            ((MainActivity) requireActivity()).imageRotation = null;
+
+            Intent photoPickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, RESULT_SELECT_FROM_GALLERY);
+        });
 
         addIngredientButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -348,6 +370,8 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
 
 
     private void getRecipeData(){
+        tagViewModel.clearTagList();
+        ingredientItemViewModel.clearIngredientItemList();
         List<RecipesWithTags> recipesWithTags = database.recipeDao().getRecipesWithTags();
         List<RecipeWithIngredientsAndProducts> recipesWithIngredientsAndProducts  =database.recipeDao().getRecipesWithIngredientsAndProducts();
         for (RecipesWithTags recipeWithTag: recipesWithTags) {
@@ -376,13 +400,6 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
                 }
             }
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        ingredientItemViewModel.clearIngredientItemList();
-        tagViewModel.clearTagList();
     }
 
     @Override
@@ -426,6 +443,32 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
         } else {
             ingredientItemViewModel.addIngredientItem(ingredientItem);
             Toast.makeText(getContext(), "Dodano produkt", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RESULT_SELECT_FROM_GALLERY) {
+            if (resultCode == RESULT_OK) {
+                try {
+                    assert data != null;
+                    final Uri imageUri = data.getData();
+                    assert imageUri != null;
+
+                    requireActivity().getContentResolver().takePersistableUriPermission(imageUri, FLAG_GRANT_READ_URI_PERMISSION);
+                    final InputStream imageStream = requireActivity().getContentResolver().openInputStream(imageUri);
+                    final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+                    updatePicture(bitmap);
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    Toast.makeText(requireActivity(), R.string.couldnt_load_image_from_gallery, Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(requireActivity(), R.string.couldnt_load_image_from_gallery,Toast.LENGTH_LONG).show();
+            }
         }
     }
 }

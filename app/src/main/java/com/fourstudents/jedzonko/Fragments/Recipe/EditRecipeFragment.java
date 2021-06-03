@@ -370,6 +370,8 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
 
 
     private void getRecipeData(){
+        tagViewModel.clearTagList();
+        ingredientItemViewModel.clearIngredientItemList();
         List<RecipesWithTags> recipesWithTags = database.recipeDao().getRecipesWithTags();
         List<RecipeWithIngredientsAndProducts> recipesWithIngredientsAndProducts  =database.recipeDao().getRecipesWithIngredientsAndProducts();
         for (RecipesWithTags recipeWithTag: recipesWithTags) {
@@ -398,13 +400,6 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
                 }
             }
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ingredientItemViewModel.clearIngredientItemList();
-        tagViewModel.clearTagList();
     }
 
     @Override

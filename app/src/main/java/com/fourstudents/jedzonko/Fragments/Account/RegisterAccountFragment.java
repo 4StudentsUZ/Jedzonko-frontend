@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
@@ -38,6 +39,9 @@ public class RegisterAccountFragment extends Fragment implements Callback<Regist
     TextView exampleText;
 
     JedzonkoService api;
+
+    @VisibleForTesting()
+    Toast toast;
 
     public RegisterAccountFragment() {
         super(R.layout.fragment_account_register);
@@ -88,27 +92,32 @@ public class RegisterAccountFragment extends Fragment implements Callback<Regist
         String password2Input = passwordText2.getText().toString().trim();
 
         if (TextUtils.isEmpty(usernameInput) || TextUtils.isEmpty(passwordInput) || TextUtils.isEmpty(password2Input)) {
-            Toast.makeText(requireContext(), R.string.missing_input_data, Toast.LENGTH_SHORT).show();
+            toast = Toast.makeText(requireContext(), R.string.missing_input_data, Toast.LENGTH_SHORT);
+            toast.show();
             return false;
         }
 
         if (!isValidEmail(usernameInput)) {
-            Toast.makeText(requireContext(), R.string.account_register_email_not_valid, Toast.LENGTH_SHORT).show();
+            toast = Toast.makeText(requireContext(), R.string.account_register_email_not_valid, Toast.LENGTH_SHORT);
+            toast.show();
             return false;
         }
 
         if (passwordInput.length() < 8) {
-            Toast.makeText(requireContext(), R.string.account_register_password_too_short, Toast.LENGTH_SHORT).show();
+            toast = Toast.makeText(requireContext(), R.string.account_register_password_too_short, Toast.LENGTH_SHORT);
+            toast.show();
             return false;
         }
 
         if (!passwordInput.equals(password2Input)) {
-            Toast.makeText(requireContext(), R.string.account_register_password_not_match, Toast.LENGTH_SHORT).show();
+            toast = Toast.makeText(requireContext(), R.string.account_register_password_not_match, Toast.LENGTH_SHORT);
+            toast.show();
             return false;
         }
 
         if (!registerCheckBox.isChecked()) {
-            Toast.makeText(requireContext(), R.string.account_register_no_consent, Toast.LENGTH_SHORT).show();
+            toast = Toast.makeText(requireContext(), R.string.account_register_no_consent, Toast.LENGTH_SHORT);
+            toast.show();
             return false;
         }
 

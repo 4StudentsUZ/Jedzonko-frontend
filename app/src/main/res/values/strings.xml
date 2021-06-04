@@ -69,4 +69,5 @@
     <string name="account_create_account">Nie posiadasz konta? Zarejestruj się!</string>
     <string name="account_first_name">Imię</string>
     <string name="account_last_name">Nazwisko</string>
+    <string name="account_delete">Usuń konto</string>
 </resources>

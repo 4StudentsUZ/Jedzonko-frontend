@@ -1,6 +1,8 @@
 package com.fourstudents.jedzonko.Adapters.Shared;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -51,6 +53,8 @@ public class IngredientItemAdapter extends ListAdapter<IngredientItem, Ingredien
         holder.imageView.setImageResource(R.drawable.ic_recipes);
         IngredientItem ingredientItem = getItem(position);
         holder.textView.setText(ingredientItem.product.getName());
+        Bitmap recipePhoto = BitmapFactory.decodeByteArray(ingredientItem.product.getData(),0,ingredientItem.product.getData().length);
+        holder.imageView.setImageBitmap(recipePhoto);
         holder.editText.setVisibility(View.VISIBLE);
         holder.deleteImage.setVisibility(View.VISIBLE);
         holder.editText.addTextChangedListener(new TextWatcher() {

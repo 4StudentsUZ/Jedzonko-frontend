@@ -28,6 +28,7 @@ import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.Recipe.RecipeViewModel;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import retrofit2.Call;
@@ -155,6 +156,13 @@ public class SearchFragment extends Fragment implements RecipeAdapter.OnRecipeLi
             recipe.setTitle(remoteRecipe.getTitle());
             recipe.setDescription(remoteRecipe.getDescription());
             recipe.setRecipeId(remoteRecipe.getId());
+            byte[] data;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                data = Base64.getDecoder().decode(remoteRecipe.getImage());
+            } else {
+                data = android.util.Base64.decode(remoteRecipe.getImage(), 0);
+            }
+            recipe.setData(data);
             recipes.add(recipe);
         }
     }

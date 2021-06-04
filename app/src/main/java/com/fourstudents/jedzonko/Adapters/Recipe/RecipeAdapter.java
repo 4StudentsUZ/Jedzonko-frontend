@@ -1,5 +1,7 @@
 package com.fourstudents.jedzonko.Adapters.Recipe;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +47,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         Recipe recipe = recipeList.get(position);
         viewHolder.getTextView().setText(recipe.getTitle());
         viewHolder.getTagView().setText(recipe.getDescription());
+        Bitmap recipePhoto = BitmapFactory.decodeByteArray(recipe.getData(),0,recipe.getData().length);
+        viewHolder.getImageView().setImageBitmap(recipePhoto);
 
 //        viewHolder.getTextView().setOnClickListener(new View.OnClickListener() {
 //            @Override

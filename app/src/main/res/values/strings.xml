@@ -70,4 +70,8 @@
     <string name="account_first_name">Imię</string>
     <string name="account_last_name">Nazwisko</string>
     <string name="account_delete">Usuń konto</string>
+    <string name="account_delete_success">Konto zostało usunięte</string>
+    <string name="account_delete_dialog_title">Czy chcesz usunąć konto?</string>
+    <string name="account_delete_dialog_cancel">Anuluj</string>
+    <string name="account_delete_dialog_confirm">Usuń</string>
 </resources>

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -49,6 +50,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
     //WithAuth
     EditText firstNameEdit;
     EditText lastNameEdit;
+    Dialog deleteAccountDialog;
 
     //Helper
     JedzonkoService api;
@@ -84,6 +86,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         if (isLoggedIn) {
             initToolbarAuth(view);
             initViewsAuth(view);
+            initDialogAuth();
         } else {
             initToolbar(view);
             initViews(view);
@@ -92,6 +95,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
                 passwordText.setText("");
             });
         }
+        initDialog();
     }
 
     private void initToolbar(View view) {
@@ -112,8 +116,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
                 Toast.makeText(requireContext(), "Wylogowano", Toast.LENGTH_SHORT).show();
                 reattachFragment();
             } else if (clickedMenuItem.getItemId() == R.id.action_delete) {
-                deleteProfile();
-
+                deleteAccountDialog.show();
             }
             return false;
         });
@@ -154,7 +157,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         sharedPreferences.edit().clear().apply();
     }
 
-    private void deleteProfile() {
+    private void deleteAccount() {
         Call<String> call = api.deleteUser();
         call.enqueue(new Callback<String>() {
             @Override
@@ -165,7 +168,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
 //                    Toast.makeText(requireContext(), "Konto zostało usunięte", Toast.LENGTH_LONG).show();
 //                }
                 if (response != null) {
-                    Toast.makeText(requireContext(), "Konto zostało usunięte", Toast.LENGTH_LONG).show();
+                    Toast.makeText(requireContext(), R.string.account_delete_success, Toast.LENGTH_LONG).show();
                     logoutUser();
                     reattachFragment();
                 }
@@ -175,6 +178,47 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
             public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
                 Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
             }
+        });
+    }
+
+    private void initDialogAuth() {
+        deleteAccountDialog = new Dialog(requireContext());
+        deleteAccountDialog.setContentView(R.layout.dialog_delete_account);
+        deleteAccountDialog.setCanceledOnTouchOutside(true);
+        deleteAccountDialog.getWindow()
+                .setLayout(
+                        WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT
+                );
+        deleteAccountDialog.setOnDismissListener(dialog -> {
+
+        });
+        deleteAccountDialog.setOnCancelListener(dialog -> {
+
+        });
+        Button cancelDelete = deleteAccountDialog.findViewById(R.id.account_delete_dialog_cancel_button);
+        cancelDelete.setOnClickListener(v -> deleteAccountDialog.dismiss());
+        Button confirmDelete = deleteAccountDialog.findViewById(R.id.account_delete_dialog_confirm_button);
+        confirmDelete.setOnClickListener(v -> {
+            deleteAccountDialog.dismiss();
+            deleteAccount();
+        });
+    }
+
+    private void initDialog() {
+        transferDialog = new Dialog(requireContext());
+        transferDialog.setContentView(R.layout.dialog_data_transfer);
+        transferDialog.setCanceledOnTouchOutside(true);
+        transferDialog.getWindow()
+                .setLayout(
+                        WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT
+                );
+        transferDialog.setOnDismissListener(dialog -> {
+
+        });
+        transferDialog.setOnCancelListener(dialog -> {
+
         });
     }
 

@@ -69,7 +69,7 @@
 
     <Button
         android:id="@+id/addImageCameraButton"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="4dp"
@@ -88,11 +88,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addImageCameraButton" />
+        app:layout_constraintTop_toBottomOf="@+id/addImageGalleryButton" />
 
     <Button
         android:id="@+id/addImageGalleryButton"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"

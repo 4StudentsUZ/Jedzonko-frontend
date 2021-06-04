@@ -162,16 +162,9 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
-//                if (response.isSuccessful()) {
-//                    Toast.makeText(requireContext(), "Konto zostało usunięte", Toast.LENGTH_LONG).show();
-//                } else if (response.errorBody() != null) {
-//                    Toast.makeText(requireContext(), "Konto zostało usunięte", Toast.LENGTH_LONG).show();
-//                }
-                if (response != null) {
-                    Toast.makeText(requireContext(), R.string.account_delete_success, Toast.LENGTH_LONG).show();
-                    logoutUser();
-                    reattachFragment();
-                }
+                Toast.makeText(requireContext(), R.string.account_delete_success, Toast.LENGTH_LONG).show();
+                logoutUser();
+                reattachFragment();
             }
 
             @Override

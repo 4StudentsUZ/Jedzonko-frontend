@@ -92,23 +92,23 @@ public class RegisterAccountFragment extends Fragment implements Callback<Regist
             return false;
         }
 
-        if (!registerCheckBox.isChecked()) {
-            Toast.makeText(requireContext(), "Trzeba się zgodzić", Toast.LENGTH_SHORT).show();
+        if (!isValidEmail(usernameInput)) {
+            Toast.makeText(requireContext(), R.string.account_register_email_not_valid, Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if (passwordInput.length() < 8) {
-            Toast.makeText(requireContext(), "Hasło musi posiadać minimum 8 znaków", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.account_register_password_too_short, Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if (!passwordInput.equals(password2Input)) {
-            Toast.makeText(requireContext(), "Hasła nie są identyczne", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.account_register_password_not_match, Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if (!isValidEmail(usernameInput)) {
-            Toast.makeText(requireContext(), "Email nie jest poprawny", Toast.LENGTH_SHORT).show();
+        if (!registerCheckBox.isChecked()) {
+            Toast.makeText(requireContext(), R.string.account_register_no_consent, Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -122,7 +122,7 @@ public class RegisterAccountFragment extends Fragment implements Callback<Regist
     @Override
     public void onResponse(@NotNull Call<RegisterResponse> call, @NotNull Response<RegisterResponse> response) {
         if (response.isSuccessful()) {
-            Toast.makeText(requireContext(), "Dziękujemy za rejestrację! Możesz się zalogować.", Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), R.string.account_register_thanks, Toast.LENGTH_LONG).show();
             getParentFragmentManager().popBackStack();
         } else if (response.errorBody() != null) {
             try {

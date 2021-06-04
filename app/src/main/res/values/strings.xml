@@ -74,4 +74,9 @@
     <string name="account_delete_dialog_title">Czy chcesz usunąć konto?</string>
     <string name="account_delete_dialog_cancel">Anuluj</string>
     <string name="account_delete_dialog_confirm">Usuń</string>
+    <string name="account_register_no_consent">Trzeba się zgodzić</string>
+    <string name="account_register_password_too_short">Hasło musi posiadać minimum 8 znaków</string>
+    <string name="account_register_password_not_match">Hasła nie są identyczne</string>
+    <string name="account_register_email_not_valid">Email nie jest poprawny</string>
+    <string name="account_register_thanks">Dziękujemy za rejestrację! Możesz się zalogować.</string>
 </resources>

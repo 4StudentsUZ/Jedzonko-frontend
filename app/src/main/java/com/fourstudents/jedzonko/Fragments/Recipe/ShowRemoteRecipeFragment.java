@@ -115,6 +115,13 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
             IngredientItem ingredientItem = new IngredientItem();
             Product product = new Product();
             product.setName(ingredient.getName());
+            byte[] data;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                data = Base64.getDecoder().decode(ingredient.getImage());
+            } else {
+                data = android.util.Base64.decode(ingredient.getImage(), 0);
+            }
+            product.setData(data);
             ingredientItem.setProduct(product);
             ingredientItem.setQuantity(quantites.get(pos));
             pos++;

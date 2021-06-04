@@ -1,6 +1,8 @@
 package com.fourstudents.jedzonko.Adapters.Shared;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +42,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.imageView.setImageResource(R.drawable.ic_recipes);
         Product product = productList.get(position);
         holder.textView.setText(product.getName());
+        Bitmap recipePhoto = BitmapFactory.decodeByteArray(product.getData(),0,product.getData().length);
+        holder.imageView.setImageBitmap(recipePhoto);
     }
 
     @Override

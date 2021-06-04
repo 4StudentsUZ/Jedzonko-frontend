@@ -17,6 +17,10 @@ import java.util.List;
 
 @Dao
 public interface RecipeDao {
+
+    @Query("SELECT * from recipe r WHERE remoteId = :remoteId LIMIT 1")
+    Recipe findByRemoteId(Long remoteId);
+
     @Insert
     void insert(Recipe recipe);
 

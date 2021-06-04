@@ -4,10 +4,10 @@ import com.fourstudents.jedzonko.Network.Responses.AverageRateResponse;
 import com.fourstudents.jedzonko.Network.Responses.CommentResponse;
 import com.fourstudents.jedzonko.Network.Responses.LoginResponse;
 import com.fourstudents.jedzonko.Network.Responses.ProductResponse;
-import com.fourstudents.jedzonko.Network.Responses.UserRateResponse;
 import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
 import com.fourstudents.jedzonko.Network.Responses.RegisterResponse;
 import com.fourstudents.jedzonko.Network.Responses.UpdateUserResponse;
+import com.fourstudents.jedzonko.Network.Responses.UserRateResponse;
 import com.google.gson.JsonObject;
 
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +16,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -37,6 +38,9 @@ public interface JedzonkoService {
 
     @POST("recipes/create/")
     Call<RecipeResponse> addRecipe(@Body JsonObject object);
+
+    @DELETE("recipes/delete/{recipeId}")
+    Call<String> deleteRecipe(@Path("recipeId") Long recipeId);
 
     @GET("users/all")
     Call<List<RegisterResponse>> getAllUsers(@Body JsonObject object);

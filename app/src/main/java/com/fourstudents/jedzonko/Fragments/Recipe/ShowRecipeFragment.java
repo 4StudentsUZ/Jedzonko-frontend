@@ -2,25 +2,31 @@ package com.fourstudents.jedzonko.Fragments.Recipe;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Adapters.Shared.ShowIngredientItemAdapter;
+import com.fourstudents.jedzonko.Database.Entities.Ingredient;
+import com.fourstudents.jedzonko.Database.Entities.IngredientProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
+import com.fourstudents.jedzonko.Database.Entities.RecipeTagCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
 import com.fourstudents.jedzonko.Database.Relations.IngredientsWithProducts;
 import com.fourstudents.jedzonko.Database.Relations.RecipeWithIngredientsAndProducts;
@@ -31,12 +37,15 @@ import com.fourstudents.jedzonko.Network.JedzonkoService;
 import com.fourstudents.jedzonko.Network.Responses.ProductResponse;
 import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
 import com.fourstudents.jedzonko.Other.IngredientItem;
+import com.fourstudents.jedzonko.Other.Sorting.SortOrder;
+import com.fourstudents.jedzonko.Other.Sorting.SortProperty;
 import com.fourstudents.jedzonko.R;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -90,9 +99,34 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            } else if(clickedItem.getItemId()==R.id.action_delete_recipe){
+                onDeleteRecipe();
             }
-            return false;
+        return false;
+    });
+    }
+
+    private void onDeleteRecipe() {
+        androidx.appcompat.app.AlertDialog.Builder alertBuilder = new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+
+        alertBuilder.setTitle(R.string.dialog_delete_recipe_title);
+        alertBuilder.setMessage(R.string.dialog_delete_recipe_message);
+
+        alertBuilder.setPositiveButton(R.string.delete_confirm, (dialog, which) -> {
+            deleteRecipe();
         });
+
+        alertBuilder.setNegativeButton(R.string.delete_not_confirm, (dialog, which) -> {
+        });
+
+        alertBuilder.show();
+    }
+
+    private void deleteRecipe() {
+        database.recipeDao().deleteIngredients(recipe.getRecipeId());
+        database.recipeDao().deleteTags(recipe.getRecipeId());
+        database.recipeDao().delete(recipe);
+        getParentFragmentManager().popBackStack();
     }
 
     @Override

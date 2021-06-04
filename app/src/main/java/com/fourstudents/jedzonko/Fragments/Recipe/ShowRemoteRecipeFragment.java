@@ -70,6 +70,7 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
         toolbar.inflateMenu(R.menu.show_recipe);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         toolbar.getMenu().getItem(1).setVisible(false);
+        toolbar.getMenu().getItem(2).setVisible(false);
         toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
     }
 

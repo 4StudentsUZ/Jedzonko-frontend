@@ -79,4 +79,11 @@
     <string name="account_register_password_not_match">Hasła nie są identyczne</string>
     <string name="account_register_email_not_valid">Email nie jest poprawny</string>
     <string name="account_register_thanks">Dziękujemy za rejestrację! Możesz się zalogować.</string>
+    <string name="delete_recipe">Usuń</string>
+    <string name="dialog_delete_recipe_title">Usuwanie przepisu</string>
+    <string name="dialog_delete_recipe_message">Czy na pewno chcesz usunąć ten przepis? Ta operacja jest nieodwracalna.</string>
+    <string name="yes">Tak</string>
+    <string name="no">Nie</string>
+    <string name="delete_confirm">Usuń</string>
+    <string name="delete_not_confirm">Nie usuwaj</string>
 </resources>

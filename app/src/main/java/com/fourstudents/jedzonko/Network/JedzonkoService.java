@@ -47,6 +47,9 @@ public interface JedzonkoService {
     @PUT("users/update")
     Call<UpdateUserResponse> updateUser(@Body JsonObject object);
 
+    @POST("users/delete")
+    Call<String> deleteUser();
+
     @GET("recipes/get/all")
     Call<List<RecipeResponse>> getRecipes();
 

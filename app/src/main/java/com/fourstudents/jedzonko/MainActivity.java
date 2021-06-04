@@ -2,6 +2,7 @@ package com.fourstudents.jedzonko;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -30,7 +31,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String BACK_STACK_ROOT_TAG = "root_fragment";
+    public static final String BACK_STACK_ROOT_TAG = "root_fragment";
+    public static final String SHARED_PREFERENCES_NAME = "userPreferences";
+    public static final String PREFERENCES_TOKEN = "token";
+    public static final String PREFERENCES_USERID = "userid";
+
+
     private MenuItem menuItem;
 
     //Http interceptor
@@ -66,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     //// Login Auth
     public String token = "";
     public int userid = -1;
+    SharedPreferences sharedPreferences;
 
 
     @Override
@@ -78,7 +85,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        loadUserPreferences();
         setupBottomNavigationView();
+    }
+
+    private void loadUserPreferences() {
+        sharedPreferences = getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);
+        token = sharedPreferences.getString(PREFERENCES_TOKEN, "");
+        userid = sharedPreferences.getInt(PREFERENCES_USERID, -1);
     }
 
     @Override

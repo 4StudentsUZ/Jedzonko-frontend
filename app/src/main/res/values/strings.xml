@@ -55,4 +55,23 @@
     <string name="dialog_add_product">Dodaj produkt</string>
     <string name="add_ingredients_button">Dodaj składniki</string>
     <string name="couldnt_load_image_from_gallery">Nie udało się załadować zdjęcia z galerii</string>
+    <string name="service_connect_error">Błąd połączenia z serwisem</string>
+    <string name="example_text">Przykład</string>
+    <string name="account_register">Zarejestruj się</string>
+    <string name="account_consent">Zgadzam się na wszystko</string>
+    <string name="account_repeat_password">Powtórz hasło</string>
+    <string name="account_password">Hasło</string>
+    <string name="account_email">Email</string>
+    <string name="content_application_logo">Logo aplikacji</string>
+    <string name="account_ad_pitch">Uzyskaj więcej możliwości poprzez zalogowanie na swoje konto</string>
+    <string name="account_forgot_password">Nie pamiętasz hasła?</string>
+    <string name="account_login">Zaloguj się</string>
+    <string name="account_create_account">Nie posiadasz konta? Zarejestruj się!</string>
+    <string name="account_first_name">Imię</string>
+    <string name="account_last_name">Nazwisko</string>
+    <string name="account_delete">Usuń konto</string>
+    <string name="account_delete_success">Konto zostało usunięte</string>
+    <string name="account_delete_dialog_title">Czy chcesz usunąć konto?</string>
+    <string name="account_delete_dialog_cancel">Anuluj</string>
+    <string name="account_delete_dialog_confirm">Usuń</string>
 </resources>

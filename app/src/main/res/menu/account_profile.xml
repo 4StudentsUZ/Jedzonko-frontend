@@ -8,7 +8,7 @@
         android:enabled="true"
         android:icon="@android:drawable/ic_menu_save"
         android:orderInCategory="0"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_logout"
@@ -16,6 +16,14 @@
         android:enabled="true"
         android:icon="@drawable/ic_logout"
         android:orderInCategory="0"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_delete"
+        android:title="@string/account_delete"
+        android:enabled="true"
+        android:icon="@drawable/ic_remove_account"
+        android:orderInCategory="0"
+        app:showAsAction="never" />
 
 </menu>

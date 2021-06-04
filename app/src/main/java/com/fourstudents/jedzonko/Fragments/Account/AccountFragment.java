@@ -1,11 +1,15 @@
 package com.fourstudents.jedzonko.Fragments.Account;
 
+import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -46,11 +50,14 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
     //WithAuth
     EditText firstNameEdit;
     EditText lastNameEdit;
+    Dialog deleteAccountDialog;
 
     //Helper
     JedzonkoService api;
     MainActivity activity;
     boolean isLoggedIn;
+    SharedPreferences sharedPreferences;
+    Dialog transferDialog;
 
 
     public AccountFragment() {}
@@ -63,6 +70,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         int layoutId = R.layout.fragment_account;
         activity = ((MainActivity) requireActivity());
         isLoggedIn = activity.token.length() > 0;
+        sharedPreferences = activity.getSharedPreferences(MainActivity.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
 
         if (isLoggedIn)
             layoutId = R.layout.fragment_account_profile;
@@ -78,6 +86,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         if (isLoggedIn) {
             initToolbarAuth(view);
             initViewsAuth(view);
+            initDialogAuth();
         } else {
             initToolbar(view);
             initViews(view);
@@ -86,6 +95,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
                 passwordText.setText("");
             });
         }
+        initDialog();
     }
 
     private void initToolbar(View view) {
@@ -100,34 +110,115 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         toolbar.setOnMenuItemClickListener(clickedMenuItem -> {
 
             if (clickedMenuItem.getItemId() == R.id.action_edit_profile) {
-                JsonObject object = new JsonObject();
-                object.addProperty("firstName", firstNameEdit.getText().toString().trim());
-                object.addProperty("lastName", lastNameEdit.getText().toString().trim());
-                Call<UpdateUserResponse> call = api.updateUser(object);
-                call.enqueue(new Callback<UpdateUserResponse>() {
-                    @Override
-                    public void onResponse(@NotNull Call<UpdateUserResponse> call, @NotNull Response<UpdateUserResponse> response) {
-                        if (response.isSuccessful()) {
-                            Toast.makeText(requireContext(), "Edycja udana", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(requireContext(), "Nie działa", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NotNull Call<UpdateUserResponse> call, @NotNull Throwable t) {
-                        t.printStackTrace();
-                    }
-                });
+                editProfile();
             } else if (clickedMenuItem.getItemId() == R.id.action_logout) {
-                activity.userid = -1;
-                activity.token = "";
+                logoutUser();
                 Toast.makeText(requireContext(), "Wylogowano", Toast.LENGTH_SHORT).show();
-                Fragment frg = getParentFragmentManager().findFragmentByTag("root_fragment");
-                getParentFragmentManager().beginTransaction().detach(frg).commitNowAllowingStateLoss();
-                getParentFragmentManager().beginTransaction().attach(frg).commitAllowingStateLoss();
+                reattachFragment();
+            } else if (clickedMenuItem.getItemId() == R.id.action_delete) {
+                deleteAccountDialog.show();
             }
             return false;
+        });
+    }
+
+    private void reattachFragment() {
+        Fragment frg = getParentFragmentManager().findFragmentByTag(MainActivity.BACK_STACK_ROOT_TAG);
+        getParentFragmentManager().beginTransaction().detach(frg).commitNowAllowingStateLoss();
+        getParentFragmentManager().beginTransaction().attach(frg).commitAllowingStateLoss();
+    }
+
+    private void editProfile() {
+        JsonObject object = new JsonObject();
+        object.addProperty("firstName", firstNameEdit.getText().toString().trim());
+        object.addProperty("lastName", lastNameEdit.getText().toString().trim());
+        Call<UpdateUserResponse> call = api.updateUser(object);
+        call.enqueue(new Callback<UpdateUserResponse>() {
+            @Override
+            public void onResponse(@NotNull Call<UpdateUserResponse> call, @NotNull Response<UpdateUserResponse> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(requireContext(), "Edycja udana", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(requireContext(), "Błąd podczas edycji", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<UpdateUserResponse> call, @NotNull Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void logoutUser() {
+        activity.userid = -1;
+        activity.token = "";
+        sharedPreferences.edit().clear().apply();
+    }
+
+    private void deleteAccount() {
+        Call<String> call = api.deleteUser();
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
+//                if (response.isSuccessful()) {
+//                    Toast.makeText(requireContext(), "Konto zostało usunięte", Toast.LENGTH_LONG).show();
+//                } else if (response.errorBody() != null) {
+//                    Toast.makeText(requireContext(), "Konto zostało usunięte", Toast.LENGTH_LONG).show();
+//                }
+                if (response != null) {
+                    Toast.makeText(requireContext(), R.string.account_delete_success, Toast.LENGTH_LONG).show();
+                    logoutUser();
+                    reattachFragment();
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
+                Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void initDialogAuth() {
+        deleteAccountDialog = new Dialog(requireContext());
+        deleteAccountDialog.setContentView(R.layout.dialog_delete_account);
+        deleteAccountDialog.setCanceledOnTouchOutside(true);
+        deleteAccountDialog.getWindow()
+                .setLayout(
+                        WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT
+                );
+        deleteAccountDialog.setOnDismissListener(dialog -> {
+
+        });
+        deleteAccountDialog.setOnCancelListener(dialog -> {
+
+        });
+        Button cancelDelete = deleteAccountDialog.findViewById(R.id.account_delete_dialog_cancel_button);
+        cancelDelete.setOnClickListener(v -> deleteAccountDialog.dismiss());
+        Button confirmDelete = deleteAccountDialog.findViewById(R.id.account_delete_dialog_confirm_button);
+        confirmDelete.setOnClickListener(v -> {
+            deleteAccountDialog.dismiss();
+            deleteAccount();
+        });
+    }
+
+    private void initDialog() {
+        transferDialog = new Dialog(requireContext());
+        transferDialog.setContentView(R.layout.dialog_data_transfer);
+        transferDialog.setCanceledOnTouchOutside(true);
+        transferDialog.getWindow()
+                .setLayout(
+                        WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT
+                );
+        transferDialog.setOnDismissListener(dialog -> {
+
+        });
+        transferDialog.setOnCancelListener(dialog -> {
+
         });
     }
 
@@ -155,7 +246,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
 
             @Override
             public void onFailure(@NotNull Call<RegisterResponse> call, @NotNull Throwable t) {
-
+                Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -170,7 +261,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         infoText = view.findViewById(R.id.infoText);
 
         exampleText.setOnClickListener(v -> {
-            usernameText.setText("sikreto2021@protonmail.com");
+            usernameText.setText("sikreto2020@protonmail.com");
             passwordText.setText("12345678");
         });
 
@@ -218,13 +309,15 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
             Toast.makeText(requireContext(), "Logowanie pomyślne", Toast.LENGTH_LONG).show();
             activity.token = response.body().getToken();
             activity.userid = response.body().getId();
-            Fragment frg = getParentFragmentManager().findFragmentByTag("root_fragment");
-            getParentFragmentManager().beginTransaction().detach(frg).commitNowAllowingStateLoss();
-            getParentFragmentManager().beginTransaction().attach(frg).commitAllowingStateLoss();
+            SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+            preferencesEditor.putString(MainActivity.PREFERENCES_TOKEN, activity.token);
+            preferencesEditor.putInt(MainActivity.PREFERENCES_USERID, activity.userid);
+            preferencesEditor.apply();
+            reattachFragment();
         } else if (response.errorBody() != null) {
             try {
                 Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
-                Log.v("HarryAccountonResponse", call.request().body().toString());
+                Log.i("HarryAccountonResponse", call.request().body().toString());
             } catch (IOException e) {
                 Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -233,6 +326,6 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
 
     @Override
     public void onFailure(@NotNull Call<LoginResponse> call, @NotNull Throwable t) {
-
+        Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
     }
 }

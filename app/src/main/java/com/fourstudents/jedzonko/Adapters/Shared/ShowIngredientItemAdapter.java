@@ -1,6 +1,8 @@
 package com.fourstudents.jedzonko.Adapters.Shared;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +57,8 @@ public class ShowIngredientItemAdapter extends ListAdapter<IngredientItem, ShowI
         holder.textView.setText(ingredientItem.product.getName());
         holder.countTextView.setVisibility(View.VISIBLE);
         holder.countTextView.setText(ingredientItem.getQuantity());
+        Bitmap recipePhoto = BitmapFactory.decodeByteArray(ingredientItem.product.getData(),0,ingredientItem.product.getData().length);
+        holder.imageView.setImageBitmap(recipePhoto);
     }
 
     public static class ViewHolderClass extends RecyclerView.ViewHolder implements View.OnClickListener{

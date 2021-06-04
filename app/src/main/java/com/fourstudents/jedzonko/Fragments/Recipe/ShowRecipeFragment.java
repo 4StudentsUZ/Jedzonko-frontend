@@ -1,32 +1,27 @@
+
 package com.fourstudents.jedzonko.Fragments.Recipe;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fourstudents.jedzonko.Adapters.Shared.ShowIngredientItemAdapter;
-import com.fourstudents.jedzonko.Database.Entities.Ingredient;
-import com.fourstudents.jedzonko.Database.Entities.IngredientProductCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Product;
 import com.fourstudents.jedzonko.Database.Entities.Recipe;
-import com.fourstudents.jedzonko.Database.Entities.RecipeTagCrossRef;
 import com.fourstudents.jedzonko.Database.Entities.Tag;
 import com.fourstudents.jedzonko.Database.Relations.IngredientsWithProducts;
 import com.fourstudents.jedzonko.Database.Relations.RecipeWithIngredientsAndProducts;
@@ -37,15 +32,12 @@ import com.fourstudents.jedzonko.Network.JedzonkoService;
 import com.fourstudents.jedzonko.Network.Responses.ProductResponse;
 import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
 import com.fourstudents.jedzonko.Other.IngredientItem;
-import com.fourstudents.jedzonko.Other.Sorting.SortOrder;
-import com.fourstudents.jedzonko.Other.Sorting.SortProperty;
 import com.fourstudents.jedzonko.R;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -56,7 +48,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class ShowRecipeFragment extends Fragment implements Callback<ProductResponse>, ShowIngredientItemAdapter.OnIngredientItemListener{
+public class ShowRecipeFragment extends Fragment implements Callback<ProductResponse>, ShowIngredientItemAdapter.OnIngredientItemListener {
     RoomDB database;
     ShowIngredientItemAdapter showIngredientItemAdapter;
     List<IngredientItem> ingredientItemList = new ArrayList<>();
@@ -123,6 +115,18 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
     }
 
     private void deleteRecipe() {
+        if (recipe.getRemoteId() != -1) {
+            Call<String> call = api.deleteRecipe(recipe.getRemoteId());
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                }
+            });
+        }
         database.recipeDao().deleteIngredients(recipe.getRecipeId());
         database.recipeDao().deleteTags(recipe.getRecipeId());
         database.recipeDao().delete(recipe);

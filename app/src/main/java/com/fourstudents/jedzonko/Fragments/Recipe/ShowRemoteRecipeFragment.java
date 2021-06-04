@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fourstudents.jedzonko.Adapters.Recipe.RecipeCommentsAdapter;
 import com.fourstudents.jedzonko.Adapters.Shared.ShowIngredientItemAdapter;
 import com.fourstudents.jedzonko.Database.Entities.Product;
+import com.fourstudents.jedzonko.Database.Entities.Recipe;
+import com.fourstudents.jedzonko.Database.RoomDB;
 import com.fourstudents.jedzonko.MainActivity;
 import com.fourstudents.jedzonko.Network.JedzonkoService;
 import com.fourstudents.jedzonko.Network.Responses.AverageRateResponse;
@@ -47,6 +49,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredientItemAdapter.OnIngredientItemListener {
+    RoomDB database;
     RatingBar ratingBar;
     RatingBar averageRatingBar;
     Button rateButton;
@@ -70,8 +73,49 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
         toolbar.inflateMenu(R.menu.show_recipe);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         toolbar.getMenu().getItem(1).setVisible(false);
-        toolbar.getMenu().getItem(2).setVisible(false);
+        if (remoteRecipe.getAuthor().getId() == ((MainActivity)requireActivity()).userid) {
+            toolbar.getMenu().getItem(2).setVisible(true);
+        }
+        else {
+            toolbar.getMenu().getItem(2).setVisible(false);
+        }
         toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
+
+        toolbar.setOnMenuItemClickListener(clickedItem -> {
+            if(clickedItem.getItemId()==R.id.action_delete_recipe){
+                onDeleteRecipe();
+            }
+            return false;
+        });
+    }
+
+    private void onDeleteRecipe() {
+        androidx.appcompat.app.AlertDialog.Builder alertBuilder = new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+        alertBuilder.setTitle(R.string.dialog_delete_recipe_title);
+        alertBuilder.setMessage(R.string.dialog_delete_recipe_message);
+        alertBuilder.setPositiveButton(R.string.delete_confirm, (dialog, which) -> deleteRecipe());
+        alertBuilder.setNegativeButton(R.string.delete_not_confirm, (dialog, which) -> {});
+        alertBuilder.show();
+    }
+
+    private void deleteRecipe() {
+        Call<String> call = api.deleteRecipe((long) remoteRecipe.getId());
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+            }
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+            }
+        });
+
+        Recipe localRecipe = database.recipeDao().findByRemoteId((long) remoteRecipe.getId());
+        if (localRecipe != null) {
+            database.recipeDao().deleteIngredients(localRecipe.getRecipeId());
+            database.recipeDao().deleteTags(localRecipe.getRecipeId());
+            database.recipeDao().delete(localRecipe);
+        }
+        getParentFragmentManager().popBackStack();
     }
 
     @Override
@@ -86,6 +130,7 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
         Bundle bundle = getArguments();
         assert bundle != null;
         remoteRecipe = (RecipeResponse) bundle.getSerializable("remoteRecipe");
+        database = RoomDB.getInstance(getActivity());
         initToolbar(view);
         userRate = 0;
         ratingBar = view.findViewById(R.id.ratingBar);
@@ -155,10 +200,11 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
             userRateCall.enqueue(new Callback<UserRateResponse>() {
                 @Override
                 public void onResponse(@NotNull Call<UserRateResponse> call, @NotNull Response<UserRateResponse> response) {
-                    assert response.body() != null;
-                    userRate = response.body().getRating();
-                    ratingBar.setRating((float) userRate);
-                    if (userRate > 0) rateButton.setText("ZMIEŃ");
+                    if (response.body() != null) {
+                        userRate = response.body().getRating();
+                        ratingBar.setRating((float) userRate);
+                        if (userRate > 0) rateButton.setText("ZMIEŃ");
+                    }
                 }
 
                 @Override

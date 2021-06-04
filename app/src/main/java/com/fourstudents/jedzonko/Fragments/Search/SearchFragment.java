@@ -1,8 +1,10 @@
 package com.fourstudents.jedzonko.Fragments.Search;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
@@ -40,6 +42,7 @@ public class SearchFragment extends Fragment implements RecipeAdapter.OnRecipeLi
         super(R.layout.fragment_search);
     }
 
+    Dialog waitDialog;
     RecyclerView recipeRV;
     RecipeAdapter recipeAdapter;
     RecipeViewModel recipeViewModel;
@@ -136,6 +139,24 @@ public class SearchFragment extends Fragment implements RecipeAdapter.OnRecipeLi
                 .commit();
     }
 
+    private void openWaitDialog(Call call) {
+        if (waitDialog == null) {
+            waitDialog = new Dialog(requireContext());
+            waitDialog.setContentView(R.layout.dialog_loading);
+            waitDialog.setCanceledOnTouchOutside(true);
+            waitDialog.getWindow()
+                    .setLayout(
+                            WindowManager.LayoutParams.MATCH_PARENT,
+                            WindowManager.LayoutParams.WRAP_CONTENT
+                    );
+        }
+
+        waitDialog.setOnDismissListener(dialog -> call.cancel());
+        waitDialog.setOnCancelListener(dialog -> call.cancel());
+
+        waitDialog.show();
+    }
+
     @Override
     public void onResponse(Call<List<RecipeResponse>> call, Response<List<RecipeResponse>> response) {
         if (response.body() == null) return;
@@ -143,10 +164,17 @@ public class SearchFragment extends Fragment implements RecipeAdapter.OnRecipeLi
         remoteRecipes = new ArrayList<>(response.body());
         convertRecipes();
         recipeAdapter.setRecipeList(recipes);
+
+        if (waitDialog != null) {
+            waitDialog.hide();
+        }
     }
 
     @Override
     public void onFailure(Call<List<RecipeResponse>> call, Throwable t) {
+        if (waitDialog != null) {
+            waitDialog.hide();
+        }
     }
 
     private void convertRecipes() {
@@ -211,5 +239,6 @@ public class SearchFragment extends Fragment implements RecipeAdapter.OnRecipeLi
 
         Call<List<RecipeResponse>> call = api.queryRecipes(queryText, sortString, directionString);
         call.enqueue(SearchFragment.this);
+        openWaitDialog(call);
     }
 }

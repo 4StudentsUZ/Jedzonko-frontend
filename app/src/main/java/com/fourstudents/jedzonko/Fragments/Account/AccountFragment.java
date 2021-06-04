@@ -1,5 +1,8 @@
 package com.fourstudents.jedzonko.Fragments.Account;
 
+import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -51,6 +54,8 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
     JedzonkoService api;
     MainActivity activity;
     boolean isLoggedIn;
+    SharedPreferences sharedPreferences;
+    Dialog transferDialog;
 
 
     public AccountFragment() {}
@@ -63,6 +68,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         int layoutId = R.layout.fragment_account;
         activity = ((MainActivity) requireActivity());
         isLoggedIn = activity.token.length() > 0;
+        sharedPreferences = activity.getSharedPreferences(MainActivity.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
 
         if (isLoggedIn)
             layoutId = R.layout.fragment_account_profile;
@@ -110,20 +116,22 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
                         if (response.isSuccessful()) {
                             Toast.makeText(requireContext(), "Edycja udana", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(requireContext(), "Nie działa", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Błąd podczas edycji", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(@NotNull Call<UpdateUserResponse> call, @NotNull Throwable t) {
                         t.printStackTrace();
+                        Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
                     }
                 });
             } else if (clickedMenuItem.getItemId() == R.id.action_logout) {
                 activity.userid = -1;
                 activity.token = "";
+                sharedPreferences.edit().clear().apply();
                 Toast.makeText(requireContext(), "Wylogowano", Toast.LENGTH_SHORT).show();
-                Fragment frg = getParentFragmentManager().findFragmentByTag("root_fragment");
+                Fragment frg = getParentFragmentManager().findFragmentByTag(MainActivity.BACK_STACK_ROOT_TAG);
                 getParentFragmentManager().beginTransaction().detach(frg).commitNowAllowingStateLoss();
                 getParentFragmentManager().beginTransaction().attach(frg).commitAllowingStateLoss();
             }
@@ -155,7 +163,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
 
             @Override
             public void onFailure(@NotNull Call<RegisterResponse> call, @NotNull Throwable t) {
-
+                Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -170,7 +178,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         infoText = view.findViewById(R.id.infoText);
 
         exampleText.setOnClickListener(v -> {
-            usernameText.setText("sikreto2021@protonmail.com");
+            usernameText.setText("sikreto2020@protonmail.com");
             passwordText.setText("12345678");
         });
 
@@ -218,13 +226,17 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
             Toast.makeText(requireContext(), "Logowanie pomyślne", Toast.LENGTH_LONG).show();
             activity.token = response.body().getToken();
             activity.userid = response.body().getId();
-            Fragment frg = getParentFragmentManager().findFragmentByTag("root_fragment");
+            SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+            preferencesEditor.putString(MainActivity.PREFERENCES_TOKEN, activity.token);
+            preferencesEditor.putInt(MainActivity.PREFERENCES_USERID, activity.userid);
+            preferencesEditor.apply();
+            Fragment frg = getParentFragmentManager().findFragmentByTag(MainActivity.BACK_STACK_ROOT_TAG);
             getParentFragmentManager().beginTransaction().detach(frg).commitNowAllowingStateLoss();
             getParentFragmentManager().beginTransaction().attach(frg).commitAllowingStateLoss();
         } else if (response.errorBody() != null) {
             try {
                 Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
-                Log.v("HarryAccountonResponse", call.request().body().toString());
+                Log.i("HarryAccountonResponse", call.request().body().toString());
             } catch (IOException e) {
                 Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -233,6 +245,6 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
 
     @Override
     public void onFailure(@NotNull Call<LoginResponse> call, @NotNull Throwable t) {
-
+        Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
     }
 }

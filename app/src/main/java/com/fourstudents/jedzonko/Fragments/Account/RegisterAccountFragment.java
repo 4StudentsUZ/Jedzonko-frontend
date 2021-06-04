@@ -65,7 +65,7 @@ public class RegisterAccountFragment extends Fragment implements Callback<Regist
         exampleText = view.findViewById(R.id.exampleText);
 
         exampleText.setOnClickListener(v -> {
-            usernameText.setText("sikreto2021@protonmail.com");
+            usernameText.setText("sikreto2020@protonmail.com");
             passwordText.setText("12345678");
             passwordText2.setText("12345678");
         });
@@ -135,6 +135,6 @@ public class RegisterAccountFragment extends Fragment implements Callback<Regist
 
     @Override
     public void onFailure(@NotNull Call<RegisterResponse> call, @NotNull Throwable t) {
-
+        Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
     }
 }

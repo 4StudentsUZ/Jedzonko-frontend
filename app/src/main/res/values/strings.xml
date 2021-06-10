@@ -79,4 +79,14 @@
     <string name="account_register_password_not_match">Hasła nie są identyczne</string>
     <string name="account_register_email_not_valid">Email nie jest poprawny</string>
     <string name="account_register_thanks">Dziękujemy za rejestrację! Możesz się zalogować.</string>
+    <string name="account_recovery_recoveryButton">Resetuj hasło</string>
+    <string name="account_recovery_start">Wysłano maila z tokenem</string>
+    <string name="title_register_recovery">Resetuj hasło</string>
+    <string name="title_reset_account">Zmień hasło</string>
+    <string name="account_reset_token">Token</string>
+    <string name="account_reset_change_password">Zmień hasło</string>
+    <string name="account_reset_success">Hasło zostało zmienione</string>
+    <string name="account_recovery_not_found">Konta nie znaleziono</string>
+    <string name="account_invalid_data">Podano zły email lub hasło</string>
+    <string name="account_reset_wrong_token">Czas na wpisanie tokenu minął lub podano błędny</string>
 </resources>

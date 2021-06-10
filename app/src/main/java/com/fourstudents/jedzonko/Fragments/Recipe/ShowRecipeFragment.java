@@ -119,11 +119,12 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
             Call<String> call = api.deleteRecipe(recipe.getRemoteId());
             call.enqueue(new Callback<String>() {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response) {
+                public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t) {
+                public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
+                    Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
                 }
             });
         }
@@ -278,6 +279,7 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
             @Override
             public void onFailure(@NotNull Call<RecipeResponse> call, @NotNull Throwable t) {
                 t.printStackTrace();
+                Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
             }
         });
 
@@ -303,7 +305,7 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
 
     @Override
     public void onFailure(@NotNull Call<ProductResponse> call, @NotNull Throwable t) {
-
+        Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
     }
 
     @Override

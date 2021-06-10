@@ -102,10 +102,11 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
         Call<String> call = api.deleteRecipe((long) remoteRecipe.getId());
         call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
             }
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
+                Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
             }
         });
 
@@ -216,6 +217,7 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
 
                 @Override
                 public void onFailure(@NotNull Call<UserRateResponse> call, @NotNull Throwable t) {
+                    Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
                 }
             });
         }
@@ -240,7 +242,7 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
 
                     @Override
                     public void onFailure(@NotNull Call<UserRateResponse> call, @NotNull Throwable t) {
-
+                        Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
                     }
                 });
 
@@ -276,7 +278,8 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
 
                     @Override
                     public void onFailure(@NotNull Call<CommentResponse> call, @NotNull Throwable t) {
-                        Toast.makeText(getContext(), t.toString(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getContext(), t.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -293,7 +296,7 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
 
             @Override
             public void onFailure(@NotNull Call<List<CommentResponse>> call, @NotNull Throwable t) {
-
+                Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -311,7 +314,7 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
 
             @Override
             public void onFailure(@NotNull Call<AverageRateResponse> call, @NotNull Throwable t) {
-
+                Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
             }
         });
     }

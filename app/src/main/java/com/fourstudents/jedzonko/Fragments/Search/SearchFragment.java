@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -175,6 +176,7 @@ public class SearchFragment extends Fragment implements RecipeAdapter.OnRecipeLi
         if (waitDialog != null) {
             waitDialog.hide();
         }
+        Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
     }
 
     private void convertRecipes() {

@@ -517,7 +517,7 @@ public class EditRecipeFragment extends Fragment implements Callback<ProductResp
 
     @Override
     public void onFailure(Call<ProductResponse> call, Throwable t) {
-
+        Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
     }
     private void editRecipe(){
         JsonObject object = new JsonObject();
@@ -563,6 +563,7 @@ public class EditRecipeFragment extends Fragment implements Callback<ProductResp
             @Override
             public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
                 t.printStackTrace();
+                Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
             }
         });
 

@@ -271,6 +271,7 @@ Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, 256, 256, true);
                     @Override
                     public void onClick(View v) {
                         productList.clear();
+                        tagList.clear();
                         ingredientDialog.dismiss();
                         requireActivity()
                                 .getSupportFragmentManager()
@@ -299,6 +300,7 @@ Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, 256, 256, true);
                     @Override
                     public void onClick(View v) {
                         tagList.clear();
+                        productList.clear();
                         tagDialog.dismiss();
                         requireActivity()
                                 .getSupportFragmentManager()

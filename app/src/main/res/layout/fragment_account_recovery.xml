@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/fragment_account_register_parent">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/custom_toolbar"
@@ -23,70 +24,40 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/content_application_logo"
         android:src="@mipmap/ic_launcher_foreground"
-        app:layout_constraintBottom_toTopOf="@+id/firstNameText"
+        app:layout_constraintBottom_toTopOf="@+id/usernameText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/custom_toolbar" />
 
-    <TextView
-        android:id="@+id/firstNameText"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/usernameText"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/account_first_name"
-        android:textColor="@color/secondaryColor"
-        app:layout_constraintBottom_toTopOf="@+id/firstNameEdit"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:ems="10"
+        android:hint="@string/account_email"
+        android:importantForAutofill="no"
+        android:inputType="textEmailAddress"
+        app:layout_constraintBottom_toTopOf="@+id/recoveryButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appLogo" />
 
-    <EditText
-        android:id="@+id/firstNameEdit"
+    <Button
+        android:id="@+id/recoveryButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:ems="10"
-        android:hint="@string/account_first_name"
-        android:inputType="textPersonName"
-        android:singleLine="true"
-        app:layout_constraintBottom_toTopOf="@+id/lastNameText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/firstNameText"
-        android:importantForAutofill="no" />
-
-    <TextView
-        android:id="@+id/lastNameText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/account_last_name"
-        android:textColor="@color/secondaryColor"
-        app:layout_constraintBottom_toTopOf="@+id/lastNameEdit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/firstNameEdit" />
-
-    <EditText
-        android:id="@+id/lastNameEdit"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="16dp"
-        android:ems="10"
-        android:hint="@string/account_last_name"
-        android:inputType="textPersonName"
-        android:singleLine="true"
+        android:text="@string/account_recovery_recoveryButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lastNameText"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/usernameText" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

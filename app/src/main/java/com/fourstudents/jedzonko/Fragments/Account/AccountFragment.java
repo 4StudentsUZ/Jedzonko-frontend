@@ -254,9 +254,16 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
         infoText = view.findViewById(R.id.infoText);
 
         exampleText.setOnClickListener(v -> {
-            usernameText.setText("sikreto2020@protonmail.com");
+            usernameText.setText("email@protonmail.com");
             passwordText.setText("12345678");
         });
+
+        forgotPasswordText.setOnClickListener(v ->
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainFrameLayout, new RecoveryAccountFragment(), "RecoveryAccountFragment")
+                        .addToBackStack("RecoveryAccountFragment")
+                        .commit());
 
         loginButton.setOnClickListener(v -> {
             if (isInputValid()) {
@@ -308,6 +315,10 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
             preferencesEditor.apply();
             reattachFragment();
         } else if (response.errorBody() != null) {
+            if (response.code() == 403) {
+                Toast.makeText(requireContext(), R.string.account_invalid_data, Toast.LENGTH_LONG).show();
+                return;
+            }
             try {
                 Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
                 Log.i("HarryAccountonResponse", call.request().body().toString());

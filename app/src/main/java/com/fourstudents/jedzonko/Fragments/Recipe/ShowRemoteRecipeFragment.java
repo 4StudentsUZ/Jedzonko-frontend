@@ -1,11 +1,13 @@
 package com.fourstudents.jedzonko.Fragments.Recipe;
 
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -62,6 +64,7 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
     double userRate;
     RecyclerView commentsRV;
     List<CommentItem> commentsList = new ArrayList<>();
+    Dialog waitDialog;
 
     public ShowRemoteRecipeFragment() {
         super(R.layout.fragment_show_remote_recipe);
@@ -100,12 +103,16 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
 
     private void deleteRecipe() {
         Call<Void> call = api.deleteRecipe((long) remoteRecipe.getId());
+        openWaitDialog(call);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
+                waitDialog.hide();
+                getParentFragmentManager().popBackStack();
             }
             @Override
             public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
+                waitDialog.hide();
                 Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
             }
         });
@@ -116,7 +123,6 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
             database.recipeDao().deleteTags(localRecipe.getRecipeId());
             database.recipeDao().delete(localRecipe);
         }
-        getParentFragmentManager().popBackStack();
     }
 
     @Override
@@ -338,5 +344,23 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
     @Override
     public void onIngredientItemClick(int position) {
 
+    }
+
+    private void openWaitDialog(Call call) {
+        if (waitDialog == null) {
+            waitDialog = new Dialog(requireContext());
+            waitDialog.setContentView(R.layout.dialog_loading);
+            waitDialog.setCanceledOnTouchOutside(true);
+            waitDialog.getWindow()
+                    .setLayout(
+                            WindowManager.LayoutParams.MATCH_PARENT,
+                            WindowManager.LayoutParams.WRAP_CONTENT
+                    );
+        }
+
+        waitDialog.setOnDismissListener(dialog -> call.cancel());
+        waitDialog.setOnCancelListener(dialog -> call.cancel());
+
+        waitDialog.show();
     }
 }

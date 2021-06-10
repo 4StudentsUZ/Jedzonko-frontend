@@ -1,12 +1,14 @@
 
 package com.fourstudents.jedzonko.Fragments.Recipe;
 
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +51,7 @@ import retrofit2.Response;
 
 
 public class ShowRecipeFragment extends Fragment implements Callback<ProductResponse>, ShowIngredientItemAdapter.OnIngredientItemListener {
+    Dialog waitDialog;
     RoomDB database;
     ShowIngredientItemAdapter showIngredientItemAdapter;
     List<IngredientItem> ingredientItemList = new ArrayList<>();
@@ -115,23 +118,28 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
     }
 
     private void deleteRecipe() {
+        database.recipeDao().deleteIngredients(recipe.getRecipeId());
+        database.recipeDao().deleteTags(recipe.getRecipeId());
+        database.recipeDao().delete(recipe);
         if (recipe.getRemoteId() != -1) {
             Call<Void> call = api.deleteRecipe(recipe.getRemoteId());
+            openWaitDialog(call);
             call.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
+                    waitDialog.hide();
+                    getParentFragmentManager().popBackStack();
                 }
 
                 @Override
                 public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
+                    waitDialog.hide();
                     Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
                 }
             });
+        } else {
+            getParentFragmentManager().popBackStack();
         }
-        database.recipeDao().deleteIngredients(recipe.getRecipeId());
-        database.recipeDao().deleteTags(recipe.getRecipeId());
-        database.recipeDao().delete(recipe);
-        getParentFragmentManager().popBackStack();
     }
 
     @Override
@@ -311,5 +319,23 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
     @Override
     public void onIngredientItemClick(int position) {
 
+    }
+
+    private void openWaitDialog(Call call) {
+        if (waitDialog == null) {
+            waitDialog = new Dialog(requireContext());
+            waitDialog.setContentView(R.layout.dialog_loading);
+            waitDialog.setCanceledOnTouchOutside(true);
+            waitDialog.getWindow()
+                    .setLayout(
+                            WindowManager.LayoutParams.MATCH_PARENT,
+                            WindowManager.LayoutParams.WRAP_CONTENT
+                    );
+        }
+
+        waitDialog.setOnDismissListener(dialog -> call.cancel());
+        waitDialog.setOnCancelListener(dialog -> call.cancel());
+
+        waitDialog.show();
     }
 }

@@ -266,9 +266,11 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
         object.addProperty("image", new String(data));
 
         Call<RecipeResponse> call = api.addRecipe(object);
+        openWaitDialog(call);
         call.enqueue(new Callback<RecipeResponse>() {
             @Override
             public void onResponse(@NotNull Call<RecipeResponse> call, @NotNull Response<RecipeResponse> response) {
+                waitDialog.hide();
                 if (response.isSuccessful()) {
                     assert response.body() != null;
                     recipe.setRemoteId(response.body().getId());
@@ -286,6 +288,7 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
 
             @Override
             public void onFailure(@NotNull Call<RecipeResponse> call, @NotNull Throwable t) {
+                waitDialog.hide();
                 t.printStackTrace();
                 Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
             }

@@ -31,6 +31,7 @@ import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -124,8 +125,10 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
 
     private void reattachFragment() {
         Fragment frg = getParentFragmentManager().findFragmentByTag(MainActivity.BACK_STACK_ROOT_TAG);
-        getParentFragmentManager().beginTransaction().detach(frg).commitNowAllowingStateLoss();
-        getParentFragmentManager().beginTransaction().attach(frg).commitAllowingStateLoss();
+        if (frg != null) {
+            getParentFragmentManager().beginTransaction().detach(frg).commitNowAllowingStateLoss();
+            getParentFragmentManager().beginTransaction().attach(frg).commitAllowingStateLoss();
+        }
     }
 
     private void editProfile() {
@@ -158,17 +161,17 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
     }
 
     private void deleteAccount() {
-        Call<String> call = api.deleteUser();
-        call.enqueue(new Callback<String>() {
+        Call<Void> call = api.deleteUser();
+        call.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
+            public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
                 Toast.makeText(requireContext(), R.string.account_delete_success, Toast.LENGTH_LONG).show();
                 logoutUser();
                 reattachFragment();
             }
 
             @Override
-            public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
+            public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
                 Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
             }
         });
@@ -228,6 +231,12 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
                         lastNameEdit.setText(response.body().getLastName());
                     }
                 } else if (response.errorBody() != null) {
+                    if (response.code() == 403) {
+                        logoutUser();
+                        Toast.makeText(requireContext(), "Wylogowano", Toast.LENGTH_SHORT).show();
+                        reattachFragment();
+                        return;
+                    }
                     try {
                         Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
                         Log.i("Harry", response.errorBody().string());
@@ -307,13 +316,15 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
     public void onResponse(@NotNull Call<LoginResponse> call, @NotNull Response<LoginResponse> response) {
         if (response.isSuccessful()) {
             Toast.makeText(requireContext(), "Logowanie pomyślne", Toast.LENGTH_LONG).show();
-            activity.token = response.body().getToken();
-            activity.userid = response.body().getId();
-            SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
-            preferencesEditor.putString(MainActivity.PREFERENCES_TOKEN, activity.token);
-            preferencesEditor.putInt(MainActivity.PREFERENCES_USERID, activity.userid);
-            preferencesEditor.apply();
-            reattachFragment();
+            if (response.body() != null) {
+                activity.token = response.body().getToken();
+                activity.userid = response.body().getId();
+                SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+                preferencesEditor.putString(MainActivity.PREFERENCES_TOKEN, activity.token);
+                preferencesEditor.putInt(MainActivity.PREFERENCES_USERID, activity.userid);
+                preferencesEditor.apply();
+                reattachFragment();
+            }
         } else if (response.errorBody() != null) {
             if (response.code() == 403) {
                 Toast.makeText(requireContext(), R.string.account_invalid_data, Toast.LENGTH_LONG).show();
@@ -321,7 +332,7 @@ public class AccountFragment extends Fragment implements Callback<LoginResponse>
             }
             try {
                 Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
-                Log.i("HarryAccountonResponse", call.request().body().toString());
+                Log.i("HarryAccountonResponse", Objects.requireNonNull(call.request().body()).toString());
             } catch (IOException e) {
                 Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             }

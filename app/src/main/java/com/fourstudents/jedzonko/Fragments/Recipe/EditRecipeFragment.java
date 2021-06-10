@@ -137,7 +137,8 @@ public class EditRecipeFragment extends Fragment implements Callback<ProductResp
 
     private void updatePicture(byte[] bytes) {
         Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth()/10, bmp.getHeight()/10, true);
+        //Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth()/10, bmp.getHeight()/10, true);
+Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, 256, 256, true);
 //            Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, imageViewWidth, imageViewHeight, true);
         Bitmap rotatedBmp = HarryHelperClass.rotateBitmapByAngle(scaledBmp, ((MainActivity) requireActivity()).imageRotation);
 
@@ -150,7 +151,8 @@ public class EditRecipeFragment extends Fragment implements Callback<ProductResp
     }
 
     private void updatePicture(Bitmap bmp) {
-        Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth()/10, bmp.getHeight()/10, true);
+        //Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth()/10, bmp.getHeight()/10, true);
+Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, 256, 256, true);
         imageView.setImageBitmap(scaledBmp);
     }
 

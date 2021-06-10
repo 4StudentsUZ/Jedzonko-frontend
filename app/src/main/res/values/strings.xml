@@ -78,7 +78,7 @@
     <string name="account_register_password_too_short">Hasło musi posiadać minimum 8 znaków</string>
     <string name="account_register_password_not_match">Hasła nie są identyczne</string>
     <string name="account_register_email_not_valid">Email nie jest poprawny</string>
-    <string name="account_register_thanks">Dziękujemy za rejestrację! Możesz się zalogować.</string>
+    <string name="account_register_thanks">Dziękujemy za rejestrację! Mail aktywacyjny został wysłany.</string>
     <string name="account_recovery_recoveryButton">Resetuj hasło</string>
     <string name="account_recovery_start">Wysłano maila z tokenem</string>
     <string name="title_register_recovery">Resetuj hasło</string>

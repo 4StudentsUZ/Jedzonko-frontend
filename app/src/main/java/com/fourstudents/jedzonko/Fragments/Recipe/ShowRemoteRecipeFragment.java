@@ -99,13 +99,13 @@ public class ShowRemoteRecipeFragment extends Fragment implements ShowIngredient
     }
 
     private void deleteRecipe() {
-        Call<String> call = api.deleteRecipe((long) remoteRecipe.getId());
-        call.enqueue(new Callback<String>() {
+        Call<Void> call = api.deleteRecipe((long) remoteRecipe.getId());
+        call.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
+            public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
             }
             @Override
-            public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
+            public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
                 Toast.makeText(requireContext(), R.string.service_connect_error, Toast.LENGTH_LONG).show();
             }
         });

@@ -54,7 +54,8 @@ public class AddProductFragment extends Fragment {
         if (activity.productImageData != null) {
             byte[] bytes = activity.productImageData;
             Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth()/10, bmp.getHeight()/10, true);
+            ////Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth()/10, bmp.getHeight()/10, true);
+Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, 256, 256, true);
             Bitmap rotatedBmp = HarryHelperClass.rotateBitmapByAngle(scaledBmp, activity.productImageRotation);
             imageView.setImageBitmap(rotatedBmp);
         }
@@ -198,7 +199,8 @@ public class AddProductFragment extends Fragment {
     }
 
     private void updatePicture(Bitmap bmp) {
-        Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth()/10, bmp.getHeight()/10, true);
+        //Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth()/10, bmp.getHeight()/10, true);
+Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, 256, 256, true);
         imageView.setImageBitmap(scaledBmp);
     }
 }

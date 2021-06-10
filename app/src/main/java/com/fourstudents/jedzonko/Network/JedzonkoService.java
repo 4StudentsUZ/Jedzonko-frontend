@@ -40,7 +40,7 @@ public interface JedzonkoService {
     Call<RecipeResponse> addRecipe(@Body JsonObject object);
 
     @DELETE("recipes/delete/{recipeId}")
-    Call<String> deleteRecipe(@Path("recipeId") Long recipeId);
+    Call<Void> deleteRecipe(@Path("recipeId") Long recipeId);
 
     @GET("users/all")
     Call<List<RegisterResponse>> getAllUsers(@Body JsonObject object);
@@ -58,7 +58,7 @@ public interface JedzonkoService {
     Call<Void> resetUser(@Body JsonObject object);
 
     @POST("users/delete")
-    Call<String> deleteUser();
+    Call<Void> deleteUser();
 
     @GET("recipes/get/all")
     Call<List<RecipeResponse>> getRecipes();

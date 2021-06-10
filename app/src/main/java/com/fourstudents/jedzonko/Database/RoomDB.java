@@ -51,9 +51,9 @@ public abstract class RoomDB extends RoomDatabase {
             databaseWriteExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    shoppingTemplate();
-                    productTemplate();
-                    tagTemplate();
+//                    shoppingTemplate();
+//                    productTemplate();
+//                    tagTemplate();
                 }
             });
         }

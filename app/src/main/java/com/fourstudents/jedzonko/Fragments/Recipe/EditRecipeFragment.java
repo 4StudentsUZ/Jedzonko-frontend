@@ -41,23 +41,36 @@ import com.fourstudents.jedzonko.Database.RoomDB;
 import com.fourstudents.jedzonko.Fragments.Shared.AddProductFragment;
 import com.fourstudents.jedzonko.Fragments.Shared.CameraFragment;
 import com.fourstudents.jedzonko.MainActivity;
+import com.fourstudents.jedzonko.Network.JedzonkoService;
+import com.fourstudents.jedzonko.Network.Responses.ProductResponse;
+import com.fourstudents.jedzonko.Network.Responses.RecipeResponse;
 import com.fourstudents.jedzonko.Other.HarryHelperClass;
 import com.fourstudents.jedzonko.Other.IngredientItem;
 import com.fourstudents.jedzonko.R;
 import com.fourstudents.jedzonko.ViewModels.Shared.IngredientItemViewModel;
 import com.fourstudents.jedzonko.ViewModels.Shared.TagViewModel;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 
 
-public class EditRecipeFragment extends Fragment implements ProductAdapter.OnProductListener, IngredientItemAdapter.OnIngredientItemListener, TagAdapter.OnTagListener, RecipeTagAdapter.OnRecipeTagListener {
+public class EditRecipeFragment extends Fragment implements Callback<ProductResponse>, ProductAdapter.OnProductListener, IngredientItemAdapter.OnIngredientItemListener, TagAdapter.OnTagListener, RecipeTagAdapter.OnRecipeTagListener {
     private static final int RESULT_SELECT_FROM_GALLERY = 1;
     RoomDB database;
     List<Product> productList = new ArrayList<>();
@@ -80,6 +93,11 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
     IngredientItemViewModel ingredientItemViewModel;
     TagViewModel tagViewModel;
     long recipeId;
+    long remoteRecipeId;
+    JedzonkoService api;
+    JsonArray tagsJsonArray;
+    List<Long> productsId = new ArrayList<>();
+    byte[] data;
 
 
     public EditRecipeFragment() {super(R.layout.fragment_edit_recipe);}
@@ -155,7 +173,7 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initToolbar(view);
-
+        api = ((MainActivity) requireActivity()).api;
         Bundle bundle = getArguments();
         recipeId= bundle.getLong("recipeId");
 
@@ -307,7 +325,7 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
                 }
             }
 
-            byte[] data;
+
             BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
             Bitmap bmp = bitmapDrawable.getBitmap();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -335,30 +353,36 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
                 database.ingredientDao().insertIngredientWithProduct(ingredientProductCrossRef);
             }
             List<Tag> tags = tagViewModel.getTagsList();
-
+            tagsJsonArray = new JsonArray();
             for (Tag tag: tags) {
                 RecipeTagCrossRef recipeTagCrossRef= new RecipeTagCrossRef();
                 recipeTagCrossRef.setTagId(tag.getTagId());
                 recipeTagCrossRef.setRecipeId(recipeId);
+                tagsJsonArray.add(tag.getName());
                 database.recipeDao().insertRecipeWithTag(recipeTagCrossRef);
             }
+            if (((MainActivity) requireActivity()).token.length() > 0 && remoteRecipeId!=-1){
+                for (IngredientItem ingredientItem: ingredientItems) {
+                    JsonObject object = new JsonObject();
+                    object.addProperty("name", ingredientItem.getProduct().getName());
+                    object.addProperty("barcode", ingredientItem.getProduct().getBarcode());
+                    byte[] remoteData;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                       remoteData = Base64.getEncoder().encode(ingredientItem.getProduct().getData());
+                    } else {
+                        remoteData = android.util.Base64.encode(ingredientItem.getProduct().getData(), 0);
+                    }
+                    object.addProperty("image", new String(remoteData));
+                    Call<ProductResponse> call = api.addProduct(object);
+                    call.enqueue(this);
+                }
+            }
+            if (((MainActivity) requireActivity()).token.length() == 0 || remoteRecipeId==-1){
+                clearAndBack();
+            }
 
-            title.setText("");
-            description.setText("");
-            ingredientItemViewModel.clearIngredientItemList();
-            tagViewModel.clearTagList();
-            ((MainActivity) requireActivity()).imageData = null;
-            imageView.setImageResource(R.drawable.test_drawable);
-            Toast.makeText(getContext(), "Zapisano zmiany", Toast.LENGTH_SHORT).show();
-            requireActivity()
-                    .getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.mainFrameLayout, new RecipeFragment(), "RecipeFragment")
-                    .addToBackStack("RecipeFragment")
-                    .commit();
         }
         productRV.setAdapter(productAdapter);
-
     }
     boolean checkData(){
         if(title.getText().toString().equals("") || description.getText().toString().equals("")|| ingredientItemViewModel.getIngredientItemsListSize()==0 || !ingredientItemViewModel.isQuantityFilled() ){
@@ -381,6 +405,7 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
                 byte[] data = recipeWithTag.recipe.getData();
                 Bitmap recipePhoto = BitmapFactory.decodeByteArray(data,0,data.length);
                 imageView.setImageBitmap(recipePhoto);
+                remoteRecipeId = recipeWithTag.recipe.getRemoteId();
                 for (Tag tag: recipeWithTag.tags) {
                     tagViewModel.addTag(tag);
                 }
@@ -470,5 +495,92 @@ public class EditRecipeFragment extends Fragment implements ProductAdapter.OnPro
                 Toast.makeText(requireActivity(), R.string.couldnt_load_image_from_gallery,Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Override
+    public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
+        if (response.isSuccessful()) {
+            assert response.body() != null;
+            productsId.add(response.body().getId());
+
+            if(productsId.size()==ingredientItemViewModel.getIngredientItemsList().size()){
+                editRecipe();
+            }
+        } else if (response.errorBody() != null) {
+            try {
+                Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
+    public void onFailure(Call<ProductResponse> call, Throwable t) {
+
+    }
+    private void editRecipe(){
+        JsonObject object = new JsonObject();
+
+        object.addProperty("title", title.getText().toString().trim());
+        object.addProperty("description", description.getText().toString().trim());
+        JsonArray ingredientArray = new JsonArray();
+        for (Long id:productsId) {
+            ingredientArray.add(id);
+        }
+        object.add("ingredients", ingredientArray);
+
+        JsonArray quantityArray = new JsonArray();
+        for (IngredientItem ingredientItem: ingredientItemViewModel.getIngredientItemsList()) {
+            quantityArray.add(ingredientItem.getQuantity());
+        }
+        object.add("quantities", quantityArray);
+        object.add("tags", tagsJsonArray);
+
+        byte[] remoteData;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            remoteData = Base64.getEncoder().encode(data);
+        } else {
+            remoteData = android.util.Base64.encode(data, 0);
+        }
+        object.addProperty("image", new String(remoteData));
+
+        Call<String> call = api.updateRecipe(remoteRecipeId, object);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
+                if (response.isSuccessful()) {
+                    clearAndBack();
+                } else if (response.errorBody() != null) {
+                    try {
+                        Toast.makeText(requireContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
+                t.printStackTrace();
+            }
+        });
+
+    }
+    private void clearAndBack(){
+        title.setText("");
+        description.setText("");
+        ingredientItemViewModel.clearIngredientItemList();
+        tagViewModel.clearTagList();
+        ((MainActivity) requireActivity()).imageData = null;
+        imageView.setImageResource(R.drawable.test_drawable);
+        Toast.makeText(getContext(), "Zapisano zmiany", Toast.LENGTH_SHORT).show();
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.mainFrameLayout, new RecipeFragment(), "RecipeFragment")
+                .addToBackStack("RecipeFragment")
+                .commit();
+        productRV.setAdapter(productAdapter);
     }
 }

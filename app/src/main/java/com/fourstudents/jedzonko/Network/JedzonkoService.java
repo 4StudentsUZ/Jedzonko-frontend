@@ -78,4 +78,7 @@ public interface JedzonkoService {
 
     @GET("comments/get/forRecipe/{recipeId}")
     Call<List<CommentResponse>> getCommentsForRecipe(@Path("recipeId") int value);
+
+    @PUT("recipes/update/{recipeId}")
+    Call<String> updateRecipe(@Path("recipeId") long value, @Body JsonObject object);
 }

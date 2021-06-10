@@ -89,4 +89,11 @@
     <string name="account_recovery_not_found">Konta nie znaleziono</string>
     <string name="account_invalid_data">Podano zły email lub hasło</string>
     <string name="account_reset_wrong_token">Czas na wpisanie tokenu minął lub podano błędny</string>
+    <string name="delete_recipe">Usuń</string>
+    <string name="dialog_delete_recipe_title">Usuwanie przepisu</string>
+    <string name="dialog_delete_recipe_message">Czy na pewno chcesz usunąć ten przepis? Ta operacja jest nieodwracalna.</string>
+    <string name="yes">Tak</string>
+    <string name="no">Nie</string>
+    <string name="delete_confirm">Usuń</string>
+    <string name="delete_not_confirm">Nie usuwaj</string>
 </resources>

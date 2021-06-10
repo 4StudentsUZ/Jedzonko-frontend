@@ -1,3 +1,4 @@
+
 package com.fourstudents.jedzonko.Fragments.Recipe;
 
 import android.graphics.Bitmap;
@@ -47,7 +48,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class ShowRecipeFragment extends Fragment implements Callback<ProductResponse>, ShowIngredientItemAdapter.OnIngredientItemListener{
+public class ShowRecipeFragment extends Fragment implements Callback<ProductResponse>, ShowIngredientItemAdapter.OnIngredientItemListener {
     RoomDB database;
     ShowIngredientItemAdapter showIngredientItemAdapter;
     List<IngredientItem> ingredientItemList = new ArrayList<>();
@@ -90,9 +91,46 @@ public class ShowRecipeFragment extends Fragment implements Callback<ProductResp
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            } else if(clickedItem.getItemId()==R.id.action_delete_recipe){
+                onDeleteRecipe();
             }
-            return false;
+        return false;
+    });
+    }
+
+    private void onDeleteRecipe() {
+        androidx.appcompat.app.AlertDialog.Builder alertBuilder = new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+
+        alertBuilder.setTitle(R.string.dialog_delete_recipe_title);
+        alertBuilder.setMessage(R.string.dialog_delete_recipe_message);
+
+        alertBuilder.setPositiveButton(R.string.delete_confirm, (dialog, which) -> {
+            deleteRecipe();
         });
+
+        alertBuilder.setNegativeButton(R.string.delete_not_confirm, (dialog, which) -> {
+        });
+
+        alertBuilder.show();
+    }
+
+    private void deleteRecipe() {
+        if (recipe.getRemoteId() != -1) {
+            Call<String> call = api.deleteRecipe(recipe.getRemoteId());
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                }
+            });
+        }
+        database.recipeDao().deleteIngredients(recipe.getRecipeId());
+        database.recipeDao().deleteTags(recipe.getRecipeId());
+        database.recipeDao().delete(recipe);
+        getParentFragmentManager().popBackStack();
     }
 
     @Override

@@ -1,13 +1,13 @@
 package com.fourstudents.jedzonko.Other;
 
 public class Author {
-    private int id;
+    private Long id;
     private String username;
     private String firstName;
     private String lastName;
     private boolean enabled;
 
-    public Author(int id, String username, String firstName, String lastName, boolean enabled) {
+    public Author(Long id, String username, String firstName, String lastName, boolean enabled) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
@@ -15,11 +15,11 @@ public class Author {
         this.enabled = enabled;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
